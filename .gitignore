@@ -1,6 +1,7 @@
 # 作業暫存與產出
 work/
 outputs/
+backups/
 
 # 相依套件（目前專案不需要，但避免未來誤提交）
 node_modules/
