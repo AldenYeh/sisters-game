@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff8e8">
+  <title>兔兔找胡蘿蔔｜離線迷宮遊戲</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="game-shell" aria-labelledby="game-title">
+    <header class="game-header">
+      <div>
+        <p class="eyebrow">小小探險家</p>
+        <h1 id="game-title">兔兔找胡蘿蔔</h1>
+      </div>
+      <button class="restart-button" id="restart" type="button">↻ 重新開始</button>
+    </header>
+
+    <section class="game-card" aria-label="迷宮遊戲區">
+      <div class="maze-column">
+        <p class="instruction" id="instruction">幫兔兔走到胡蘿蔔！可按方向鍵或下方大按鈕。</p>
+        <div class="maze-wrap" id="maze-wrap">
+          <div id="maze" class="maze" role="grid" aria-label="兔兔迷宮" aria-describedby="instruction status"></div>
+          <div class="win-panel" id="win-panel" role="dialog" aria-modal="true" aria-labelledby="win-title" hidden>
+            <div class="celebration" aria-hidden="true">✦ ● ✦</div>
+            <div class="win-bunny" aria-hidden="true">🐰🥕</div>
+            <h2 id="win-title">太棒了！找到胡蘿蔔！</h2>
+            <p>兔兔謝謝你的幫忙。</p>
+            <button id="play-again" class="play-again" type="button">再玩一次</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="control-column" aria-label="移動控制">
+        <div class="legend" aria-label="遊戲角色說明">
+          <span><b aria-hidden="true">🐰</b> 兔兔</span>
+          <span><b aria-hidden="true">🥕</b> 終點</span>
+        </div>
+        <div class="controls" aria-label="方向按鈕">
+          <button class="move-button up" type="button" data-direction="up" aria-label="向上走"><span aria-hidden="true">▲</span><small>上</small></button>
+          <button class="move-button left" type="button" data-direction="left" aria-label="向左走"><span aria-hidden="true">◀</span><small>左</small></button>
+          <div class="control-center" aria-hidden="true">🐾</div>
+          <button class="move-button right" type="button" data-direction="right" aria-label="向右走"><span aria-hidden="true">▶</span><small>右</small></button>
+          <button class="move-button down" type="button" data-direction="down" aria-label="向下走"><span aria-hidden="true">▼</span><small>下</small></button>
+        </div>
+        <p id="status" class="status" aria-live="polite">兔兔準備好了！</p>
+      </aside>
+    </section>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>
