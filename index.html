@@ -4,110 +4,48 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#fff8e8">
-  <title>迷宮小冒險｜離線迷宮遊戲</title>
-  <link rel="stylesheet" href="styles.css">
+  <title></title>
+  <link rel="stylesheet" href="assets/css/site.css">
 </head>
 <body>
-  <main class="app-shell">
-    <section id="home-screen" class="screen home-screen" aria-labelledby="home-title">
-      <div class="home-card">
-        <p class="eyebrow">兔兔的尋寶旅程</p>
-        <h1 id="home-title">迷宮小冒險</h1>
-        <p class="home-lead">選一位小玩家，出發找胡蘿蔔！</p>
-
-        <fieldset class="choice-group">
-          <legend>誰要玩？</legend>
-          <div class="player-choices">
-            <button class="choice-button player-choice sister" type="button" data-player="sister" aria-pressed="false"><span aria-hidden="true">🌼</span>姊姊</button>
-            <button class="choice-button player-choice younger" type="button" data-player="youngerSister" aria-pressed="false"><span aria-hidden="true">🌸</span>妹妹</button>
-          </div>
-        </fieldset>
-
-        <fieldset class="choice-group">
-          <legend>選擇難度</legend>
-          <div class="difficulty-choices">
-            <button class="difficulty-choice selected" type="button" data-difficulty="easy" aria-pressed="true"><b>簡單</b><small>第一次玩</small></button>
-            <button class="difficulty-choice" type="button" data-difficulty="normal" aria-pressed="false"><b>普通</b><small>更多岔路</small></button>
-            <button class="difficulty-choice" type="button" data-difficulty="hard" aria-pressed="false"><b>困難</b><small>大大迷宮</small></button>
-          </div>
-        </fieldset>
-
-        <p id="player-reminder" class="player-reminder" aria-live="polite">請先選擇玩家</p>
-        <div class="home-actions">
-          <button id="start-game" class="primary-button" type="button" disabled>開始遊戲</button>
-          <button id="show-records" class="secondary-button" type="button">遊戲紀錄</button>
-        </div>
-      </div>
-    </section>
-
-    <section id="game-screen" class="screen game-screen" aria-labelledby="game-title" hidden>
-      <header class="game-header">
-        <button id="home-from-game" class="header-button" type="button">⌂ 回首頁</button>
-        <div class="game-heading">
-          <p class="eyebrow">迷宮小冒險</p>
-          <h1 id="game-title">兔兔找胡蘿蔔</h1>
-        </div>
-        <div class="game-info" aria-label="本局資訊">
-          <span id="current-player">玩家：—</span>
-          <span id="current-difficulty">難度：—</span>
-          <time id="timer" datetime="PT0S">00:00</time>
-        </div>
-        <div class="game-actions">
-          <button id="toggle-path" class="header-button path-toggle" type="button" aria-pressed="true">隱藏路徑</button>
-          <button id="restart" class="header-button" type="button">↻ 重新開始</button>
-        </div>
+  <main class="hub-shell">
+    <section id="player-screen" class="hero-card hub-screen" aria-labelledby="site-title">
+      <header class="site-heading cat-heading">
+        <div class="cat-mark" aria-hidden="true">🐱</div>
+        <h1 id="site-title"></h1>
+        <div class="paw-divider" aria-hidden="true">🐾　🐟　🐾</div>
       </header>
-
-      <section class="maze-card" aria-label="迷宮遊戲區">
-        <div class="maze-wrap" id="maze-wrap">
-          <div id="maze" class="maze" role="grid" aria-label="兔兔迷宮" aria-describedby="status"></div>
-          <div class="win-panel" id="win-panel" role="dialog" aria-modal="true" aria-labelledby="win-title" hidden>
-            <div class="celebration" aria-hidden="true">✦ ● ✦</div>
-            <div class="win-bunny" aria-hidden="true">🐰🥕</div>
-            <h2 id="win-title">完成啦！</h2>
-            <div id="win-details" class="win-details"></div>
-            <p id="new-record" class="new-record" hidden>新的最快紀錄！</p>
-            <div class="win-actions">
-              <button id="play-again" class="primary-button" type="button">再玩一次</button>
-              <button id="home-from-win" class="secondary-button" type="button">回首頁</button>
-            </div>
-          </div>
-        </div>
-        <p id="status" class="status" aria-live="polite">兔兔準備好了！</p>
-        <div id="touch-controls" class="touch-controls" aria-label="觸控方向按鈕">
-          <button class="touch-direction touch-up" type="button" data-move="up" aria-label="向上移動"><span aria-hidden="true">▲</span><small>上</small></button>
-          <button class="touch-direction touch-left" type="button" data-move="left" aria-label="向左移動"><span aria-hidden="true">◀</span><small>左</small></button>
-          <div class="touch-center" aria-hidden="true">🐾</div>
-          <button class="touch-direction touch-right" type="button" data-move="right" aria-label="向右移動"><span aria-hidden="true">▶</span><small>右</small></button>
-          <button class="touch-direction touch-down" type="button" data-move="down" aria-label="向下移動"><span aria-hidden="true">▼</span><small>下</small></button>
-        </div>
+      <section class="hub-section" aria-labelledby="player-title">
+        <h2 id="player-title"></h2>
+        <div id="player-list" class="player-list"></div>
+        <p id="player-status" class="selection-status" aria-live="polite"></p>
       </section>
     </section>
 
-    <section id="records-screen" class="screen records-screen" aria-labelledby="records-title" hidden>
-      <div class="records-card">
-        <p class="eyebrow">每一次完成都很棒</p>
-        <h1 id="records-title">遊戲紀錄</h1>
-        <div class="records-table-wrap">
-          <table>
-            <thead><tr><th>玩家</th><th>難度</th><th>完成次數</th><th>最快紀錄</th></tr></thead>
-            <tbody id="records-body"></tbody>
-          </table>
-        </div>
-        <div class="records-actions">
-          <button id="records-home" class="primary-button" type="button">返回首頁</button>
-          <button id="clear-records" class="danger-button" type="button">清除所有紀錄</button>
-        </div>
-        <div id="clear-confirm" class="clear-confirm" role="alertdialog" aria-labelledby="clear-confirm-title" hidden>
-          <p id="clear-confirm-title">確定要刪除姊姊與妹妹的所有遊戲紀錄嗎？</p>
-          <div>
-            <button id="cancel-clear" class="secondary-button" type="button">取消</button>
-            <button id="confirm-clear" class="danger-confirm-button" type="button">確定清除</button>
-          </div>
-        </div>
-      </div>
+    <section id="category-screen" class="hero-card hub-screen" aria-labelledby="category-title" hidden>
+      <button id="back-to-players" class="back-button" type="button"></button>
+      <header class="site-heading">
+        <div class="cat-mark" aria-hidden="true">🐱</div>
+        <h1 id="category-title"></h1>
+        <p id="category-player" class="current-player-badge"></p>
+      </header>
+      <div id="category-list" class="choice-list"></div>
+    </section>
+
+    <section id="games-screen" class="hero-card hub-screen" aria-labelledby="games-title" hidden>
+      <button id="back-to-categories" class="back-button" type="button"></button>
+      <header class="site-heading">
+        <div class="cat-mark" aria-hidden="true">🧩</div>
+        <h1 id="games-title"></h1>
+        <p id="games-player" class="current-player-badge"></p>
+      </header>
+      <section class="hub-section">
+        <div id="game-list" class="choice-list"></div>
+      </section>
     </section>
   </main>
-  <script src="game.js"></script>
+  <script src="assets/js/content.js"></script>
+  <script src="assets/js/shared.js"></script>
+  <script src="assets/js/home.js"></script>
 </body>
 </html>

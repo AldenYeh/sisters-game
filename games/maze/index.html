@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff8e8">
+  <title></title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <link rel="stylesheet" href="maze.css">
+</head>
+<body>
+  <main class="maze-app">
+    <section id="setup-screen" class="screen setup-screen" aria-labelledby="setup-title">
+      <div class="setup-card">
+        <p id="setup-kicker" class="eyebrow"></p>
+        <h1 id="setup-title"></h1>
+        <p id="setup-player" class="setup-player"></p>
+        <fieldset class="difficulty-group">
+          <legend id="difficulty-title"></legend>
+          <div class="difficulty-choices">
+            <button class="difficulty-choice selected" type="button" data-difficulty="easy" aria-pressed="true"></button>
+            <button class="difficulty-choice" type="button" data-difficulty="normal" aria-pressed="false"></button>
+            <button class="difficulty-choice" type="button" data-difficulty="hard" aria-pressed="false"></button>
+          </div>
+        </fieldset>
+        <div class="setup-actions">
+          <button id="start-game" class="primary-button" type="button"></button>
+          <button id="show-records" class="secondary-button" type="button"></button>
+          <button id="setup-home" class="secondary-button" type="button"></button>
+        </div>
+      </div>
+    </section>
+
+    <section id="game-screen" class="screen game-screen" aria-labelledby="game-title" hidden>
+      <header class="game-header">
+        <button id="home-from-game" class="header-button" type="button"></button>
+        <div class="game-heading"><p id="game-kicker" class="eyebrow"></p><h1 id="game-title"></h1></div>
+        <div class="game-info" aria-live="polite">
+          <span id="current-player"></span><span id="current-difficulty"></span><time id="timer" datetime="PT0S">00:00</time>
+        </div>
+        <div class="game-actions">
+          <button id="toggle-path" class="header-button path-toggle" type="button" aria-pressed="true"></button>
+          <button id="restart" class="header-button" type="button"></button>
+        </div>
+      </header>
+      <section class="maze-card">
+        <div class="maze-wrap" id="maze-wrap">
+          <div id="maze" class="maze" role="grid"></div>
+          <div class="win-panel" id="win-panel" role="dialog" aria-modal="true" hidden>
+            <div class="celebration" aria-hidden="true">✦ 🐾 ✦</div><div class="win-mascot" aria-hidden="true">🐱🐟</div>
+            <h2 id="win-title"></h2><div id="win-details" class="win-details"></div><p id="new-record" class="new-record" hidden></p>
+            <div class="win-actions"><button id="play-again" class="primary-button" type="button"></button><button id="home-from-win" class="secondary-button" type="button"></button></div>
+          </div>
+        </div>
+        <p id="status" class="status" aria-live="polite"></p>
+        <div id="touch-controls" class="touch-controls">
+          <button class="touch-direction touch-up" type="button" data-move="up"></button>
+          <button class="touch-direction touch-left" type="button" data-move="left"></button>
+          <div class="touch-center" aria-hidden="true">🐾</div>
+          <button class="touch-direction touch-right" type="button" data-move="right"></button>
+          <button class="touch-direction touch-down" type="button" data-move="down"></button>
+        </div>
+      </section>
+    </section>
+
+    <section id="records-screen" class="screen records-screen" aria-labelledby="records-title" hidden>
+      <div class="records-card">
+        <p id="records-kicker" class="eyebrow"></p><h1 id="records-title"></h1>
+        <div class="records-table-wrap"><table><thead><tr id="records-head"></tr></thead><tbody id="records-body"></tbody></table></div>
+        <div class="records-actions"><button id="records-back" class="primary-button" type="button"></button><button id="clear-records" class="danger-button" type="button"></button></div>
+        <div id="clear-confirm" class="clear-confirm" role="alertdialog" hidden><p id="clear-confirm-title"></p><div><button id="cancel-clear" class="secondary-button" type="button"></button><button id="confirm-clear" class="danger-confirm-button" type="button"></button></div></div>
+      </div>
+    </section>
+  </main>
+  <script src="../../assets/js/content.js"></script>
+  <script src="../../assets/js/shared.js"></script>
+  <script src="maze.js"></script>
+</body>
+</html>
