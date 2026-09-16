@@ -32,6 +32,8 @@
         games: Object.freeze([
           { id: "maze", icon: "🐾", name: t("迷宮", "ㄇㄧˊ ㄍㄨㄥ"), href: "games/maze/index.html", available: true },
           { id: "sudoku", icon: "🐟", name: t("兒童數獨", "ㄦˊ ㄊㄨㄥˊ ㄕㄨˋ ㄉㄨˊ"), href: "games/sudoku/index.html", available: true },
+          { id: "puzzle", icon: "🧩", name: t("拼圖", "ㄆㄧㄣ ㄊㄨˊ"), href: "games/puzzle/index.html", available: true },
+          { id: "sliding", icon: "🚪", name: t("滑塊闖關", "ㄏㄨㄚˊ ㄎㄨㄞˋ ㄔㄨㄤˋ ㄍㄨㄢ"), href: "games/sliding/index.html", available: true },
           { id: "memory", icon: "🚧", name: t("記憶翻牌", "ㄐㄧˋ ㄧˋ ㄈㄢ ㄆㄞˊ"), available: false }
         ])
       },
@@ -51,8 +53,8 @@
       title: t("貓咪迷宮", "ㄇㄠ ㄇㄧ ㄇㄧˊ ㄍㄨㄥ"),
       chooseDifficulty: t("選擇難度", "ㄒㄩㄢˇ ㄗㄜˊ ㄋㄢˊ ㄉㄨˋ"),
       start: t("開始遊戲", "ㄎㄞ ㄕˇ ㄧㄡˊ ㄒㄧˋ"),
-      easy: t("簡單", "ㄐㄧㄢˇ ㄉㄢ"), normal: t("普通", "ㄆㄨˇ ㄊㄨㄥ"), hard: t("困難", "ㄎㄨㄣˋ ㄋㄢˊ"),
-      easyHint: t("第一次玩", "ㄉㄧˋ ㄧ ㄘˋ ㄨㄢˊ"), normalHint: t("更多岔路", "ㄍㄥˋ ㄉㄨㄛ ㄔㄚˋ ㄌㄨˋ"), hardHint: t("大大迷宮", "ㄉㄚˋ ㄉㄚˋ ㄇㄧˊ ㄍㄨㄥ"),
+      easy: t("簡單", "ㄐㄧㄢˇ ㄉㄢ"), normal: t("普通", "ㄆㄨˇ ㄊㄨㄥ"), hard: t("困難", "ㄎㄨㄣˋ ㄋㄢˊ"), super: t("超級迷宮", "ㄔㄠ ㄐㄧˊ ㄇㄧˊ ㄍㄨㄥ"),
+      easyHint: t("岔路少", "ㄔㄚˋ ㄌㄨˋ ㄕㄠˇ"), normalHint: t("更多岔路", "ㄍㄥˋ ㄉㄨㄛ ㄔㄚˋ ㄌㄨˋ"), hardHint: t("長長假路", "ㄔㄤˊ ㄔㄤˊ ㄐㄧㄚˇ ㄌㄨˋ"), superHint: t("19×19 挑戰", "ㄊㄧㄠˇ ㄓㄢˋ"),
       player: t("玩家", "ㄨㄢˊ ㄐㄧㄚ"), difficulty: t("難度", "ㄋㄢˊ ㄉㄨˋ"),
       hidePath: t("隱藏路徑", "ㄧㄣˇ ㄘㄤˊ ㄌㄨˋ ㄐㄧㄥˋ"), showPath: t("顯示路徑", "ㄒㄧㄢˇ ㄕˋ ㄌㄨˋ ㄐㄧㄥˋ"),
       restart: t("重新開始", "ㄔㄨㄥˊ ㄒㄧㄣ ㄎㄞ ㄕˇ"),

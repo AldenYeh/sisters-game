@@ -6,9 +6,10 @@
   const m = content.maze;
   const STORAGE_KEY = "mazeAdventureRecordsV1";
   const DIFFICULTIES = Object.freeze({
-    easy: { text: m.easy, hint: m.easyHint, size: 7, minPath: 20 },
-    normal: { text: m.normal, hint: m.normalHint, size: 11, minPath: 48 },
-    hard: { text: m.hard, hint: m.hardHint, size: 15, minPath: 85 }
+    easy: { text: m.easy, hint: m.easyHint, size: 3, candidates: 8, percentile: .20 },
+    normal: { text: m.normal, hint: m.normalHint, size: 5, candidates: 10, percentile: .50 },
+    hard: { text: m.hard, hint: m.hardHint, size: 7, candidates: 12, percentile: .78 },
+    super: { text: m.super, hint: m.superHint, size: 9, candidates: 14, percentile: .90 }
   });
   const DIRECTIONS = Object.freeze({ up: [-1, 0], down: [1, 0], left: [0, -1], right: [0, 1] });
   const KEY_DIRECTIONS = Object.freeze({ ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right" });
@@ -46,7 +47,7 @@
     phrase(byId("win-title"), m.completed); phrase(byId("new-record"), m.newBest); phrase(byId("play-again"), m.playAgain); phrase(byId("home-from-win"), content.common.backToGames, { icon: "←" });
     phrase(byId("records-back"), content.common.back); phrase(byId("clear-records"), m.clearAll, { compact: true });
     phrase(byId("clear-confirm-title"), m.clearConfirm); phrase(byId("cancel-clear"), content.common.cancel); phrase(byId("confirm-clear"), m.confirmClear);
-    const difficultyIds = ["easy", "normal", "hard"];
+    const difficultyIds = ["easy", "normal", "hard", "super"];
     document.querySelectorAll(".difficulty-choice").forEach((button, index) => {
       button.replaceChildren(ui.makeReading(DIFFICULTIES[difficultyIds[index]].text), ui.makeReading(DIFFICULTIES[difficultyIds[index]].hint, { compact: true }));
     });
@@ -131,11 +132,9 @@
     return { distances, farthest, distance: distances.get(cellKey(farthest.row,farthest.col)) };
   }
 
-  function generateAndValidateMaze(id) {
-    const config=DIFFICULTIES[id], start={row:1,col:1}; let best=null;
-    for(let attempt=0;attempt<14;attempt+=1){const grid=makeGrid(config.size),result=bfs(grid,start),candidate={grid,start,goal:{...result.farthest},pathLength:result.distance};if(!best||candidate.pathLength>best.pathLength)best=candidate;if(candidate.pathLength>=config.minPath&&result.distances.has(cellKey(candidate.goal.row,candidate.goal.col)))return candidate;}
-    return best;
-  }
+  function pathBetween(grid,start,goal){const queue=[start],previous=new Map([[cellKey(start.row,start.col),null]]);for(let i=0;i<queue.length;i+=1){const current=queue[i];if(current.row===goal.row&&current.col===goal.col)break;Object.values(DIRECTIONS).forEach(([dr,dc])=>{const row=current.row+dr,col=current.col+dc,key=cellKey(row,col);if(grid[row]?.[col]===0&&!previous.has(key)){previous.set(key,current);queue.push({row,col});}});}const result=[];for(let point=goal;point;point=previous.get(cellKey(point.row,point.col)))result.push(point);return result.reverse();}
+  function mazeComplexity(grid,start,goal){const path=pathBetween(grid,start,goal),pathKeys=new Set(path.map(p=>cellKey(p.row,p.col)));let deadEnds=0,totalDepth=0,maxDepth=0,nearBranches=0,awaySteps=0;grid.forEach((line,row)=>line.forEach((tile,col)=>{if(tile!==0)return;const degree=Object.values(DIRECTIONS).filter(([dr,dc])=>grid[row+dr]?.[col+dc]===0).length;if(degree===1&&!pathKeys.has(cellKey(row,col))){deadEnds+=1;let depth=0,current={row,col},previous=null;while(current){const next=Object.values(DIRECTIONS).map(([dr,dc])=>({row:current.row+dr,col:current.col+dc})).filter(p=>grid[p.row]?.[p.col]===0&&(!previous||p.row!==previous.row||p.col!==previous.col));const onward=next.find(p=>!pathKeys.has(cellKey(p.row,p.col)));if(next.some(p=>pathKeys.has(cellKey(p.row,p.col)))){depth+=1;break;}if(!onward)break;previous=current;current=onward;depth+=1;}totalDepth+=depth;maxDepth=Math.max(maxDepth,depth);}}));path.forEach((point,index)=>{const branches=Object.values(DIRECTIONS).filter(([dr,dc])=>{const key=cellKey(point.row+dr,point.col+dc);return grid[point.row+dr]?.[point.col+dc]===0&&!pathKeys.has(key);}).length;nearBranches+=branches;if(index&&Math.abs(point.row-goal.row)+Math.abs(point.col-goal.col)>Math.abs(path[index-1].row-goal.row)+Math.abs(path[index-1].col-goal.col))awaySteps+=1;});const score=path.length*1.2+deadEnds*9+(deadEnds?totalDepth/deadEnds:0)*5+maxDepth*4+nearBranches*7+awaySteps*8;return {score,pathLength:path.length-1,deadEnds,maxDepth,nearBranches,awaySteps};}
+  function generateAndValidateMaze(id) {const config=DIFFICULTIES[id],start={row:1,col:1},candidates=[];for(let attempt=0;attempt<config.candidates;attempt+=1){const grid=makeGrid(config.size),result=bfs(grid,start),goal={...result.farthest};if(!result.distances.has(cellKey(goal.row,goal.col)))continue;const complexity=mazeComplexity(grid,start,goal);candidates.push({grid,start,goal,pathLength:result.distance,complexity});}candidates.sort((a,b)=>a.complexity.score-b.complexity.score);return candidates[Math.min(candidates.length-1,Math.floor((candidates.length-1)*config.percentile))];}
 
   function startGame(options={}) {
     if (!content.players[gameState.playerId]) { goHub(); return false; }
@@ -184,6 +183,6 @@
   byId("maze-wrap").addEventListener("pointerdown",handleSwipeStart,{passive:false});byId("maze-wrap").addEventListener("pointerup",handleSwipeEnd,{passive:false});byId("maze-wrap").addEventListener("pointercancel",cancelSwipe);
   document.addEventListener("keydown",event=>{const direction=KEY_DIRECTIONS[event.key];if(!direction)return;event.preventDefault();movePlayer(direction);},{passive:false});
 
-  window.MazeGame=Object.freeze({startGame,restartGame,move:movePlayer,togglePath:togglePathDisplay,generateMaze:generateAndValidateMaze,bfs,showRecords:showScoreboard,loadRecords,getState:()=>({...gameState,maze:gameState.maze.map(row=>[...row]),visited:[...gameState.visited]}),constants:{DIFFICULTIES,STORAGE_KEY}});
+  window.MazeGame=Object.freeze({startGame,restartGame,move:movePlayer,togglePath:togglePathDisplay,generateMaze:generateAndValidateMaze,mazeComplexity,bfs,showRecords:showScoreboard,loadRecords,getState:()=>({...gameState,maze:gameState.maze.map(row=>[...row]),visited:[...gameState.visited]}),constants:{DIFFICULTIES,STORAGE_KEY}});
   if(!gameState.playerId){goHub();return;} configureText(); showSetup();
 })();

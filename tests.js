@@ -13,7 +13,7 @@ const homeJs = read("assets/js/home.js");
 const mazeJs = read("games/maze/maze.js");
 
 // 資料夾、共用資料與 GitHub Pages 相對路徑。
-for (const file of ["assets/js/content.js", "assets/js/shared.js", "assets/js/home.js", "assets/css/site.css", "games/maze/index.html", "games/maze/maze.js", "games/maze/maze.css", "games/sudoku/index.html", "games/sudoku/engine.js", "games/sudoku/sudoku.js", "games/sudoku/sudoku.css"]) {
+for (const file of ["assets/js/content.js", "assets/js/shared.js", "assets/js/home.js", "assets/css/site.css", "games/maze/index.html", "games/maze/maze.js", "games/maze/maze.css", "games/sudoku/index.html", "games/sudoku/engine.js", "games/sudoku/sudoku.js", "games/sudoku/sudoku.css", "games/puzzle/index.html", "games/puzzle/puzzle.js", "games/puzzle/puzzle.css", "games/sliding/index.html", "games/sliding/levels.js", "games/sliding/sliding.js", "games/sliding/sliding.css"]) {
   assert.ok(fs.existsSync(file), `缺少 ${file}`);
 }
 assert.match(homeHtml, /assets\/js\/content\.js/);
@@ -35,6 +35,8 @@ assert.match(contentJs, /兒童數獨/);
 assert.match(contentJs, /記憶翻牌/);
 assert.match(contentJs, /href: "games\/maze\/index\.html"/);
 assert.match(contentJs, /href: "games\/sudoku\/index\.html"/);
+assert.match(contentJs, /href: "games\/puzzle\/index\.html"/);
+assert.match(contentJs, /href: "games\/sliding\/index\.html"/);
 assert.match(contentJs, /學習遊戲/);
 assert.match(contentJs, /創作遊戲/);
 assert.match(contentJs, /bopomofo/);
@@ -60,14 +62,16 @@ assert.match(mazeJs, /setTouchControlsDisabled\(true\)/);
 assert.match(mazeJs, /localStorage\.getItem\(STORAGE_KEY\)/);
 assert.match(mazeJs, /Date\.now\(\)-gameState\.timerStartedAt/);
 assert.match(mazeJs, /gameState\.visited=new Set/);
-assert.match(mazeJs, /attempt<14/);
+assert.match(mazeJs, /mazeComplexity/);
+assert.match(mazeJs, /candidates: 14/);
+assert.match(mazeJs, /super/);
 assert.match(mazeJs, /bfs\(grid,start\)/);
 assert.match(mazeHtml, /data-move="up"/);
 assert.match(mazeCss, /touch-action:none/);
 assert.match(mazeCss, /orientation:landscape/);
 assert.match(siteCss, /grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
 
-for (const source of [contentJs, sharedJs, homeJs, mazeJs]) new Function(source);
+for (const source of [contentJs, sharedJs, homeJs, mazeJs, read("games/sudoku/sudoku.js"), read("games/puzzle/puzzle.js"), read("games/sliding/levels.js"), read("games/sliding/sliding.js")]) new Function(source);
 
 // 以相同遞迴回溯原理驗證三個尺寸的 Perfect Maze 全部相通。
 function generate(size) {
