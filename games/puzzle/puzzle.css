@@ -3,5 +3,5 @@
 .tray{display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;min-height:180px;background:#fff;border:1px solid #eadfd6;border-radius:16px;padding:10px}
 .tray .piece{position:relative;border-radius:8px;box-shadow:0 4px 10px rgba(61,51,56,.08)}
 .ref-row{display:flex;align-items:center;gap:8px;font-weight:800;margin-bottom:8px}
-.ref-thumb{width:72px;height:54px;border-radius:10px;border:1px solid #eadfd6;background-size:cover}
+.ref-thumb{width:140px;height:96px;border-radius:10px;border:1px solid #eadfd6;background-size:cover}
 @media(max-width:760px){.puzzle-layout{grid-template-columns:1fr}}
