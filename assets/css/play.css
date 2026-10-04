@@ -21,3 +21,7 @@ body{margin:0;font-family:"PingFang TC","Noto Sans TC",Nunito,sans-serif;backgro
 
 .complete-overlay.pop{animation:pop .35s ease}
 @keyframes pop{from{transform:scale(.96);opacity:.6}to{transform:none;opacity:1}}
+
+.board-wrap,.jig-board,.slide-board,.sokoban{box-shadow:0 10px 24px rgba(61,51,56,.06)}
+.msg{font-size:15px}
+.toolbar{margin-top:4px}
