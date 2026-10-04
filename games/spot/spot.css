@@ -1,1 +1,1 @@
-.scene{width:min(100%,560px);margin:0 auto}.hit{cursor:pointer}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}.pair svg{width:100%;height:auto;background:#fff;border-radius:12px}.hit{cursor:pointer}@media(max-width:700px){.pair{grid-template-columns:1fr}}

@@ -1,1 +1,8 @@
-.pegs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;min-height:240px}.peg{background:#fff;border:3px solid #8d5b73;border-radius:16px;display:flex;flex-direction:column-reverse;align-items:center;padding:8px;min-height:220px}.disc{height:28px;border-radius:10px;background:#f4a3b5;margin-top:4px}
+
+.pegs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;min-height:260px}
+.peg{background:#fff;border:3px solid #d8bcc9;border-radius:16px;display:flex;flex-direction:column-reverse;align-items:center;justify-content:flex-start;padding:10px;min-height:240px;cursor:pointer}
+.peg.selected{border-color:#8d5b73;box-shadow:0 0 0 4px #f4a3b5;background:#fff4f7}
+.peg.legal{border-color:#2f6f4e}
+.peg.illegal{border-color:#c96b6b}
+.disc{height:32px;border-radius:12px;margin-top:6px}
+.disc.picked{outline:4px solid #543c4e}

@@ -33,10 +33,11 @@
     status();
   }
   function renderBoard() {
-    const url = svgUrl(state.art);
-    board.style.backgroundImage = state.pieces <= 24 ? url : "none";
-    board.style.backgroundSize = "cover";
-    board.style.opacity = state.pieces <= 12 ? "1" : ".35";
+    board.style.backgroundImage = "none";
+    board.style.background = "#f6efe6";
+    board.style.opacity = "1";
+    const ref = document.getElementById("reference");
+    if (ref) { ref.style.backgroundImage = svgUrl(state.art); ref.style.backgroundSize = "cover"; }
     board.replaceChildren();
     const showGhost = state.pieces <= 36;
     for (let i = 0; i < state.cols * state.rows; i++) {
@@ -59,7 +60,10 @@
     if (!ghost) {
       el.style.backgroundImage = svgUrl(state.art);
       el.style.backgroundSize = `${state.cols * 100}% ${state.rows * 100}%`;
-      el.style.backgroundPosition = `${state.cols === 1 ? 0 : c / (state.cols - 1) * 100}% ${state.rows === 1 ? 0 : r / (state.rows - 1) * 100}%`;
+      el.style.backgroundPosition = `${c * 100 / state.cols}% ${r * 100 / state.rows}%`;
+      el.style.backgroundRepeat = "no-repeat";
+      el.style.border = "2px solid #fff";
+      el.style.boxShadow = "0 0 0 2px #8d5b73";
     }
   }
   function makePiece(index, snapped) {

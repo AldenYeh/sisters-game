@@ -6,11 +6,19 @@
   function render(){
     const host=document.getElementById("pegs"); host.replaceChildren();
     pegs.forEach((peg,i)=>{
-      const col=document.createElement("button"); col.type="button"; col.className="peg"; col.onclick=()=>pick(i);
-      peg.forEach(d=>{ const el=document.createElement("div"); el.className="disc"; el.style.width=(30+d*18)+"px"; el.style.background=`hsl(${d*30},70%,75%)`; col.append(el); });
+      const col=document.createElement("button"); col.type="button"; col.className="peg";
+      if(selected===i) col.classList.add("selected");
+      else if(selected!=null){
+        const from=pegs[selected], disc=from[from.length-1];
+        const legal=!peg.length || peg[peg.length-1]>disc;
+        col.classList.add(legal?"legal":"illegal");
+      }
+      col.onclick=()=>pick(i);
+      peg.forEach((d,idx)=>{ const el=document.createElement("div"); el.className="disc"+(selected===i && idx===peg.length-1?" picked":""); el.style.width=(36+d*22)+"px"; el.style.background=`hsl(${d*36},70%,72%)`; col.append(el); });
+      if(!peg.length){ const empty=document.createElement("span"); empty.textContent="空柱"; col.append(empty); }
       host.append(col);
     });
-    document.getElementById("status").textContent=`${n} 層 · ${moves} 步 · 最少 ${2**n-1} 步`;
+    document.getElementById("status").textContent = selected==null ? `點一疊圓盤，再點要放的柱子 · ${n} 層 · ${moves} 步` : `選到了。綠框可以放，紅框太大放不上去`;
   }
   function pick(i){
     if (selected==null) { if (pegs[i].length) selected=i; return; }

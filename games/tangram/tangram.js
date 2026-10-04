@@ -67,11 +67,11 @@
       if (shape.hint === "partial" && !["L1","SQ"].includes(id)) return "";
       return `<polygon points="${targetPoly(id).map(p=>p.join(",")).join(" ")}" fill="none" stroke="#8d5b73" stroke-dasharray="4 3"/>`;
     }).join("") : "";
-    const ps = Object.keys(base).map(id => `<polygon data-id="${id}" points="${world(id).map(p=>p.join(",")).join(" ")}" fill="${colors[id]}" stroke="${selected===id?"#543c4e":"#fff"}" stroke-width="${selected===id?4:2}" opacity=".92"/>`).join("");
+    const ps = Object.keys(base).map(id => `<polygon data-id="${id}" points="${world(id).map(p=>p.join(",")).join(" ")}" fill="${colors[id]}" stroke="${near(id)?"#2f6f4e":(selected===id?"#543c4e":"#fff")}" stroke-width="${near(id)||selected===id?5:2}" opacity=".92"/>`).join("");
     svg.innerHTML = sil + outlines + ps;
     svg.querySelectorAll("polygon[data-id]").forEach(el => el.addEventListener("pointerdown", ev => { selected = el.dataset.id; drag(ev, el); }));
     const done = Object.keys(base).every(near);
-    document.getElementById("status").textContent = `${shape.name} · ${shape.tier} · ${done?"可以收尾":"繼續拼"} · 提示 ${hints}/3`;
+    const placed=Object.keys(base).filter(near).length; document.getElementById("status").textContent = done?`${shape.name} 七片都蓋上了`:`蓋住影子 ${placed}/7 · 蓋上的會變深色邊`;
     if (done) finish();
   }
   function near(id) {
