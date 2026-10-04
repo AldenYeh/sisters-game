@@ -43,6 +43,13 @@
     if (back) back.onclick = () => { location.href = "../../index.html#games/logic"; };
     const restart = document.getElementById("restart");
     if (restart && opts.onRestart) restart.onclick = opts.onRestart;
+    if (restart && !document.getElementById("mute")) {
+      const mute = document.createElement("button");
+      mute.id = "mute"; mute.type = "button"; mute.className = "secondary-button";
+      mute.textContent = muted() ? "開聲音" : "靜音";
+      mute.onclick = () => { try { localStorage.setItem("sistersMuted", muted() ? "0" : "1"); } catch (_) {} mute.textContent = muted() ? "開聲音" : "靜音"; };
+      restart.after(mute);
+    }
   }
   function showComplete(text) {
     const el = document.getElementById("complete");
