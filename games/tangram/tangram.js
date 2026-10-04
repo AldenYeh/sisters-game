@@ -71,7 +71,7 @@
     svg.innerHTML = sil + outlines + ps;
     svg.querySelectorAll("polygon[data-id]").forEach(el => el.addEventListener("pointerdown", ev => { selected = el.dataset.id; drag(ev, el); }));
     const done = Object.keys(base).every(near);
-    const placed=Object.keys(base).filter(near).length; document.getElementById("status").textContent = done?`${shape.name} 完成`:`已蓋上 ${placed}/7`;
+    const placed=Object.keys(base).filter(near).length; document.getElementById("status").textContent = done?`${shape.name} 蓋好了`:`把形狀蓋到影子上 · ${placed}/7`;
     if (done) finish();
   }
   function kind(id){ return id[0]==="L"?"L":id[0]==="S"?"S":id; }

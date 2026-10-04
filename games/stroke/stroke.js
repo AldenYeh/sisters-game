@@ -12,7 +12,7 @@
     const nodes=L.nodes.map((n,i)=>`<circle data-n="${i}" cx="${n[0]}" cy="${n[1]}" r="${last===i?20:16}" fill="${last===i?"#d25b6a":"#fff"}" stroke="#8d5b73" stroke-width="3"/>`).join("");
     svg.innerHTML=edges+nodes;
     svg.querySelectorAll("circle").forEach(c=>c.addEventListener("click",()=>tap(+c.dataset.n)));
-    document.getElementById("status").textContent=last==null?`點一個點開始 · ${L.name}`:`從紅點走到相連的點 · 已走 ${used.size}/${L.edges.length}`;
+    document.getElementById("status").textContent=last==null?`點一個點開始，每條線只走一次`:`從紅點走到相連的點 · 還剩 ${L.edges.length-used.size} 條`;
     if (used.size===L.edges.length) {
       SistersPlay.showComplete("整張圖走完了");
       SistersPlay.recordResult({game:"stroke", difficulty:L.tier, level:L.name, startedAt, moves, restartCount:restarts});
