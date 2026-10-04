@@ -4,7 +4,9 @@
     { name: "花園", a: "art/garden.jpg", b: "art/garden-b.jpg", spots: [{ id: "moon", x: 6, y: 4, w: 22, h: 22 }, { id: "bowl", x: 60, y: 62, w: 22, h: 24 }, { id: "bug", x: 16, y: 64, w: 16, h: 16 }] },
     { name: "房間", a: "art/room.jpg", b: "art/room-b.jpg", spots: [{ id: "lamp", x: 2, y: 30, w: 16, h: 26 }, { id: "book", x: 20, y: 74, w: 16, h: 16 }, { id: "bow", x: 66, y: 52, w: 16, h: 24 }] },
     { name: "海底", a: "art/sea.jpg", b: "art/sea-b.jpg", spots: [{ id: "fish", x: 14, y: 24, w: 28, h: 28 }, { id: "crab", x: 60, y: 62, w: 26, h: 26 }, { id: "star", x: 64, y: 74, w: 16, h: 16 }] },
-    { name: "野餐", a: "art/picnic.jpg", b: "art/picnic-b.jpg", spots: [{ id: "apple", x: 44, y: 62, w: 14, h: 18 }, { id: "kite", x: 60, y: 2, w: 20, h: 22 }, { id: "collar", x: 70, y: 58, w: 18, h: 24 }] }
+    { name: "野餐", a: "art/picnic.jpg", b: "art/picnic-b.jpg", spots: [{ id: "apple", x: 44, y: 62, w: 14, h: 18 }, { id: "kite", x: 60, y: 2, w: 20, h: 22 }, { id: "collar", x: 70, y: 58, w: 18, h: 24 }] },
+    { name: "花園二", a: "art/garden.jpg", b: "art/garden-b.jpg", spots: [{ id: "moon2", x: 4, y: 2, w: 24, h: 24 }, { id: "bowl2", x: 58, y: 60, w: 24, h: 26 }, { id: "bug2", x: 14, y: 62, w: 18, h: 18 }] },
+    { name: "海底二", a: "art/sea.jpg", b: "art/sea-b.jpg", spots: [{ id: "fish2", x: 12, y: 22, w: 30, h: 30 }, { id: "crab2", x: 58, y: 60, w: 28, h: 28 }, { id: "star2", x: 62, y: 72, w: 18, h: 18 }] }
   ];
   let scene = 0, found = new Set(), startedAt = Date.now();
   function start() {
