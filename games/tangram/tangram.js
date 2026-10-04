@@ -74,10 +74,10 @@
     const placed=Object.keys(base).filter(near).length; document.getElementById("status").textContent = done?`${shape.name} 七片都蓋上了`:`蓋住影子 ${placed}/7 · 蓋上的會變深色邊`;
     if (done) finish();
   }
+  function kind(id){ return id[0]==="L"?"L":id[0]==="S"?"S":id; }
   function near(id) {
-    const a = world(id), b = targetPoly(id);
-    const ac = centroid(a), bc = centroid(b);
-    return Math.hypot(ac[0]-bc[0], ac[1]-bc[1]) < 28;
+    const ac = centroid(world(id));
+    return Object.keys(base).some(slot => kind(slot)===kind(id) && Math.hypot(ac[0]-centroid(targetPoly(slot))[0], ac[1]-centroid(targetPoly(slot))[1]) < 36);
   }
   function centroid(p) { return [p.reduce((s,v)=>s+v[0],0)/p.length, p.reduce((s,v)=>s+v[1],0)/p.length]; }
   function drag(ev, el) {

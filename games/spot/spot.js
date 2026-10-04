@@ -1,46 +1,61 @@
 (() => {
   "use strict";
   const scenes = [
-    {name:"公園", bg:"#d7f0c8", items:[{k:"tree",x:50,y:150,d:"🌳"},{k:"sun",x:250,y:40,d:"☀️"},{k:"ball",x:160,y:170,d:"⚽"},{k:"kid",x:200,y:140,d:"🧒"},{k:"flower",x:90,y:180,d:"🌸"},{k:"bird",x:300,y:70,d:"🐦"}]},
-    {name:"房間", bg:"#fff1d6", items:[{k:"bed",x:70,y:150,d:"🛏️"},{k:"lamp",x:250,y:80,d:"💡"},{k:"book",x:180,y:160,d:"📘"},{k:"cat",x:140,y:120,d:"🐱"},{k:"clock",x:300,y:50,d:"🕒"},{k:"plant",x:40,y:80,d:"🪴"}]},
-    {name:"海底", bg:"#c7f0f4", items:[{k:"fish",x:80,y:80,d:"🐟"},{k:"star",x:200,y:150,d:"starfish"},{k:"shell",x:140,y:180,d:"🐚"},{k:"crab",x:260,y:160,d:"🦀"},{k:"weed",x:40,y:170,d:"🌿"},{k:"bubble",x:300,y:60,d:"🫧"}]}
+    {name:"公園", sky:"#c9ecff", ground:"#b7e4c7"},
+    {name:"房間", sky:"#fff4d6", ground:"#f3d7b5"},
+    {name:"海底", sky:"#b7e0f2", ground:"#7ec8d4"}
   ];
-  const counts=[3,5,8];
-  let scene=0, count=3, found=new Set(), diffs=[], startedAt=Date.now();
+  let scene=0, count=3, found=new Set(), marks=[], startedAt=Date.now();
   function start(){
     found=new Set(); startedAt=Date.now();
-    const items=scenes[scene].items;
-    diffs=items.slice(0, Math.min(count, items.length)).map((item,i)=>({...item, id:i, change:["missing","color","extra"][i%3]}));
+    const pool=[
+      {id:"ball", x:70, y:120, kind:"circle", fill:"#f4a3b5"},
+      {id:"sun", x:250, y:40, kind:"circle", fill:"#f7c56b"},
+      {id:"tree", x:180, y:130, kind:"tree", fill:"#2f6f4e"},
+      {id:"house", x:40, y:90, kind:"house", fill:"#d45d6b"},
+      {id:"cloud", x:120, y:36, kind:"cloud", fill:"#fff"}
+    ];
+    marks=pool.slice(0, count).map((item,i)=>({...item, change:["hide","recolor","move"][i%3]}));
     document.getElementById("complete").hidden=true; render();
   }
-  function panel(changed){
+  function draw(changed){
     const s=scenes[scene];
-    let svg=`<svg viewBox="0 0 340 220"><rect width="340" height="220" rx="16" fill="${s.bg}"/>`;
-    svg+=`<text x="12" y="24" font-size="16" fill="#543c4e">${changed?"找這裡":"原圖"} · ${s.name}</text>`;
-    s.items.forEach(item=>{
-      const diff=diffs.find(d=>d.k===item.k);
-      if(changed && diff && diff.change==="missing") return;
-      const color = changed && diff && diff.change==="color" ? "#d45d6b" : "#543c4e";
-      svg+=`<text x="${item.x}" y="${item.y}" font-size="32" fill="${color}">${item.d}</text>`;
+    let body=`<rect width="320" height="200" fill="${s.sky}"/><rect y="140" width="320" height="60" fill="${s.ground}"/>`;
+    const items=[
+      {id:"ball", x:70, y:120, kind:"circle", fill:"#f4a3b5"},
+      {id:"sun", x:250, y:40, kind:"circle", fill:"#f7c56b"},
+      {id:"tree", x:180, y:130, kind:"tree", fill:"#2f6f4e"},
+      {id:"house", x:40, y:90, kind:"house", fill:"#d45d6b"},
+      {id:"cloud", x:120, y:36, kind:"cloud", fill:"#fff"}
+    ];
+    items.forEach(item=>{
+      const mark=marks.find(m=>m.id===item.id);
+      let x=item.x, fill=item.fill, show=true;
+      if(changed && mark){
+        if(mark.change==="hide") show=false;
+        if(mark.change==="recolor") fill="#6d5bd0";
+        if(mark.change==="move") x+=36;
+      }
+      if(!show) return;
+      if(item.kind==="circle") body+=`<circle cx="${x+16}" cy="${item.y}" r="16" fill="${fill}"/>`;
+      if(item.kind==="tree") body+=`<rect x="${x+10}" y="${item.y}" width="8" height="28" fill="#8d5b46"/><circle cx="${x+14}" cy="${item.y-6}" r="16" fill="${fill}"/>`;
+      if(item.kind==="house") body+=`<rect x="${x}" y="${item.y}" width="36" height="28" fill="${fill}"/><polygon points="${x}, ${item.y} ${x+18},${item.y-16} ${x+36},${item.y}" fill="#543c4e"/>`;
+      if(item.kind==="cloud") body+=`<ellipse cx="${x+20}" cy="${item.y}" rx="22" ry="12" fill="${fill}"/>`;
     });
-    if(changed) diffs.filter(d=>d.change==="extra").forEach(d=>{ svg+=`<text class="hit" data-id="${d.id}" x="${d.x+28}" y="${d.y-20}" font-size="28">⭐</text>`; });
-    if(changed) diffs.forEach(d=>{ if(d.change==="extra") return; svg+=`<rect class="hit" data-id="${d.id}" x="${d.x-8}" y="${d.y-28}" width="48" height="42" fill="transparent"/>`; });
-    return svg+"</svg>";
+    if(changed) marks.forEach(m=>{
+      const hit=found.has(m.id);
+      body+=`<rect class="hit" data-id="${m.id}" x="${m.x-6}" y="${m.y-28}" width="70" height="58" fill="${hit?"#b7e4c788":"transparent"}" stroke="${hit?"#2f6f4e":"transparent"}"/>`;
+    });
+    return `<svg viewBox="0 0 320 200">${body}<text x="10" y="18" font-size="14" fill="#543c4e">${changed?"找這裡":"原圖"}</text></svg>`;
   }
   function render(){
-    const host=document.getElementById("scene");
-    host.innerHTML=`<div class="pair">${panel(false)}${panel(true)}</div>`;
-    host.querySelectorAll(".hit").forEach(n=>n.addEventListener("click",()=>hit(+n.dataset.id)));
-    document.getElementById("status").textContent=`左邊是原圖，點右邊不一樣的地方 · ${found.size}/${diffs.length}`;
+    document.getElementById("scene").innerHTML=`<div class="pair">${draw(false)}${draw(true)}</div>`;
+    document.querySelectorAll(".hit").forEach(n=>n.addEventListener("click",()=>hit(n.dataset.id)));
+    document.getElementById("status").textContent=`左邊原圖，點右邊不一樣的 · ${found.size}/${marks.length}`;
   }
-  function hit(id){ if(found.has(id)) return; found.add(id); render(); if(found.size===diffs.length){ SistersPlay.showComplete(`找到 ${diffs.length} 處不同`); SistersPlay.recordResult({game:"spot", difficulty:String(count), level:scenes[scene].name, startedAt, moves:found.size}); } }
-  function chips(){
-    const row=document.getElementById("diff-row"); row.replaceChildren();
-    counts.forEach(c=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"+(c===count?" selected":""); b.textContent=c+" 處"; b.onclick=()=>{count=c; chips(); start();}; row.append(b); });
-    scenes.forEach((s,i)=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"+(i===scene?" selected":""); b.textContent=s.name; b.onclick=()=>{scene=i; chips(); start();}; row.append(b); });
-  }
-  SistersPlay.showCoach("spot", [{demo:"👀➡️", line:"左邊原圖，點右邊不一樣的"}]);
+  function hit(id){ found.add(id); render(); if(found.size===marks.length){ SistersPlay.showComplete("找到了"); SistersPlay.recordResult({game:"spot", difficulty:String(count), level:scenes[scene].name, startedAt, moves:found.size}); } }
+  function chips(){ const row=document.getElementById("diff-row"); row.replaceChildren(); [3,5].forEach(c=>{const b=document.createElement("button"); b.type="button"; b.className="chip"+(c===count?" selected":""); b.textContent=c+" 處"; b.onclick=()=>{count=c; chips(); start();}; row.append(b);}); scenes.forEach((s,i)=>{const b=document.createElement("button"); b.type="button"; b.className="chip"+(i===scene?" selected":""); b.textContent=s.name; b.onclick=()=>{scene=i; chips(); start();}; row.append(b);}); }
   SistersPlay.mount({title:"找不同", onRestart:start});
-  document.getElementById("overlay-next").onclick=()=>{ scene=(scene+1)%scenes.length; start(); };
+  document.getElementById("overlay-next").onclick=start;
   chips(); start();
 })();

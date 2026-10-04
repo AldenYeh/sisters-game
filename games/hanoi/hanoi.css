@@ -1,8 +1,9 @@
 
-.pegs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;min-height:260px}
-.peg{background:#fff;border:3px solid #d8bcc9;border-radius:16px;display:flex;flex-direction:column-reverse;align-items:center;justify-content:flex-start;padding:10px;min-height:240px;cursor:pointer}
-.peg.selected{border-color:#8d5b73;box-shadow:0 0 0 4px #f4a3b5;background:#fff4f7}
-.peg.legal{border-color:#2f6f4e}
+.pegs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.peg{position:relative;background:#fff;border:4px solid #e4d3dc;border-radius:18px;min-height:260px;display:flex;flex-direction:column-reverse;align-items:center;padding:28px 8px 12px;cursor:pointer}
+.peg.selected{border-color:#d45d6b;background:#fff1f3;box-shadow:0 0 0 6px #f4a3b5}
+.peg.legal{border-color:#2f6f4e;box-shadow:0 0 0 6px #b7e4c7}
 .peg.illegal{border-color:#c96b6b}
-.disc{height:32px;border-radius:12px;margin-top:6px}
+.peg-tag{position:absolute;top:8px;left:0;right:0;text-align:center;font-weight:900;font-size:14px;color:#8d5b73}
+.disc{height:34px;border-radius:14px;margin-top:6px;box-shadow:0 3px 0 rgba(84,60,78,.2)}
 .disc.picked{outline:4px solid #543c4e}

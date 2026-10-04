@@ -18,9 +18,10 @@
   }
   function svgUrl(art) {
     const [, name, emoji, color] = art;
-    const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'><rect width='400' height='400' fill='${color}'/><circle cx='70' cy='80' r='36' fill='#fff4b5'/><circle cx='320' cy='300' r='48' fill='#ffffff88'/><text x='200' y='230' text-anchor='middle' font-size='150'>${emoji}</text><text x='200' y='340' text-anchor='middle' font-size='42' font-family='sans-serif' fill='#543c4e'>${name}</text></svg>`;
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'><rect width='400' height='300' fill='${color}'/><circle cx='80' cy='70' r='42' fill='#ffe08a'/><rect x='40' y='170' width='120' height='80' rx='12' fill='#fff'/><circle cx='280' cy='160' r='54' fill='#ffffff'/><text x='280' y='178' text-anchor='middle' font-size='64'>${emoji}</text><text x='70' y='250' font-size='28' fill='#543c4e'>${name}</text></svg>`;
     return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
   }
+  function pieceSize(){ const w=Math.min(board.clientWidth||420, 460)/state.cols; return {w:Math.max(56,w), h:Math.max(48,w*0.75)}; }
   function start(keepRestart) {
     const [cols, rows] = dims(state.pieces);
     state.cols = cols; state.rows = rows;
@@ -58,12 +59,14 @@
     el.style.width = w + "%";
     el.style.height = h + "%";
     if (!ghost) {
+      const size=pieceSize();
       el.style.backgroundImage = svgUrl(state.art);
-      el.style.backgroundSize = `${state.cols * 100}% ${state.rows * 100}%`;
-      el.style.backgroundPosition = `${c * 100 / state.cols}% ${r * 100 / state.rows}%`;
       el.style.backgroundRepeat = "no-repeat";
+      el.style.backgroundSize = (size.w*state.cols)+"px "+(size.h*state.rows)+"px";
+      el.style.backgroundPosition = (-c*size.w)+"px "+(-r*size.h)+"px";
       el.style.border = "2px solid #fff";
       el.style.boxShadow = "0 0 0 2px #8d5b73";
+      if(!ghost){ el.style.width=size.w+"px"; el.style.height=size.h+"px"; }
     }
   }
   function makePiece(index, snapped) {
@@ -72,9 +75,9 @@
     el.dataset.index = index;
     const [cols, rows] = [state.cols, state.rows];
     if (!snapped) {
-      const size = Math.max(46, Math.min(92, 520 / Math.max(cols, rows)));
-      el.style.width = size + "px";
-      el.style.height = size + "px";
+      const size = pieceSize();
+      el.style.width = size.w + "px";
+      el.style.height = size.h + "px";
     }
     placeBox(el, index, false);
     if (!snapped) {

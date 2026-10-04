@@ -13,6 +13,7 @@
         const legal=!peg.length || peg[peg.length-1]>disc;
         col.classList.add(legal?"legal":"illegal");
       }
+      const tag=document.createElement("span"); tag.className="peg-tag"; tag.textContent=selected===i?"選到了":(selected==null?"點我":(col.classList.contains("legal")?"可以放":"太大")); col.append(tag);
       col.onclick=()=>pick(i);
       peg.forEach((d,idx)=>{ const el=document.createElement("div"); el.className="disc"+(selected===i && idx===peg.length-1?" picked":""); el.style.width=(36+d*22)+"px"; el.style.background=`hsl(${d*36},70%,72%)`; col.append(el); });
       if(!peg.length){ const empty=document.createElement("span"); empty.textContent="空柱"; col.append(empty); }
