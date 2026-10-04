@@ -91,7 +91,19 @@
       pieces[id][1] = origin[1] + (p[1]-start[1]) / 70;
       render();
     }
-    function up() { moves++; window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); render(); }
+    function up() {
+      moves++;
+      const ac = centroid(world(id));
+      let best = null, bestD = 48;
+      Object.keys(base).forEach(slot => {
+        if (kind(slot) !== kind(id)) return;
+        const bc = centroid(targetPoly(slot));
+        const d = Math.hypot(ac[0]-bc[0], ac[1]-bc[1]);
+        if (d < bestD) { bestD = d; best = slot; }
+      });
+      if (best) { const goal = shapes[idx].parts[best]; pieces[id][0]=goal[0]; pieces[id][1]=goal[1]; pieces[id][2]=goal[2]; SistersPlay.playSound("ok"); }
+      window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); render();
+    }
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerup", up);
   }
