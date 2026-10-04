@@ -7,12 +7,12 @@
     const L=levels[index]; const svg=document.getElementById("board");
     const edges=L.edges.map((e,i)=>{
       const a=L.nodes[e[0]], b=L.nodes[e[1]];
-      return `<line data-i="${i}" x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${used.has(i)?"#8d5b73":"#d8bcc9"}" stroke-width="10" stroke-linecap="round"/>`;
+      return `<line data-i="${i}" x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${used.has(i)?"#2f6f4e":"#d7c9cf"}" stroke-width="${used.has(i)?14:8}" stroke-linecap="round"/>`;
     }).join("");
-    const nodes=L.nodes.map((n,i)=>`<circle data-n="${i}" cx="${n[0]}" cy="${n[1]}" r="16" fill="${last===i?"#f4a3b5":"#fff"}" stroke="#8d5b73" stroke-width="3"/>`).join("");
+    const nodes=L.nodes.map((n,i)=>`<circle data-n="${i}" cx="${n[0]}" cy="${n[1]}" r="${last===i?20:16}" fill="${last===i?"#d25b6a":"#fff"}" stroke="#8d5b73" stroke-width="3"/>`).join("");
     svg.innerHTML=edges+nodes;
     svg.querySelectorAll("circle").forEach(c=>c.addEventListener("click",()=>tap(+c.dataset.n)));
-    document.getElementById("status").textContent=`${L.name} · ${L.tier} · 已走 ${used.size}/${L.edges.length}`;
+    document.getElementById("status").textContent=last==null?`點一個點開始 · ${L.name}`:`從紅點走到相連的點 · 已走 ${used.size}/${L.edges.length}`;
     if (used.size===L.edges.length) {
       SistersPlay.showComplete("整張圖走完了");
       SistersPlay.recordResult({game:"stroke", difficulty:L.tier, level:L.name, startedAt, moves, restartCount:restarts});
