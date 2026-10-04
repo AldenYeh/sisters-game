@@ -16,12 +16,18 @@
     const map = {12:[4,3],24:[6,4],36:[6,6],48:[8,6],64:[8,8],80:[10,8]};
     return map[n];
   }
-  function svgUrl(art) {
-    const [, name, emoji, color] = art;
-    const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'><rect width='400' height='300' fill='${color}'/><circle cx='80' cy='70' r='42' fill='#ffe08a'/><rect x='40' y='170' width='120' height='80' rx='12' fill='#fff'/><circle cx='280' cy='160' r='54' fill='#ffffff'/><text x='280' y='178' text-anchor='middle' font-size='64'>${emoji}</text><text x='70' y='250' font-size='28' fill='#543c4e'>${name}</text></svg>`;
-    return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+  function artCanvas(){
+    const [, name, emoji, color] = state.art;
+    const c=document.createElement("canvas"); c.width=480; c.height=360;
+    const g=c.getContext("2d");
+    g.fillStyle=color; g.fillRect(0,0,480,360);
+    g.fillStyle="#ffe08a"; g.beginPath(); g.arc(90,70,46,0,7); g.fill();
+    g.fillStyle="#fff"; g.fillRect(36,200,140,90);
+    g.font="72px sans-serif"; g.textAlign="center"; g.fillText(emoji,320,190);
+    g.font="28px sans-serif"; g.fillStyle="#3d3338"; g.fillText(name,110,250);
+    return c;
   }
-  function pieceSize(){ const w=Math.min(board.clientWidth||420, 460)/state.cols; return {w:Math.max(56,w), h:Math.max(48,w*0.75)}; }
+  function pieceSize(){ const w=Math.min(board.clientWidth||440, 480)/state.cols; return {w:Math.max(64, Math.floor(w)), h:Math.max(48, Math.floor(w*0.75))}; }
   function start(keepRestart) {
     const [cols, rows] = dims(state.pieces);
     state.cols = cols; state.rows = rows;
@@ -38,7 +44,7 @@
     board.style.background = "#f6efe6";
     board.style.opacity = "1";
     const ref = document.getElementById("reference");
-    if (ref) { ref.style.backgroundImage = svgUrl(state.art); ref.style.backgroundSize = "cover"; }
+    if (ref) { const pic=artCanvas(); ref.style.backgroundImage=`url(${pic.toDataURL()})`; ref.style.backgroundSize="cover"; }
     board.replaceChildren();
     const showGhost = state.pieces <= 36;
     for (let i = 0; i < state.cols * state.rows; i++) {
@@ -60,7 +66,7 @@
     el.style.height = h + "%";
     if (!ghost) {
       const size=pieceSize();
-      el.style.backgroundImage = svgUrl(state.art);
+      el.style.backgroundImage = "none";
       el.style.backgroundRepeat = "no-repeat";
       el.style.backgroundSize = (size.w*state.cols)+"px "+(size.h*state.rows)+"px";
       el.style.backgroundPosition = (-c*size.w)+"px "+(-r*size.h)+"px";
