@@ -94,8 +94,8 @@
       document.removeEventListener("pointermove", move);
       document.removeEventListener("pointerup", up);
       const rect = board.getBoundingClientRect();
-      const c = Math.floor((e.clientX - rect.left) / w);
-      const r = Math.floor((e.clientY - rect.top) / h);
+      const c = Math.round((e.clientX - rect.left) / w - 0.5);
+      const r = Math.round((e.clientY - rect.top) / h - 0.5);
       const hit = r * state.cols + c;
       state.moves++;
       if (c >= 0 && r >= 0 && c < state.cols && r < state.rows && hit === index) {

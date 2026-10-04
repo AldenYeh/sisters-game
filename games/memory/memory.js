@@ -39,7 +39,7 @@
     if (open.length===2) {
       const [a,b]=open;
       if (deck[a].icon===deck[b].icon) { deck[a].gone=deck[b].gone=true; open=[]; if (deck.every(c=>c.gone)) finish(); }
-      else { lock=true; setTimeout(()=>{ deck[a].up=deck[b].up=false; open=[]; lock=false; render(); }, 700); }
+      else { lock=true; setTimeout(()=>{ SistersPlay.playSound('soft'); deck[a].up=deck[b].up=false; open=[]; lock=false; render(); }, 700); }
     }
   }
   function finish() {

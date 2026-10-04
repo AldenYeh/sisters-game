@@ -69,6 +69,7 @@
   function playSound(name) {
     if (name === "ok") { tone(520, 0.12); tone(680, 0.16); }
     else if (name === "win") { tone(523, 0.12); setTimeout(() => tone(659, 0.12), 90); setTimeout(() => tone(784, 0.2), 180); }
+    else if (name === "soft") tone(300, 0.06, "triangle");
     else tone(240, 0.08, "triangle");
   }
 function showCoach(gameId, steps) {
