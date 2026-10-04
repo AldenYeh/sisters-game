@@ -1,9 +1,10 @@
 
 .pegs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.peg{position:relative;background:#fff;border:1px solid #eadfd6;border-radius:18px;min-height:260px;display:flex;flex-direction:column-reverse;align-items:center;padding:28px 8px 12px;cursor:pointer}
-.peg.selected{border-color:#d25b6a;box-shadow:0 0 0 4px #f6c9cf;background:#fff7f8}
-.peg.legal{border-color:#2f6f4e;box-shadow:0 0 0 4px #d7efd4}
-.peg.illegal{border-color:#d7b4b4}
-.peg-tag{position:absolute;top:8px;left:0;right:0;text-align:center;font-weight:800;font-size:13px;color:#8a737c}
-.disc{height:28px;border-radius:999px;margin-top:6px}
-.disc.picked{outline:3px solid #3d3338}
+.peg{position:relative;background:#fff;border:2px solid #eadfd6;border-radius:18px;min-height:280px;display:flex;flex-direction:column-reverse;align-items:center;padding:36px 8px 16px;cursor:pointer}
+.peg.selected{border:4px solid #d25b6a !important;background:#fff1f3 !important;box-shadow:0 0 0 6px #f6c9cf}
+.peg.legal{border:4px solid #2f6f4e !important;box-shadow:0 0 0 6px #d7efd4}
+.peg.illegal{border:4px solid #d7b4b4 !important}
+.peg-tag{position:absolute;top:8px;left:0;right:0;text-align:center;font-weight:800;font-size:15px}
+.peg.selected .peg-tag{color:#d25b6a}
+.disc{height:30px;border-radius:999px;margin-top:6px}
+.disc.picked{outline:4px solid #3d3338;transform:translateY(-6px)}
