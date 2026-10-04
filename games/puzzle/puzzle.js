@@ -37,9 +37,19 @@
     const out = document.createElement("canvas");
     out.width = w; out.height = h;
     const g = out.getContext("2d");
+    g.save();
+    g.beginPath();
+    g.moveTo(2, 2);
+    g.lineTo(w - 2, 2);
+    if (c < state.cols - 1) g.arc(w - 10, h / 2, 8, -1.1, 1.1);
+    g.lineTo(w - 2, h - 2);
+    g.lineTo(2, h - 2);
+    if (r < state.rows - 1) g.arc(w / 2, h - 10, 8, 0.4, 2.7);
+    g.closePath();
+    g.clip();
     g.drawImage(img, c * img.width / state.cols, r * img.height / state.rows, img.width / state.cols, img.height / state.rows, 0, 0, w, h);
-    if (!solid) { g.fillStyle = "rgba(255,253,249,.72)"; g.fillRect(0, 0, w, h); }
-    g.strokeStyle = "rgba(61,51,56,.25)"; g.lineWidth = 1; g.strokeRect(0.5, 0.5, w - 1, h - 1);
+    g.restore();
+    if (!solid) { g.fillStyle = "rgba(255,253,249,.7)"; g.fillRect(0, 0, w, h); }
     return out.toDataURL();
   }
   function render() {
