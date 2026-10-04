@@ -1,190 +1,137 @@
-
 (() => {
   "use strict";
   const arts = [
-    ["cat", "貓咪", "🐱", "#f7c5ce"],
-    ["dog", "小狗", "🐶", "#d9b082"],
-    ["fruit", "水果", "🍓", "#ffd6a5"],
-    ["car", "車子", "🚗", "#bde0fe"],
-    ["fish", "小魚", "🐟", "#bfe8ef"]
+    ["cat", "貓咪", "#f7c5ce"],
+    ["park", "公園", "#c9ecff"],
+    ["room", "房間", "#fff4d6"]
   ];
-  const sizes = [12, 24, 36, 48, 64, 80];
-  const state = { pieces: 12, art: arts[0], placed: [], hints: 0, moves: 0, restarts: 0, startedAt: Date.now(), drag: null };
+  const sizes = [12, 24, 36];
+  const state = { pieces: 12, art: arts[0], placed: [], hints: 0, moves: 0, restarts: 0, startedAt: Date.now(), drag: null, cols: 4, rows: 3 };
   const board = document.getElementById("board");
   const tray = document.getElementById("tray");
-  function dims(n) {
-    const map = {12:[4,3],24:[6,4],36:[6,6],48:[8,6],64:[8,8],80:[10,8]};
-    return map[n];
-  }
-  function artCanvas(){
-    const [, name, emoji, color] = state.art;
-    const c=document.createElement("canvas"); c.width=480; c.height=360;
-    const g=c.getContext("2d");
-    g.fillStyle=color; g.fillRect(0,0,480,360);
-    g.fillStyle="#ffe08a"; g.beginPath(); g.arc(90,70,46,0,7); g.fill();
-    g.fillStyle="#fff"; g.fillRect(36,200,140,90);
-    g.font="72px sans-serif"; g.textAlign="center"; g.fillText(emoji,320,190);
-    g.font="28px sans-serif"; g.fillStyle="#3d3338"; g.fillText(name,110,250);
+  function dims(n) { return {12:[4,3],24:[6,4],36:[6,6]}[n]; }
+  function paint(color, name) {
+    const c = document.createElement("canvas");
+    c.width = 480; c.height = 360;
+    const g = c.getContext("2d");
+    g.fillStyle = color; g.fillRect(0, 0, 480, 360);
+    g.fillStyle = "#ffe08a"; g.beginPath(); g.arc(90, 70, 42, 0, 7); g.fill();
+    g.fillStyle = "#fff"; g.fillRect(40, 190, 130, 80);
+    g.fillStyle = "#7aa7c7"; g.beginPath(); g.arc(330, 150, 50, 0, 7); g.fill();
+    g.fillStyle = "#3d3338"; g.font = "28px sans-serif"; g.fillText(name, 48, 250);
     return c;
   }
-  function pieceSize(){ const w=Math.min(board.clientWidth||440, 480)/state.cols; return {w:Math.max(64, Math.floor(w)), h:Math.max(48, Math.floor(w*0.75))}; }
-  function start(keepRestart) {
+  function start() {
     const [cols, rows] = dims(state.pieces);
     state.cols = cols; state.rows = rows;
     state.placed = Array(cols * rows).fill(false);
-    state.hints = keepRestart ? state.hints : 0;
-    if (!keepRestart) { state.moves = 0; state.startedAt = Date.now(); }
+    state.hints = 0; state.moves = 0; state.startedAt = Date.now();
     document.getElementById("complete").hidden = true;
-    renderBoard();
-    renderTray();
-    status();
+    render();
   }
-  function renderBoard() {
-    board.style.backgroundImage = "none";
-    board.style.background = "#f6efe6";
-    board.style.opacity = "1";
-    const ref = document.getElementById("reference");
-    if (ref) { const pic=artCanvas(); ref.style.backgroundImage=`url(${pic.toDataURL()})`; ref.style.backgroundSize="cover"; }
+  function cellSize() {
+    const w = Math.floor((board.clientWidth || 420) / state.cols);
+    return { w: Math.max(48, w), h: Math.max(40, Math.floor(w * 0.75)) };
+  }
+  function slice(i, w, h) {
+    const src = paint(state.art[2], state.art[1]);
+    const c = i % state.cols, r = Math.floor(i / state.cols);
+    const out = document.createElement("canvas");
+    out.width = w; out.height = h;
+    out.getContext("2d").drawImage(src, c * src.width / state.cols, r * src.height / state.rows, src.width / state.cols, src.height / state.rows, 0, 0, w, h);
+    return out;
+  }
+  function render() {
+    const size = cellSize();
+    board.style.display = "grid";
+    board.style.gridTemplateColumns = `repeat(${state.cols}, ${size.w}px)`;
+    board.style.width = "max-content";
     board.replaceChildren();
-    const showGhost = state.pieces <= 36;
-    for (let i = 0; i < state.cols * state.rows; i++) {
-      if (!showGhost && !state.placed[i]) continue;
-      const g = document.createElement("div");
-      g.className = "cell-ghost";
-      placeBox(g, i, true);
-      if (state.pieces > 24 && !state.placed[i]) g.style.opacity = ".25";
-      board.append(g);
+    const ref = document.getElementById("reference");
+    if (ref) ref.style.backgroundImage = `url(${paint(state.art[2], state.art[1]).toDataURL()})`;
+    for (let i = 0; i < state.placed.length; i++) {
+      const cell = document.createElement("div");
+      cell.style.width = size.w + "px";
+      cell.style.height = size.h + "px";
+      cell.style.background = state.placed[i] ? `url(${slice(i, size.w, size.h).toDataURL()}) center/cover` : "#f6efe6";
+      cell.style.boxShadow = "inset 0 0 0 1px #eadfd6";
+      board.append(cell);
     }
-    state.placed.forEach((on, i) => { if (on) board.append(makePiece(i, true)); });
-  }
-  function placeBox(el, index, ghost) {
-    const w = 100 / state.cols, h = 100 / state.rows;
-    const c = index % state.cols, r = Math.floor(index / state.cols);
-    el.style.left = c * w + "%";
-    el.style.top = r * h + "%";
-    el.style.width = w + "%";
-    el.style.height = h + "%";
-    if (!ghost) {
-      const size=pieceSize();
-      el.style.backgroundImage = "none";
-      el.style.backgroundRepeat = "no-repeat";
-      el.style.backgroundSize = (size.w*state.cols)+"px "+(size.h*state.rows)+"px";
-      el.style.backgroundPosition = (-c*size.w)+"px "+(-r*size.h)+"px";
-      el.style.border = "2px solid #fff";
-      el.style.boxShadow = "0 0 0 2px #8d5b73";
-      if(!ghost){ el.style.width=size.w+"px"; el.style.height=size.h+"px"; }
-    }
-  }
-  function makePiece(index, snapped) {
-    const el = document.createElement("div");
-    el.className = "piece" + (snapped ? " snapped" : "");
-    el.dataset.index = index;
-    const [cols, rows] = [state.cols, state.rows];
-    if (!snapped) {
-      const size = pieceSize();
+    tray.replaceChildren();
+    state.placed.forEach((on, i) => {
+      if (on) return;
+      const el = document.createElement("button");
+      el.type = "button";
+      el.className = "piece";
       el.style.width = size.w + "px";
       el.style.height = size.h + "px";
+      el.style.background = `url(${slice(i, size.w, size.h).toDataURL()}) center/cover`;
+      el.style.border = "0";
+      el.style.borderRadius = "8px";
+      el.addEventListener("pointerdown", ev => begin(ev, i, el));
+      tray.append(el);
+    });
+    document.getElementById("status").textContent = `已放好 ${state.placed.filter(Boolean).length} / ${state.placed.length}`;
+  }
+  function begin(ev, index, el) {
+    ev.preventDefault();
+    const ghost = el.cloneNode();
+    ghost.style.position = "fixed";
+    ghost.style.zIndex = "9";
+    ghost.style.pointerEvents = "none";
+    ghost.style.left = ev.clientX - el.offsetWidth / 2 + "px";
+    ghost.style.top = ev.clientY - el.offsetHeight / 2 + "px";
+    document.body.append(ghost);
+    state.drag = { index, ghost, w: el.offsetWidth, h: el.offsetHeight };
+    function move(e) {
+      ghost.style.left = e.clientX - state.drag.w / 2 + "px";
+      ghost.style.top = e.clientY - state.drag.h / 2 + "px";
     }
-    placeBox(el, index, false);
-    if (!snapped) {
-      el.style.left = ""; el.style.top = ""; el.style.width = el.style.width; el.style.height = el.style.height;
-      el.addEventListener("pointerdown", onDown);
+    function up(e) {
+      document.removeEventListener("pointermove", move);
+      document.removeEventListener("pointerup", up);
+      const rect = board.getBoundingClientRect();
+      const c = Math.floor((e.clientX - rect.left) / state.drag.w);
+      const r = Math.floor((e.clientY - rect.top) / state.drag.h);
+      const hit = r * state.cols + c;
+      state.moves++;
+      if (c >= 0 && r >= 0 && c < state.cols && r < state.rows && hit === index) state.placed[index] = true;
+      ghost.remove();
+      state.drag = null;
+      render();
+      if (state.placed.every(Boolean)) {
+        SistersPlay.showComplete("拼好了");
+        SistersPlay.recordResult({ game: "puzzle", difficulty: String(state.pieces), level: state.art[0], startedAt: state.startedAt, moves: state.moves, hintsUsed: state.hints, restartCount: state.restarts });
+      }
     }
-    return el;
+    document.addEventListener("pointermove", move);
+    document.addEventListener("pointerup", up);
   }
-  function renderTray() {
-    tray.replaceChildren();
-    const order = state.placed.map((on, i) => on ? null : i).filter(v => v !== null);
-    for (let i = order.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [order[i], order[j]] = [order[j], order[i]];
-    }
-    order.forEach(i => tray.append(makePiece(i, false)));
-  }
-  function onDown(ev) {
-    const piece = ev.currentTarget;
-    piece.setPointerCapture(ev.pointerId);
-    const rect = piece.getBoundingClientRect();
-    state.drag = { piece, dx: ev.clientX - rect.left, dy: ev.clientY - rect.top, index: Number(piece.dataset.index) };
-    piece.style.position = "fixed";
-    piece.style.zIndex = 20;
-    piece.style.left = rect.left + "px";
-    piece.style.top = rect.top + "px";
-    piece.addEventListener("pointermove", onMove);
-    piece.addEventListener("pointerup", onUp);
-  }
-  function onMove(ev) {
-    if (!state.drag) return;
-    state.drag.piece.style.left = (ev.clientX - state.drag.dx) + "px";
-    state.drag.piece.style.top = (ev.clientY - state.drag.dy) + "px";
-  }
-  function cellAt(x, y) {
-    const rect = board.getBoundingClientRect();
-    if (x < rect.left || y < rect.top || x > rect.right || y > rect.bottom) return -1;
-    const c = Math.floor((x - rect.left) / rect.width * state.cols);
-    const r = Math.floor((y - rect.top) / rect.height * state.rows);
-    return r * state.cols + c;
-  }
-  function onUp(ev) {
-    const drag = state.drag;
-    if (!drag) return;
-    drag.piece.removeEventListener("pointermove", onMove);
-    drag.piece.removeEventListener("pointerup", onUp);
-    const hit = cellAt(ev.clientX, ev.clientY);
-    state.moves++;
-    if (hit === drag.index && !state.placed[hit]) {
-      state.placed[hit] = true;
-    }
-    state.drag = null;
-    renderBoard();
-    renderTray();
-    status();
-    if (state.placed.every(Boolean)) finish();
-  }
-  function status() {
-    const done = state.placed.filter(Boolean).length;
-    document.getElementById("status").textContent = `已放好 ${done} / ${state.placed.length}　移動 ${state.moves}`;
-  }
-  function finish() {
-    const text = `你放好了 ${state.pieces} 片`;
-    SistersPlay.showComplete(text);
-    SistersPlay.recordResult({ game: "puzzle", difficulty: String(state.pieces), level: state.art[0], startedAt: state.startedAt, moves: state.moves, hintsUsed: state.hints, restartCount: state.restarts });
-  }
-  function hint() {
-    if (state.hints >= 3) return;
-    const missing = state.placed.findIndex(v => !v);
-    if (missing < 0) return;
-    state.hints++;
-    state.placed[missing] = true;
-    state.moves++;
-    renderBoard(); renderTray(); status();
-    document.getElementById("status").textContent = "提示：已幫你放上一片，剩下的再試試看";
-    if (state.placed.every(Boolean)) finish();
-  }
-  function chips(row, items, current, onPick) {
-    const host = document.getElementById(row);
-    host.replaceChildren();
-    items.forEach(item => {
+  function chips() {
+    const sizeRow = document.getElementById("size-row");
+    sizeRow.replaceChildren();
+    sizes.forEach(n => {
       const b = document.createElement("button");
-      b.type = "button";
-      b.className = "chip" + (item.value === current ? " selected" : "");
-      b.textContent = item.label;
-      b.onclick = () => onPick(item.value);
-      host.append(b);
+      b.type = "button"; b.className = "chip" + (n === state.pieces ? " selected" : ""); b.textContent = n + " 片";
+      b.onclick = () => { state.pieces = n; chips(); start(); };
+      sizeRow.append(b);
+    });
+    const artRow = document.getElementById("art-row");
+    artRow.replaceChildren();
+    arts.forEach(a => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "chip" + (a[0] === state.art[0] ? " selected" : ""); b.textContent = a[1];
+      b.onclick = () => { state.art = a; chips(); start(); };
+      artRow.append(b);
     });
   }
-  function boot() {
-    SistersPlay.showCoach("puzzle", [{demo:"🧩➡️🖼", line:"抓住碎片，拖到圖上"}]);
-  SistersPlay.mount({ title: "拼圖", onRestart: () => { state.restarts++; start(true); } });
-    chips("size-row", sizes.map(n => ({ value: n, label: n + " 片" })), state.pieces, n => { state.pieces = n; state.restarts = 0; start(false); bootChips(); });
-    chips("art-row", arts.map(a => ({ value: a[0], label: a[2] + a[1] })), state.art[0], id => { state.art = arts.find(a => a[0] === id); start(false); bootChips(); });
-    document.getElementById("hint").onclick = hint;
-    document.getElementById("overlay-next").onclick = () => start(false);
-    start(false);
-  }
-  function bootChips() {
-    chips("size-row", sizes.map(n => ({ value: n, label: n + " 片" })), state.pieces, n => { state.pieces = n; start(false); bootChips(); });
-    chips("art-row", arts.map(a => ({ value: a[0], label: a[2] + a[1] })), state.art[0], id => { state.art = arts.find(a => a[0] === id); start(false); bootChips(); });
-  }
-  boot();
+  SistersPlay.showCoach("puzzle", [{ demo: "🧩", line: "把碎片拖到同樣的格子" }]);
+  SistersPlay.mount({ title: "拼圖", onRestart: () => { state.restarts++; start(); } });
+  document.getElementById("hint").onclick = () => {
+    const i = state.placed.findIndex(v => !v);
+    if (i < 0 || state.hints >= 3) return;
+    state.hints++; state.placed[i] = true; render();
+  };
+  document.getElementById("overlay-next").onclick = start;
+  chips(); start();
 })();
