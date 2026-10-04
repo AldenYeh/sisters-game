@@ -39,7 +39,7 @@
       if (ok) {
         SistersPlay.showComplete(`${levels[idx].name} 記得住`);
         SistersPlay.recordResult({game:"visual", difficulty:levels[idx].tier, level:levels[idx].name, startedAt, attempts, moves:picks.size});
-      } else document.getElementById("status").textContent="有一格不一樣，可以再看一次";
+      } else document.getElementById("status").textContent=phase==="show"?`先看，要記住貓`:`點回剛才的位置`; //"有一格不一樣，可以再看一次";
     }
   }
   function chips(){ const row=document.getElementById("level-row"); row.replaceChildren(); levels.forEach((L,i)=>{const b=document.createElement("button"); b.type="button"; b.className="chip"+(i===idx?" selected":""); b.textContent=L.name; b.onclick=()=>{idx=i; chips(); start();}; row.append(b);}); }

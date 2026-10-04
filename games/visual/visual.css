@@ -1,1 +1,5 @@
-.vgrid{display:grid;gap:6px;width:min(100%,420px);margin:0 auto}.cell{aspect-ratio:1;border-radius:10px;border:2px solid #d8bcc9;background:#fff;font-size:22px}.cell.on{background:#f7c5ce}.cell.pick{outline:3px solid #8d5b73}
+
+.grid{display:grid;gap:8px;width:min(100%,480px);margin:0 auto}
+.cell{aspect-ratio:1;border:0;border-radius:14px;background:#f6efe6;font-size:28px}
+.cell.on{background:#fff4d6}
+.cell.pick{background:#d7efd4}
