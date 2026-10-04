@@ -17,12 +17,12 @@
     board.replaceChildren();
     rows.forEach(row => row.forEach(ch => {
       const d = document.createElement("div");
-      d.className = "cell" + (ch==="#"?" wall":"") + (" .*+".includes(ch)?" goal":"");
+      d.className = "cell" + (ch==="#"?" wall":"") + (" .*+".includes(ch)?" goal":"") + (ch==="$"||ch==="*"?" box":"") + (ch==="*"?" done":"");
       d.textContent = { "#":"", "@":"🐱", "+":"🐱", "$":"📦", "*":"📦", ".":"🐟", " ":"" }[ch] || "";
       board.append(d);
     }));
     const L = levels[index];
-    document.getElementById("status").textContent = `${L.name} · ${L.tier} · ${moves} 步 · 最少 ${L.minimumMoves} 步 · 箱子 ${L.boxes}`;
+    document.getElementById("status").textContent = `把箱子推到小魚上 · ${L.name} · ${moves} 步`;
   }
   function move(dx, dy) {
     let px, py; 
