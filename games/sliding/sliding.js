@@ -1,1 +1,68 @@
-(()=>{"use strict";const levels=window.SlidingLevels,id=x=>document.getElementById(x),SIZE=4;let levelIndex=0,state,selected=null,moves=0;function clone(blocks){return blocks.map(b=>({...b}));}function occupied(blocks,skip){const cells=new Map();blocks.forEach(b=>{if(b===skip)return;for(let i=0;i<b.length;i++)cells.set(`${b.row+(b.orientation==='v'?i:0)},${b.col+(b.orientation==='h'?i:0)}`,b.id);});return cells;}function destinations(block){const used=occupied(state,block),out=[];for(let pos=0;pos<=SIZE-block.length;pos++){const row=block.orientation==='v'?pos:block.row,col=block.orientation==='h'?pos:block.col;let ok=true;for(let i=0;i<block.length;i++)if(used.has(`${row+(block.orientation==='v'?i:0)},${col+(block.orientation==='h'?i:0)}`))ok=false;if(ok&&((block.orientation==='v'?row:col)!==(block.orientation==='v'?block.row:block.col)))out.push(pos);}return out;}function key(blocks){return blocks.map(b=>`${b.row},${b.col}`).join('|');}function solve(blocks){const start=clone(blocks),queue=[start],dist=new Map([[key(start),0]]);for(let q=0;q<queue.length;q++){const current=queue[q],d=dist.get(key(current)),target=current.find(b=>b.target);if(target.col+target.length===SIZE)return d;for(let i=0;i<current.length;i++){state=current;destinations(current[i]).forEach(pos=>{const next=clone(current);if(next[i].orientation==='h')next[i].col=pos;else next[i].row=pos;const k=key(next);if(!dist.has(k)){dist.set(k,d+1);queue.push(next);}});}}return null;}function render(){const board=id('board');board.replaceChildren();id('level-name').textContent=levels[levelIndex].name;id('moves').textContent=`用了 ${moves} 步`;state.forEach((b,index)=>{const el=document.createElement('button'),horizontal=b.orientation==='h';el.type='button';el.className=`block${b.target?' target':''}${selected===index?' selected':''}`;el.style.left=`${b.col*25}%`;el.style.top=`${b.row*25}%`;el.style.width=`${horizontal?b.length*25:25}%`;el.style.height=`${horizontal?25:b.length*25}%`;el.textContent=b.target?'🐱':'●';el.onclick=()=>pick(index);if(selected===index)destinations(b).forEach(pos=>{const marker=document.createElement('button');marker.type='button';marker.className='block move-target';marker.style.left=`${horizontal?pos*25:b.col*25}%`;marker.style.top=`${horizontal?b.row*25:pos*25}%`;marker.style.width=`${horizontal?b.length*25:25}%`;marker.style.height=`${horizontal?25:b.length*25}%`;marker.onclick=()=>move(index,pos);board.append(marker);});board.append(el);});id('previous').disabled=levelIndex===0;id('next').disabled=levelIndex===levels.length-1;}function pick(index){selected=selected===index?null:index;id('instruction').textContent=selected===null?'點一個方塊，再點亮起來的位置':'點亮起來的位置，讓方塊滑過去';render();}function move(index,pos){if(state[index].orientation==='h')state[index].col=pos;else state[index].row=pos;moves++;selected=null;id('instruction').textContent='點一個方塊，再點亮起來的位置';render();const target=state.find(b=>b.target);if(target.col+target.length===SIZE){const minimum=solve(levels[levelIndex].blocks);id('complete-text').textContent=`你用了 ${moves} 步。最少可以 ${minimum} 步完成。`;id('complete').hidden=false;}}function load(index){levelIndex=Math.max(0,Math.min(levels.length-1,index));state=clone(levels[levelIndex].blocks);selected=null;moves=0;id('complete').hidden=true;render();}function back(){location.href='../../index.html#games/logic';}id('back').onclick=back;id('restart').onclick=()=>load(levelIndex);id('previous').onclick=()=>load(levelIndex-1);id('next').onclick=()=>load(levelIndex+1);id('next-level').onclick=()=>load(Math.min(levelIndex+1,levels.length-1));window.SlidingGame=Object.freeze({solve,levels,load,getState:()=>clone(state)});load(0);})();
+
+(() => {
+  "use strict";
+  const levels = window.SlidingLevels;
+  const tiers = ["tutorial","easy","medium","hard","challenge","master"];
+  const tierName = {tutorial:"教學",easy:"簡單",medium:"普通",hard:"困難",challenge:"挑戰",master:"大師"};
+  let filter = "all", index = 0, pieces = [], moves = 0, hints = 0, restarts = 0, startedAt = Date.now(), selected = null, history = [];
+  const board = document.getElementById("board");
+  function level() { return levels[index]; }
+  function clone(ps) { return ps.map(p => ({...p})); }
+  function load(i) {
+    index = i; pieces = clone(level().pieces); moves = 0; hints = 0; startedAt = Date.now(); history = []; selected = null;
+    document.getElementById("complete").hidden = true; render();
+  }
+  function occ(skip) {
+    const m = new Set();
+    pieces.forEach((p,i) => { if (i===skip) return; for (let y=0;y<p.h;y++) for (let x=0;x<p.w;x++) m.add((p.r+y)+","+(p.c+x)); });
+    return m;
+  }
+  function can(i, dr, dc) {
+    const L = level(), p = pieces[i], nr = p.r+dr, nc = p.c+dc;
+    if (nr<0||nc<0||nr+p.h>L.rows||nc+p.w>L.cols) return false;
+    const used = occ(i);
+    for (let y=0;y<p.h;y++) for (let x=0;x<p.w;x++) if (used.has((nr+y)+","+(nc+x))) return false;
+    return true;
+  }
+  function won() { const L = level(); return pieces.some(p => p.target && p.c+p.w===L.cols && p.r===L.rows-1); }
+  function render() {
+    const L = level();
+    board.style.aspectRatio = L.cols+"/"+L.rows; board.replaceChildren();
+    pieces.forEach((p,i) => {
+      const el = document.createElement("button");
+      el.type = "button"; el.className = "block"+(p.target?" target":"")+(selected===i?" selected":"");
+      el.style.left = (p.c/L.cols*100)+"%"; el.style.top = (p.r/L.rows*100)+"%";
+      el.style.width = (p.w/L.cols*100)+"%"; el.style.height = (p.h/L.rows*100)+"%";
+      el.textContent = p.target ? "🐱" : "●";
+      el.onclick = () => { selected = i; render(); };
+      board.append(el);
+    });
+    document.getElementById("status").textContent = `${L.name} · ${tierName[L.tier]||L.tier} · ${moves} 步 · 最少 ${L.minimumMoves} 步 · 提示 ${hints}/3`;
+  }
+  function move(i, dr, dc) {
+    if (!can(i,dr,dc)) return;
+    history.push(clone(pieces)); pieces[i].r += dr; pieces[i].c += dc; moves++; render();
+    if (won()) {
+      SistersPlay.showComplete(`你用了 ${moves} 步，最少可以 ${level().minimumMoves} 步喔！`);
+      SistersPlay.recordResult({game:"sliding", difficulty:level().tier, level:level().name, startedAt, moves, hintsUsed:hints, restartCount:restarts});
+    }
+  }
+  function hint() {
+    if (hints>=3 || won()) return;
+    const t = pieces.findIndex(p => p.target);
+    for (const [dr,dc] of [[0,1],[1,0],[-1,0],[0,-1]]) if (can(t,dr,dc)) { hints++; move(t,dr,dc); return; }
+    for (let i=0;i<pieces.length;i++) for (const [dr,dc] of [[0,1],[1,0],[-1,0],[0,-1]]) if (can(i,dr,dc)) { hints++; selected=i; render(); document.getElementById("status").textContent="提示：先看看選中的這塊，能不能讓出一條路"; return; }
+  }
+  function chips() {
+    const tierRow = document.getElementById("tier-row"); tierRow.replaceChildren();
+    ["all", ...tiers].forEach(t => { const b=document.createElement("button"); b.className="chip"+(filter===t?" selected":""); b.type="button"; b.textContent=t==="all"?"全部":tierName[t]; b.onclick=()=>{filter=t; chips();}; tierRow.append(b); });
+    const row = document.getElementById("level-row"); row.replaceChildren();
+    levels.forEach((L,i) => { if (filter!=="all" && L.tier!==filter) return; const b=document.createElement("button"); b.type="button"; b.className="chip"+(i===index?" selected":""); b.textContent=(i+1)+" "+L.name; b.onclick=()=>load(i); row.append(b); });
+  }
+  window.addEventListener("keydown", ev => { if (selected==null) return; const map={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]}; if (map[ev.key]) { ev.preventDefault(); move(selected, ...map[ev.key]); } });
+  document.getElementById("hint").onclick = hint;
+  document.getElementById("undo").onclick = () => { if (!history.length) return; pieces = history.pop(); moves=Math.max(0,moves-1); render(); };
+  document.getElementById("overlay-next").onclick = () => { load((index+1)%levels.length); chips(); };
+  SistersPlay.mount({ title:"滑塊闖關", onRestart: () => { restarts++; load(index); } });
+  chips(); load(0);
+})();

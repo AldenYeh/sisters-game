@@ -34,7 +34,14 @@
           { id: "sudoku", icon: "🐟", name: t("兒童數獨", "ㄦˊ ㄊㄨㄥˊ ㄕㄨˋ ㄉㄨˊ"), href: "games/sudoku/index.html", available: true },
           { id: "puzzle", icon: "🧩", name: t("拼圖", "ㄆㄧㄣ ㄊㄨˊ"), href: "games/puzzle/index.html", available: true },
           { id: "sliding", icon: "🚪", name: t("滑塊闖關", "ㄏㄨㄚˊ ㄎㄨㄞˋ ㄔㄨㄤˋ ㄍㄨㄢ"), href: "games/sliding/index.html", available: true },
-          { id: "memory", icon: "🚧", name: t("記憶翻牌", "ㄐㄧˋ ㄧˋ ㄈㄢ ㄆㄞˊ"), available: false }
+          { id: "tangram", icon: "🔺", name: t("七巧板", "ㄑㄧ ㄑㄧㄠˇ ㄅㄢˇ"), href: "games/tangram/index.html", available: true },
+          { id: "memory", icon: "🃏", name: t("記憶翻牌", "ㄐㄧˋ ㄧˋ ㄈㄢ ㄆㄞˊ"), href: "games/memory/index.html", available: true },
+          { id: "visual", icon: "👀", name: t("視覺記憶", "ㄕˋ ㄐㄧㄝˋ ㄐㄧˋ ㄧˋ"), href: "games/visual/index.html", available: true },
+          { id: "sokoban", icon: "📦", name: t("推箱子", "ㄊㄨㄟ ㄒㄧㄤ ㄗˇ"), href: "games/sokoban/index.html", available: true },
+          { id: "pattern", icon: "🔁", name: t("規律接龍", "ㄍㄨㄟ ㄌㄩˋ ㄐㄧㄝ ㄌㄨㄥˊ"), href: "games/pattern/index.html", available: true },
+          { id: "hanoi", icon: "🗼", name: t("河內塔", "ㄏㄜˊ ㄋㄟˋ ㄊㄚˇ"), href: "games/hanoi/index.html", available: true },
+          { id: "stroke", icon: "✏️", name: t("一筆畫", "ㄧ ㄅㄧˇ ㄏㄨㄚˋ"), href: "games/stroke/index.html", available: true },
+          { id: "spot", icon: "🔎", name: t("找不同", "ㄓㄠˇ ㄅㄨˋ ㄊㄨㄥˊ"), href: "games/spot/index.html", available: true }
         ])
       },
       { id: "learning", icon: "📚", name: t("學習遊戲", "ㄒㄩㄝˊ ㄒㄧˊ ㄧㄡˊ ㄒㄧˋ"), available: false, games: Object.freeze([]) },

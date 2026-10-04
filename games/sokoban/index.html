@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>推箱子</title>
+<link rel="stylesheet" href="../../assets/css/site.css"><link rel="stylesheet" href="../../assets/css/play.css"><link rel="stylesheet" href="sokoban.css"></head>
+<body><main class="play-app"><header class="play-top"><button id="back-home" class="back-button" type="button">← 返回</button><div><h1 id="play-title">推箱子</h1><p id="player-badge" class="play-meta"></p></div></header>
+<div class="toolbar" id="level-row"></div>
+<p id="status" class="msg"></p>
+<div class="board-wrap"><div id="board" class="sokoban"></div>
+<div id="complete" class="complete-overlay" hidden><div>🎉</div><h2>完成啦！</h2><p></p><button id="overlay-next" class="primary-button" type="button">下一關</button></div></div>
+<div class="pad"><button data-d="0,-1">上</button><button data-d="-1,0">左</button><button data-d="1,0">右</button><button data-d="0,1">下</button></div>
+<div class="toolbar"><button id="undo" class="secondary-button" type="button">反悔</button><button id="restart" class="secondary-button" type="button">重新開始</button></div>
+</main>
+<script src="../../assets/js/content.js"></script><script src="../../assets/js/shared.js"></script><script src="../../assets/js/play.js"></script>
+<script src="levels.js"></script><script src="sokoban.js"></script></body></html>

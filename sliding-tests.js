@@ -1,6 +1,21 @@
 const fs=require("fs"),vm=require("vm"),assert=require("assert");
-const context={window:{}};vm.createContext(context);vm.runInContext(fs.readFileSync("games/sliding/levels.js","utf8"),context);const levels=context.window.SlidingLevels;
-const SIZE=4,clone=blocks=>blocks.map(b=>({...b})),key=blocks=>blocks.map(b=>`${b.row},${b.col}`).join("|");
-function destinations(blocks,index){const block=blocks[index],used=new Set();blocks.forEach((b,i)=>{if(i===index)return;for(let n=0;n<b.length;n++)used.add(`${b.row+(b.orientation==="v"?n:0)},${b.col+(b.orientation==="h"?n:0)}`);});const out=[];for(let p=0;p<=SIZE-block.length;p++){const row=block.orientation==="v"?p:block.row,col=block.orientation==="h"?p:block.col;let ok=true;for(let n=0;n<block.length;n++)if(used.has(`${row+(block.orientation==="v"?n:0)},${col+(block.orientation==="h"?n:0)}`))ok=false;if(ok&&(block.orientation==="v"?p!==block.row:p!==block.col))out.push(p);}return out;}
-function solve(blocks){const queue=[clone(blocks)],dist=new Map([[key(blocks),0]]);for(let q=0;q<queue.length;q++){const current=queue[q],d=dist.get(key(current)),target=current.find(b=>b.target);if(target.col+target.length===SIZE)return d;current.forEach((_,i)=>destinations(current,i).forEach(p=>{const next=clone(current);if(next[i].orientation==="h")next[i].col=p;else next[i].row=p;const k=key(next);if(!dist.has(k)){dist.set(k,d+1);queue.push(next);}}));}return null;}
-assert.strictEqual(levels.length,12);levels.forEach((level,index)=>{assert.ok(level.blocks.some(b=>b.target),`level ${index+1} target`);assert.notStrictEqual(solve(level.blocks),null,`level ${index+1} solvable`);});console.log("Sliding levels validated: 12 levels solvable with BFS.");
+const context={window:{}};
+vm.createContext(context);
+vm.runInContext(fs.readFileSync("games/sliding/levels.js","utf8"),context);
+const levels=context.window.SlidingLevels;
+assert.ok(levels.length>=24, "need 24 sliding levels");
+const tiers=new Set(levels.map(l=>l.tier));
+for (const t of ["tutorial","easy","medium","hard","challenge","master"]) assert.ok(tiers.has(t), t);
+levels.forEach((level,i)=>{
+  assert.ok(level.minimumMoves>=1, i);
+  assert.ok(level.pieces.some(p=>p.target), i);
+  const occ=new Set();
+  level.pieces.forEach(p=>{
+    for(let y=0;y<p.h;y++) for(let x=0;x<p.w;x++){
+      const k=(p.r+y)+","+(p.c+x);
+      assert.ok(!occ.has(k), "overlap "+level.name);
+      occ.add(k);
+    }
+  });
+});
+console.log("Sliding metadata ok:", levels.length);

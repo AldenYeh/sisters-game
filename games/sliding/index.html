@@ -1,1 +1,15 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#fff8e9"><title>滑塊闖關｜姊妹益智樂園</title><link rel="stylesheet" href="../../assets/css/site.css"><link rel="stylesheet" href="sliding.css"></head><body><main class="slide-app"><section id="game" class="slide-screen"><header><button id="back" class="header-button">← 遊戲列表</button><div><h1>🚪 滑塊闖關</h1><p>小小華容道</p></div><button id="restart" class="header-button">重新開始</button></header><div class="level-nav"><button id="previous" class="secondary-button">上一關</button><strong id="level-name"></strong><button id="next" class="secondary-button">下一關</button></div><p id="instruction" aria-live="polite">點一個方塊，再點亮起來的位置</p><div id="board" class="slide-board" role="grid"></div><p id="moves">用了 0 步</p><div id="complete" class="slide-complete" hidden><div>🎉 🚪 🎉</div><h2>過關啦！</h2><p id="complete-text"></p><button id="next-level" class="primary-button">下一關</button></div></section></main><script src="../../assets/js/content.js"></script><script src="../../assets/js/shared.js"></script><script src="levels.js"></script><script src="sliding.js"></script></body></html>
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>滑塊闖關</title>
+<link rel="stylesheet" href="../../assets/css/site.css"><link rel="stylesheet" href="../../assets/css/play.css"><link rel="stylesheet" href="sliding.css"></head>
+<body><main class="play-app">
+<header class="play-top"><button id="back-home" class="back-button" type="button">← 返回</button><div><h1 id="play-title">滑塊闖關</h1><p id="player-badge" class="play-meta"></p></div></header>
+<div class="toolbar" id="tier-row"></div>
+<div class="toolbar" id="level-row"></div>
+<p id="status" class="msg"></p>
+<div class="board-wrap"><div id="board" class="slide-board"></div>
+<div id="complete" class="complete-overlay" hidden><div>🎉</div><h2>完成啦！</h2><p></p><button id="overlay-next" class="primary-button" type="button">下一關</button></div></div>
+<div class="toolbar"><button id="restart" class="secondary-button" type="button">重新開始</button><button id="hint" class="primary-button" type="button">提示</button><button id="undo" class="secondary-button" type="button">反悔</button></div>
+</main>
+<script src="../../assets/js/content.js"></script><script src="../../assets/js/shared.js"></script><script src="../../assets/js/play.js"></script>
+<script src="levels.js"></script><script src="sliding.js"></script></body></html>

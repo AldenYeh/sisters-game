@@ -1,4 +1,34 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#fff8e9"><title>拼圖｜姊妹益智樂園</title><link rel="stylesheet" href="../../assets/css/site.css"><link rel="stylesheet" href="puzzle.css"></head><body><main class="puzzle-app">
-<section id="setup" class="puzzle-screen"><div class="puzzle-card"><button id="back" class="back-button" type="button">← 返回遊戲列表</button><div class="puzzle-logo">🧩🐱</div><h1>拼圖<small>ㄆㄧㄣ ㄊㄨˊ</small></h1><p id="player" class="current-player-badge"></p><h2>選一張圖</h2><div id="art-list" class="art-list"></div><h2>選難度</h2><div class="size-list"><button data-size="2x2" class="option selected">小小拼圖<br><small>2 × 2</small></button><button data-size="3x2" class="option">簡單<br><small>3 × 2</small></button><button data-size="3x3" class="option">普通<br><small>3 × 3</small></button><button data-size="4x3" class="option">挑戰<br><small>4 × 3</small></button></div><button id="start" class="primary-button big-start">開始拼圖</button></div></section>
-<section id="game" class="puzzle-screen" hidden><header class="puzzle-header"><button id="back-setup" class="header-button">← 返回</button><div><h1>拼圖</h1><p id="moves">交換 0 次</p></div><button id="shuffle" class="header-button">重新打散</button></header><div class="puzzle-play"><div id="board" class="tile-board" aria-label="拼圖"></div><aside><p>原圖參考</p><div id="reference" class="reference"></div><p id="message" aria-live="polite">點兩塊拼圖來交換</p></aside></div><div id="complete" class="puzzle-complete" hidden><div>🎉 🧩 🎉</div><h2>完成啦！</h2><p id="complete-text"></p><button id="again" class="primary-button">再玩一次</button><button id="home" class="secondary-button">回遊戲列表</button></div></section>
-</main><script src="../../assets/js/content.js"></script><script src="../../assets/js/shared.js"></script><script src="puzzle.js"></script></body></html>
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>拼圖</title>
+<link rel="stylesheet" href="../../assets/css/site.css">
+<link rel="stylesheet" href="../../assets/css/play.css">
+<link rel="stylesheet" href="puzzle.css">
+</head>
+<body>
+<main class="play-app">
+<header class="play-top">
+  <button id="back-home" class="back-button" type="button">← 返回</button>
+  <div><h1 id="play-title">拼圖</h1><p id="player-badge" class="play-meta"></p></div>
+</header>
+
+<div class="toolbar" id="size-row"></div>
+<div class="toolbar" id="art-row"></div>
+<p id="status" class="msg">把圖片碎片拖到正確位置</p>
+<div class="puzzle-layout">
+  <div class="board-wrap"><div id="board" class="jig-board"></div></div>
+  <div id="tray" class="tray"></div>
+</div>
+<div class="toolbar"><button id="restart" class="secondary-button" type="button">重新開始</button><button id="hint" class="primary-button" type="button">提示</button></div>
+
+<div id="complete" class="complete-overlay" hidden><div>🎉 ⭐ 🐱 ⭐ 🎉</div><h2>完成啦！</h2><p></p><button id="overlay-next" class="primary-button" type="button">下一題</button></div>
+</main>
+<script src="../../assets/js/content.js"></script>
+<script src="../../assets/js/shared.js"></script>
+<script src="../../assets/js/play.js"></script>
+<script src="puzzle.js"></script>
+</body>
+</html>

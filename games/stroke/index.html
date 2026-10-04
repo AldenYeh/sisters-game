@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>一筆畫</title>
+<link rel="stylesheet" href="../../assets/css/site.css"><link rel="stylesheet" href="../../assets/css/play.css"><link rel="stylesheet" href="stroke.css"></head>
+<body><main class="play-app"><header class="play-top"><button id="back-home" class="back-button" type="button">← 返回</button><div><h1 id="play-title">一筆畫</h1><p id="player-badge" class="play-meta"></p></div></header>
+<div class="toolbar" id="level-row"></div>
+<p id="status" class="msg">不重複走完每一條線</p>
+<div class="board-wrap"><svg id="board" viewBox="0 0 260 240"></svg>
+<div id="complete" class="complete-overlay" hidden><div>🎉</div><h2>完成啦！</h2><p></p><button id="overlay-next" class="primary-button" type="button">下一關</button></div></div>
+<div class="toolbar"><button id="restart" class="secondary-button" type="button">重新開始</button></div>
+</main>
+<script src="../../assets/js/content.js"></script><script src="../../assets/js/shared.js"></script><script src="../../assets/js/play.js"></script>
+<script src="levels.js"></script><script src="stroke.js"></script></body></html>

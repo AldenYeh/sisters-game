@@ -1,14 +1,176 @@
-(()=>{
-"use strict";
-const ui=window.SistersShared,content=window.SISTERS_CONTENT,id=x=>document.getElementById(x);
-const arts=[['cat','貓咪','🐱','#f7c5ce'],['dog','小狗','🐶','#d9b082'],['fruit','水果','🍓','#ffd6a5'],['car','車子','🚗','#bde0fe'],['dino','恐龍','🦕','#cdeac0'],['fish','小魚','🐟','#bfe8ef']];
-const svg=([,name,emoji,color])=>`url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'><rect width='400' height='400' fill='${color}'/><circle cx='70' cy='70' r='28' fill='#fff4b5'/><circle cx='330' cy='330' r='35' fill='#ffffff88'/><text x='200' y='245' text-anchor='middle' font-size='180'>${emoji}</text><text x='200' y='345' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='34' fill='#543c4e'>${name}</text></svg>`)}")`;
-const state={player:ui.loadPlayer(),art:arts[0],size:'2x2',tiles:[],selected:null,moves:0};
-function back(){location.href='../../index.html#games/logic';}function dims(){return state.size.split('x').map(Number);}function complete(){return state.tiles.every((tile,index)=>tile===index);}
-function shuffled(n){let a=Array.from({length:n},(_,i)=>i);do{for(let i=n-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}while(a.every((v,i)=>v===i));return a;}
-function renderArt(){const list=id('art-list');list.replaceChildren();arts.forEach(art=>{const b=document.createElement('button');b.className='art-button'+(art===state.art?' selected':'');b.type='button';b.style.background=art[3];b.textContent=`${art[2]} ${art[1]}`;b.onclick=()=>{state.art=art;renderArt();};list.append(b);});}
-function render(){const[cols,rows]=dims(),art=svg(state.art),board=id('board');board.style.setProperty('--cols',cols);board.style.setProperty('--rows',rows);board.style.setProperty('--art',art);id('reference').style.setProperty('--art',art);board.replaceChildren();state.tiles.forEach((tile,index)=>{const b=document.createElement('button'),x=tile%cols,y=Math.floor(tile/cols);b.type='button';b.className='tile'+(state.selected===index?' selected':'');b.style.setProperty('--x',x);b.style.setProperty('--y',y);b.setAttribute('aria-label',`第 ${index+1} 塊`);b.onclick=()=>choose(index);board.append(b);});id('moves').textContent=`交換 ${state.moves} 次`;}
-function choose(index){if(state.selected===index){state.selected=null;render();return;}if(state.selected===null){state.selected=index;id('message').textContent='再點一塊來交換';render();return;}[state.tiles[state.selected],state.tiles[index]]=[state.tiles[index],state.tiles[state.selected]];state.selected=null;state.moves++;render();if(complete()){id('complete-text').textContent=`你交換了 ${state.moves} 次！`;id('complete').hidden=false;}}
-function start(){const[cols,rows]=dims();state.tiles=shuffled(cols*rows);state.moves=0;state.selected=null;id('setup').hidden=true;id('game').hidden=false;id('complete').hidden=true;id('message').textContent='點兩塊拼圖來交換';render();}
-if(!content.players[state.player]){back();return;}id('player').replaceChildren(ui.makeReading(content.site.currentPlayer,{compact:true}),document.createTextNode('：'),ui.makeReading(content.players[state.player].name,{compact:true}));renderArt();document.querySelectorAll('[data-size]').forEach(b=>b.onclick=()=>{state.size=b.dataset.size;document.querySelectorAll('[data-size]').forEach(x=>x.classList.toggle('selected',x===b));});id('start').onclick=start;id('back').onclick=back;id('back-setup').onclick=()=>{id('game').hidden=true;id('setup').hidden=false;};id('shuffle').onclick=start;id('again').onclick=start;id('home').onclick=back;window.PuzzleGame=Object.freeze({start,getState:()=>({...state,tiles:[...state.tiles]})});
+
+(() => {
+  "use strict";
+  const arts = [
+    ["cat", "貓咪", "🐱", "#f7c5ce"],
+    ["dog", "小狗", "🐶", "#d9b082"],
+    ["fruit", "水果", "🍓", "#ffd6a5"],
+    ["car", "車子", "🚗", "#bde0fe"],
+    ["fish", "小魚", "🐟", "#bfe8ef"]
+  ];
+  const sizes = [12, 24, 36, 48, 64, 80];
+  const state = { pieces: 12, art: arts[0], placed: [], hints: 0, moves: 0, restarts: 0, startedAt: Date.now(), drag: null };
+  const board = document.getElementById("board");
+  const tray = document.getElementById("tray");
+  function dims(n) {
+    const map = {12:[4,3],24:[6,4],36:[6,6],48:[8,6],64:[8,8],80:[10,8]};
+    return map[n];
+  }
+  function svgUrl(art) {
+    const [, name, emoji, color] = art;
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'><rect width='400' height='400' fill='${color}'/><circle cx='70' cy='80' r='36' fill='#fff4b5'/><circle cx='320' cy='300' r='48' fill='#ffffff88'/><text x='200' y='230' text-anchor='middle' font-size='150'>${emoji}</text><text x='200' y='340' text-anchor='middle' font-size='42' font-family='sans-serif' fill='#543c4e'>${name}</text></svg>`;
+    return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+  }
+  function start(keepRestart) {
+    const [cols, rows] = dims(state.pieces);
+    state.cols = cols; state.rows = rows;
+    state.placed = Array(cols * rows).fill(false);
+    state.hints = keepRestart ? state.hints : 0;
+    if (!keepRestart) { state.moves = 0; state.startedAt = Date.now(); }
+    document.getElementById("complete").hidden = true;
+    renderBoard();
+    renderTray();
+    status();
+  }
+  function renderBoard() {
+    const url = svgUrl(state.art);
+    board.style.backgroundImage = state.pieces <= 24 ? url : "none";
+    board.style.backgroundSize = "cover";
+    board.style.opacity = state.pieces <= 12 ? "1" : ".35";
+    board.replaceChildren();
+    const showGhost = state.pieces <= 36;
+    for (let i = 0; i < state.cols * state.rows; i++) {
+      if (!showGhost && !state.placed[i]) continue;
+      const g = document.createElement("div");
+      g.className = "cell-ghost";
+      placeBox(g, i, true);
+      if (state.pieces > 24 && !state.placed[i]) g.style.opacity = ".25";
+      board.append(g);
+    }
+    state.placed.forEach((on, i) => { if (on) board.append(makePiece(i, true)); });
+  }
+  function placeBox(el, index, ghost) {
+    const w = 100 / state.cols, h = 100 / state.rows;
+    const c = index % state.cols, r = Math.floor(index / state.cols);
+    el.style.left = c * w + "%";
+    el.style.top = r * h + "%";
+    el.style.width = w + "%";
+    el.style.height = h + "%";
+    if (!ghost) {
+      el.style.backgroundImage = svgUrl(state.art);
+      el.style.backgroundSize = `${state.cols * 100}% ${state.rows * 100}%`;
+      el.style.backgroundPosition = `${state.cols === 1 ? 0 : c / (state.cols - 1) * 100}% ${state.rows === 1 ? 0 : r / (state.rows - 1) * 100}%`;
+    }
+  }
+  function makePiece(index, snapped) {
+    const el = document.createElement("div");
+    el.className = "piece" + (snapped ? " snapped" : "");
+    el.dataset.index = index;
+    const [cols, rows] = [state.cols, state.rows];
+    if (!snapped) {
+      const size = Math.max(46, Math.min(92, 520 / Math.max(cols, rows)));
+      el.style.width = size + "px";
+      el.style.height = size + "px";
+    }
+    placeBox(el, index, false);
+    if (!snapped) {
+      el.style.left = ""; el.style.top = ""; el.style.width = el.style.width; el.style.height = el.style.height;
+      el.addEventListener("pointerdown", onDown);
+    }
+    return el;
+  }
+  function renderTray() {
+    tray.replaceChildren();
+    const order = state.placed.map((on, i) => on ? null : i).filter(v => v !== null);
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    order.forEach(i => tray.append(makePiece(i, false)));
+  }
+  function onDown(ev) {
+    const piece = ev.currentTarget;
+    piece.setPointerCapture(ev.pointerId);
+    const rect = piece.getBoundingClientRect();
+    state.drag = { piece, dx: ev.clientX - rect.left, dy: ev.clientY - rect.top, index: Number(piece.dataset.index) };
+    piece.style.position = "fixed";
+    piece.style.zIndex = 20;
+    piece.style.left = rect.left + "px";
+    piece.style.top = rect.top + "px";
+    piece.addEventListener("pointermove", onMove);
+    piece.addEventListener("pointerup", onUp);
+  }
+  function onMove(ev) {
+    if (!state.drag) return;
+    state.drag.piece.style.left = (ev.clientX - state.drag.dx) + "px";
+    state.drag.piece.style.top = (ev.clientY - state.drag.dy) + "px";
+  }
+  function cellAt(x, y) {
+    const rect = board.getBoundingClientRect();
+    if (x < rect.left || y < rect.top || x > rect.right || y > rect.bottom) return -1;
+    const c = Math.floor((x - rect.left) / rect.width * state.cols);
+    const r = Math.floor((y - rect.top) / rect.height * state.rows);
+    return r * state.cols + c;
+  }
+  function onUp(ev) {
+    const drag = state.drag;
+    if (!drag) return;
+    drag.piece.removeEventListener("pointermove", onMove);
+    drag.piece.removeEventListener("pointerup", onUp);
+    const hit = cellAt(ev.clientX, ev.clientY);
+    state.moves++;
+    if (hit === drag.index && !state.placed[hit]) {
+      state.placed[hit] = true;
+    }
+    state.drag = null;
+    renderBoard();
+    renderTray();
+    status();
+    if (state.placed.every(Boolean)) finish();
+  }
+  function status() {
+    const done = state.placed.filter(Boolean).length;
+    document.getElementById("status").textContent = `已放好 ${done} / ${state.placed.length}　移動 ${state.moves}`;
+  }
+  function finish() {
+    const text = `你放好了 ${state.pieces} 片`;
+    SistersPlay.showComplete(text);
+    SistersPlay.recordResult({ game: "puzzle", difficulty: String(state.pieces), level: state.art[0], startedAt: state.startedAt, moves: state.moves, hintsUsed: state.hints, restartCount: state.restarts });
+  }
+  function hint() {
+    if (state.hints >= 3) return;
+    const missing = state.placed.findIndex(v => !v);
+    if (missing < 0) return;
+    state.hints++;
+    state.placed[missing] = true;
+    state.moves++;
+    renderBoard(); renderTray(); status();
+    document.getElementById("status").textContent = "提示：已幫你放上一片，剩下的再試試看";
+    if (state.placed.every(Boolean)) finish();
+  }
+  function chips(row, items, current, onPick) {
+    const host = document.getElementById(row);
+    host.replaceChildren();
+    items.forEach(item => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip" + (item.value === current ? " selected" : "");
+      b.textContent = item.label;
+      b.onclick = () => onPick(item.value);
+      host.append(b);
+    });
+  }
+  function boot() {
+    SistersPlay.mount({ title: "拼圖", onRestart: () => { state.restarts++; start(true); } });
+    chips("size-row", sizes.map(n => ({ value: n, label: n + " 片" })), state.pieces, n => { state.pieces = n; state.restarts = 0; start(false); bootChips(); });
+    chips("art-row", arts.map(a => ({ value: a[0], label: a[2] + a[1] })), state.art[0], id => { state.art = arts.find(a => a[0] === id); start(false); bootChips(); });
+    document.getElementById("hint").onclick = hint;
+    document.getElementById("overlay-next").onclick = () => start(false);
+    start(false);
+  }
+  function bootChips() {
+    chips("size-row", sizes.map(n => ({ value: n, label: n + " 片" })), state.pieces, n => { state.pieces = n; start(false); bootChips(); });
+    chips("art-row", arts.map(a => ({ value: a[0], label: a[2] + a[1] })), state.art[0], id => { state.art = arts.find(a => a[0] === id); start(false); bootChips(); });
+  }
+  boot();
 })();
