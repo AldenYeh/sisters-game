@@ -2,9 +2,9 @@
   "use strict";
   const scenes = [
     { name: "花園", src: "art/garden.jpg", spots: [
-      { id: "moon", x: 8, y: 6, w: 16, h: 18, paint(g, w, h) { g.fillStyle = "#8d7ad8"; g.beginPath(); g.arc(w * 0.14, h * 0.14, h * 0.07, 0.4, 5.4); g.lineWidth = 10; g.strokeStyle = "#8d7ad8"; g.stroke(); } },
-      { id: "bowl", x: 62, y: 62, w: 22, h: 24, paint(g, w, h) { g.fillStyle = "#9fd0ef"; g.beginPath(); g.ellipse(w * 0.73, h * 0.74, w * 0.045, h * 0.04, 0, 0, 7); g.fill(); } },
-      { id: "bug", x: 18, y: 64, w: 14, h: 16, paint(g, w, h) { g.fillStyle = "#4aa3d8"; g.beginPath(); g.ellipse(w * 0.24, h * 0.72, 16, 10, 0, 0, 7); g.fill(); g.beginPath(); g.ellipse(w * 0.24 - 14, h * 0.72, 10, 7, 0, 0, 7); g.fill(); } }
+      { id: "moon", x: 4, y: 2, w: 22, h: 24, paint(g, w, h) { g.fillStyle = "#8d7ad8"; g.beginPath(); g.arc(w * 0.14, h * 0.14, h * 0.07, 0.4, 5.4); g.lineWidth = 10; g.strokeStyle = "#8d7ad8"; g.stroke(); } },
+      { id: "bowl", x: 58, y: 58, w: 26, h: 28, paint(g, w, h) { g.fillStyle = "#9fd0ef"; g.beginPath(); g.ellipse(w * 0.73, h * 0.74, w * 0.045, h * 0.04, 0, 0, 7); g.fill(); } },
+      { id: "bug", x: 14, y: 60, w: 18, h: 20, paint(g, w, h) { g.fillStyle = "#4aa3d8"; g.beginPath(); g.ellipse(w * 0.24, h * 0.72, 16, 10, 0, 0, 7); g.fill(); g.beginPath(); g.ellipse(w * 0.24 - 14, h * 0.72, 10, 7, 0, 0, 7); g.fill(); } }
     ] },
     { name: "房間", src: "art/room.jpg", spots: [
       { id: "lamp", x: 3, y: 30, w: 14, h: 24, paint(g, w, h) { g.fillStyle = "#3d3338"; g.fillRect(w * 0.05, h * 0.38, w * 0.06, h * 0.1); } },
