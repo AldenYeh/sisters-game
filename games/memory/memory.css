@@ -1,6 +1,6 @@
 
 .grid{display:grid;gap:10px;width:min(100%,640px);margin:0 auto}
-.card{aspect-ratio:1;border:0;border-radius:18px;background:linear-gradient(160deg,#7a4e63,#d7b7c3);color:#fff;box-shadow:0 8px 16px rgba(61,51,56,.08);font-size:clamp(36px,6vw,56px);display:grid;place-items:center;cursor:pointer}
+.card{aspect-ratio:1;border:0;border-radius:18px;background:linear-gradient(160deg,#7a4e63,#d7b7c3);color:#fff;box-shadow:0 8px 16px rgba(61,51,56,.08);font-size:clamp(42px,8vw,64px);display:grid;place-items:center;cursor:pointer}
 .card.up{background:#fff;color:#3d3338}
 .card.gone{background:#eef6ef;color:#2f6f4e;box-shadow:none}
 
