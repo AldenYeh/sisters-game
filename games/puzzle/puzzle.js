@@ -84,7 +84,7 @@
       el.addEventListener("pointerdown", ev => begin(ev, i, el));
       tray.append(el);
     });
-    document.getElementById("status").textContent = `拖到同樣的格子 · 已放好 ${state.placed.filter(Boolean).length} / ${state.placed.length}`;
+    document.getElementById("status").textContent = `拖到淡色的同一格，放對會變亮 · ${state.placed.filter(Boolean).length} / ${state.placed.length}`;
   }
   function begin(ev, index, el) {
     ev.preventDefault();

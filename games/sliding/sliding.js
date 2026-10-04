@@ -18,7 +18,7 @@
     board.style.setProperty("--rows", L.rows);
     board.replaceChildren();
     for(let r=0;r<L.rows;r++) for(let c=0;c<L.cols;c++){ const cell=document.createElement("div"); cell.className="cell"+(r===L.exitRow&&c===L.cols-1?" exit":""); board.append(cell); }
-    const door=document.createElement("div"); door.className="door"; door.textContent="出口"; door.style.top=(L.exitRow/L.rows*100)+"%"; door.style.height=(100/L.rows)+"%"; door.style.right="0"; door.style.width=(100/L.cols)+"%"; board.append(door);
+    const door=document.createElement("div"); door.className="door"; door.textContent="出口 →"; door.style.top=(L.exitRow/L.rows*100)+"%"; door.style.height=(100/L.rows)+"%"; door.style.right="0"; door.style.width=(100/L.cols)+"%"; board.append(door);
     pieces.forEach((p,i)=>{
       const el=document.createElement("button");
       el.type="button"; el.className="block"+(p.target?" target":"")+(p.w>=p.h?" hcar":" vcar");
