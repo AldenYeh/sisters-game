@@ -52,7 +52,9 @@
     if (p) p.textContent = text;
   }
   
+  function muted(){ try { return localStorage.getItem('sistersMuted')==='1'; } catch(_) { return false; } }
   function tone(freq, dur, type) {
+    if (muted()) return;
     try {
       const ctx = tone.ctx || (tone.ctx = new (window.AudioContext || window.webkitAudioContext)());
       const o = ctx.createOscillator();

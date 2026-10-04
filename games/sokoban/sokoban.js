@@ -48,7 +48,7 @@
     levels.forEach((L,i)=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"+(i===index?" selected":""); b.textContent=String(i+1); b.onclick=()=>{load(i); chips();}; row.append(b); });
   }
   document.querySelectorAll(".pad button").forEach(b=>b.onclick=()=>{ const [dx,dy]=b.dataset.d.split(",").map(Number); move(dx,dy); });
-  window.addEventListener("keydown", ev=>{ const map={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],W:[0,-1],a:[-1,0],A:[-1,0],s:[0,1],S:[0,1],d:[1,0],D:[1,0]}; if(map[ev.key]){ev.preventDefault(); move(...map[ev.key]);} });
+  window.addEventListener("keydown", ev=>{ const map={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],W:[0,-1],a:[-1,0],A:[-1,0],s:[0,1],S:[0,1],d:[1,0],D:[1,0]}; if(map[ev.key]){ev.preventDefault(); move(...map[ev.key]);} if(ev.key==='z'||ev.key==='Z') document.getElementById('undo').click(); if(ev.key==='r'||ev.key==='R') document.getElementById('restart').click(); });
   let sx,sy; document.getElementById("board").addEventListener("pointerdown", e=>{sx=e.clientX; sy=e.clientY;});
   document.getElementById("board").addEventListener("pointerup", e=>{ const dx=e.clientX-sx, dy=e.clientY-sy; if(Math.hypot(dx,dy)<24) return; if(Math.abs(dx)>Math.abs(dy)) move(dx>0?1:-1,0); else move(0,dy>0?1:-1); });
   document.getElementById("undo").onclick=()=>{ if(!history.length) return; rows=history.pop().map(r=>r.split("")); moves=Math.max(0,moves-1); render(); };
