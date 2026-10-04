@@ -1,57 +1,61 @@
-
 (() => {
   "use strict";
-  const colors=["#f4a3b5","#8ecae6","#b7e4c7","#f7c56b"];
-  const shapes=["●","▲","■","◆"];
-  const sizes=["18px","28px","38px"];
-  const tiers=["easy","normal","hard","challenge"];
-  let tier="easy", puzzle=null, startedAt=Date.now(), attempts=0;
-  function seq(kind) {
-    if (kind==="ABAB") return [0,1,0,1,0];
-    if (kind==="AABAAB") return [0,0,1,0,0,1,0];
-    if (kind==="ABCABC") return [0,1,2,0,1,2,0];
-    if (kind==="AABB") return [0,0,1,1,0,0,1];
-    return [0,1,1,0,1,1,0];
+  const shapes = ["●", "▲", "■", "★"];
+  const colors = ["#d25b6a", "#7aa7c7", "#e0b15a", "#2f6f4e"];
+  let round = 0, answer = 0, startedAt = Date.now();
+  const rounds = [
+    () => seq(["●", "▲", "●", "▲"], ["●", "■", "★"], 0),
+    () => seq(["1", "2", "3", "4"], ["5", "6", "1"], 0),
+    () => seq(["紅", "紅", "藍", "藍"], ["紅", "藍", "綠"], 0),
+    () => seq(["小", "中", "大"], ["更大", "小", "中"], 0),
+    () => seq(["★", "★", "★★", "★★"], ["★★★", "★", "●"], 0),
+    () => seq(["🐱", "🐟", "🐱", "🐟"], ["🐱", "🐶", "🐟"], 0),
+    () => seq(["2", "4", "6", "8"], ["10", "9", "12"], 0),
+    () => seq(["○", "○○", "○○○"], ["○○○○", "○", "●"], 0),
+    () => seq(["上", "下", "上", "下"], ["上", "左", "下"], 0),
+    () => seq(["A", "B", "A", "B"], ["A", "C", "B"], 0),
+    () => seq(["1", "1", "2", "3"], ["5", "4", "8"], 0),
+    () => seq(["🌙", "⭐", "🌙", "⭐"], ["🌙", "☀", "⭐"], 0)
+  ];
+  function seq(items, choices, correct) {
+    return { items, choices, correct };
   }
-  function make() {
-    const kind = {easy:["ABAB","AABB"], normal:["AABAAB","ABCABC"], hard:["ABBABB","ABCABC"], challenge:["AABAAB","ABBABB"]}[tier];
-    const pattern = kind[Math.floor(Math.random()*kind.length)];
-    const base = seq(pattern);
-    const answer = base[base.length-1];
-    const shown = base.slice(0,-1);
-    const dual = tier==="hard" || tier==="challenge";
-    puzzle = {pattern, shown, answer, dual, colorMap:[0,1,2], shapeMap:[0,1,2], sizeMap:[0,2]};
-    startedAt=Date.now(); attempts++;
-    document.getElementById("complete").hidden=true;
-    render();
+  function start() {
+    startedAt = Date.now();
+    document.getElementById("complete").hidden = true;
+    show();
   }
-  function token(v, dual) {
-    const el=document.createElement("div"); el.className="token";
-    el.style.color = colors[puzzle.colorMap[v%puzzle.colorMap.length]];
-    el.style.fontSize = dual ? sizes[puzzle.sizeMap[v%2]] : "32px";
-    el.textContent = shapes[dual ? puzzle.shapeMap[v%puzzle.shapeMap.length] : 0];
-    if (!dual) el.textContent = shapes[v%shapes.length];
-    return el;
+  function show() {
+    const q = rounds[round % rounds.length]();
+    answer = q.correct;
+    const seq = document.getElementById("seq");
+    seq.replaceChildren();
+    q.items.forEach(item => { const d = document.createElement("div"); d.className = "token"; d.textContent = item; seq.append(d); });
+    const ask = document.createElement("div"); ask.className = "token"; ask.textContent = "?"; seq.append(ask);
+    const choices = document.getElementById("choices");
+    choices.replaceChildren();
+    q.choices.forEach((item, i) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "token"; b.textContent = item;
+      b.onclick = () => pick(i);
+      choices.append(b);
+    });
+    document.getElementById("status").textContent = `第 ${round + 1} / ${rounds.length} 題 · 看規律，選下一個`;
   }
-  function render() {
-    const seqEl=document.getElementById("seq"); seqEl.replaceChildren();
-    puzzle.shown.forEach(v=>seqEl.append(token(v,puzzle.dual)));
-    const q=document.createElement("div"); q.className="token"; q.textContent="?"; seqEl.append(q);
-    const choices=document.getElementById("choices"); choices.replaceChildren();
-    const opts=[...new Set([puzzle.answer, (puzzle.answer+1)%3, (puzzle.answer+2)%3])];
-    opts.sort(()=>Math.random()-.5);
-    opts.forEach(v=>{ const b=token(v,puzzle.dual); b.onclick=()=>choose(v); choices.append(b); });
-    document.getElementById("status").textContent=`${tier} · 規律 ${puzzle.pattern}`+ (puzzle.dual?" · 顏色和形狀一起看":"");
+  function pick(i) {
+    if (i !== answer) { SistersPlay.playSound("soft"); document.getElementById("status").textContent = "再看一次規律"; return; }
+    SistersPlay.playSound("ok");
+    round++;
+    if (round >= rounds.length) {
+      SistersPlay.showComplete("十二種規律都找到了");
+      SistersPlay.recordResult({ game: "pattern", difficulty: "mixed", level: rounds.length, startedAt, moves: rounds.length });
+      round = 0;
+      return;
+    }
+    show();
   }
-  function choose(v) {
-    if (v===puzzle.answer) {
-      SistersPlay.showComplete("規律找對了");
-      SistersPlay.recordResult({game:"pattern", difficulty:tier, level:puzzle.pattern, startedAt, attempts, moves:1});
-    } else document.getElementById("status").textContent="再看看重複的部分";
-  }
-  function chips(){ const row=document.getElementById("tier-row"); row.replaceChildren(); tiers.forEach(t=>{const b=document.createElement("button"); b.type="button"; b.className="chip"+(t===tier?" selected":""); b.textContent=t; b.onclick=()=>{tier=t; chips(); make();}; row.append(b);}); }
-  SistersPlay.showCoach("pattern", [{demo:"●▲●?", line:"看規律，選下一個"}]);
-  SistersPlay.mount({title:"規律接龍", onRestart:make});
-  document.getElementById("overlay-next").onclick=make;
-  chips(); make();
+  SistersPlay.showCoach("pattern", [{ demo: "●▲●?", line: "看規律，選下一個" }]);
+  SistersPlay.mount({ title: "規律接龍", onRestart: () => { round = 0; start(); } });
+  document.getElementById("overlay-next").onclick = start;
+  start();
 })();

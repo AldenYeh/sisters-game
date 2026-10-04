@@ -7,7 +7,7 @@
     const host=document.getElementById("pegs"); host.replaceChildren();
     pegs.forEach((peg,i)=>{
       const col=document.createElement("button"); col.type="button"; col.className="peg";
-      if(selected===i) col.classList.add("selected");
+      if(selected===i) { col.classList.add("selected"); col.style.outline="6px solid #d25b6a"; col.style.background="#fff1f3"; }
       else if(selected!=null){
         const from=pegs[selected], disc=from[from.length-1];
         const legal=!peg.length || peg[peg.length-1]>disc;
@@ -22,7 +22,7 @@
     document.getElementById("status").textContent = selected==null ? `點一疊圓盤，再點要放的柱子 · ${n} 層 · ${moves} 步` : `選到了。綠框可以放，紅框太大放不上去`;
   }
   function pick(i){
-    if (selected==null) { if (pegs[i].length) selected=i; return; }
+    if (selected==null) { if (pegs[i].length) { selected=i; render(); } return; }
     if (selected===i) { selected=null; return; }
     const from=pegs[selected], to=pegs[i];
     if (!from.length) { selected=null; return; }

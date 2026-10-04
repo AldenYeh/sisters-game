@@ -38,9 +38,8 @@
     out.width = w; out.height = h;
     const g = out.getContext("2d");
     g.drawImage(img, c * img.width / state.cols, r * img.height / state.rows, img.width / state.cols, img.height / state.rows, 0, 0, w, h);
-    if (!solid) { g.fillStyle = "rgba(255,253,249,.62)"; g.fillRect(0, 0, w, h); }
-    g.strokeStyle = "#fff"; g.lineWidth = 3; g.strokeRect(1.5, 1.5, w - 3, h - 3);
-    if (c < state.cols - 1) { g.fillStyle = "#fff"; g.beginPath(); g.arc(w - 3, h / 2, 7, 0, 7); g.fill(); }
+    if (!solid) { g.fillStyle = "rgba(255,253,249,.72)"; g.fillRect(0, 0, w, h); }
+    g.strokeStyle = "rgba(61,51,56,.25)"; g.lineWidth = 1; g.strokeRect(0.5, 0.5, w - 1, h - 1);
     return out.toDataURL();
   }
   function render() {

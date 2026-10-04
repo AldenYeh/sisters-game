@@ -1,57 +1,53 @@
 (() => {
   "use strict";
   const scenes = [
-    {
-      name: "花園", src: "art/garden.jpg",
-      spots: [{ id: "sun", x: 40, y: 20, w: 120, h: 110 }, { id: "bowl", x: 470, y: 240, w: 130, h: 120 }, { id: "flower", x: 20, y: 280, w: 110, h: 110 }],
-      paint(g, found) {
-        if (!found.has("sun")) { g.fillStyle = "#6d5bd0"; g.beginPath(); g.arc(105, 78, 34, 0, 7); g.fill(); }
-        if (!found.has("bowl")) { g.fillStyle = "#7dbb6a"; g.beginPath(); g.arc(545, 300, 42, 0, 7); g.fill(); }
-        if (!found.has("flower")) { g.fillStyle = "#f4a3b5"; g.beginPath(); g.arc(78, 330, 22, 0, 7); g.fill(); g.fillStyle = "#ffe08a"; g.beginPath(); g.arc(78, 330, 8, 0, 7); g.fill(); }
-      }
-    },
-    {
-      name: "房間", src: "art/room.jpg",
-      spots: [{ id: "lamp", x: 20, y: 150, w: 110, h: 120 }, { id: "book", x: 120, y: 280, w: 110, h: 90 }, { id: "cat", x: 450, y: 210, w: 120, h: 120 }],
-      paint(g, found) {
-        if (!found.has("lamp")) { g.fillStyle = "#f7c56b"; g.fillRect(48, 175, 36, 48); }
-        if (!found.has("book")) { g.fillStyle = "#e7d7c3"; g.fillRect(145, 310, 70, 36); }
-        if (!found.has("cat")) { g.fillStyle = "#d7c4ae"; g.beginPath(); g.arc(520, 270, 36, 0, 7); g.fill(); }
-      }
-    }
+    { name: "花園", a: "art/garden.jpg", b: "art/garden-b.jpg", spots: [{ id: "moon", x: 4, y: 4, w: 24, h: 22 }, { id: "bowl", x: 60, y: 60, w: 24, h: 28 }, { id: "butterfly", x: 16, y: 62, w: 18, h: 18 }] },
+    { name: "房間", a: "art/room.jpg", b: "art/room-b.jpg", spots: [{ id: "lamp", x: 2, y: 28, w: 16, h: 28 }, { id: "book", x: 20, y: 76, w: 18, h: 18 }, { id: "bow", x: 66, y: 52, w: 18, h: 28 }] },
+    { name: "海底", a: "art/sea.jpg", b: "art/sea-b.jpg", spots: [{ id: "fish", x: 14, y: 24, w: 28, h: 28 }, { id: "crab", x: 60, y: 62, w: 28, h: 28 }, { id: "star", x: 66, y: 76, w: 16, h: 16 }] },
+    { name: "野餐", a: "art/picnic.jpg", b: "art/picnic-b.jpg", spots: [{ id: "apple", x: 44, y: 62, w: 16, h: 20 }, { id: "kite", x: 60, y: 2, w: 22, h: 24 }, { id: "collar", x: 70, y: 58, w: 20, h: 28 }] }
   ];
   let scene = 0, found = new Set(), startedAt = Date.now();
   function start() {
     found = new Set(); startedAt = Date.now();
     document.getElementById("complete").hidden = true;
-    const s = scenes[scene];
-    document.getElementById("scene").innerHTML = `<div class="pair"><figure><figcaption>原圖 · ${s.name}</figcaption><img src="${s.src}" alt="${s.name}"></figure><figure><figcaption>找這裡</figcaption><canvas id="changed" width="640" height="420"></canvas></figure></div>`;
-    const img = new Image();
-    img.onload = () => draw(img);
-    img.src = s.src;
-    document.getElementById("status").textContent = "左邊原圖，點右邊不一樣的 · 0/3";
+    render();
   }
-  function draw(img) {
-    const canvas = document.getElementById("changed");
+  function render() {
     const s = scenes[scene];
-    const g = canvas.getContext("2d");
-    g.drawImage(img, 0, 0, canvas.width, canvas.height);
-    s.paint(g, found);
-    canvas.onclick = (ev) => {
-      const rect = canvas.getBoundingClientRect();
-      const x = (ev.clientX - rect.left) / rect.width * canvas.width;
-      const y = (ev.clientY - rect.top) / rect.height * canvas.height;
-      const hit = s.spots.find(sp => x > sp.x && x < sp.x + sp.w && y > sp.y && y < sp.y + sp.h);
-      if (!hit || found.has(hit.id)) return;
-      found.add(hit.id);
-      SistersPlay.playSound("ok");
-      draw(img);
-      document.getElementById("status").textContent = `左邊原圖，點右邊不一樣的 · ${found.size}/3`;
-      if (found.size === 3) {
-        SistersPlay.showComplete(`${s.name}找到了`);
-        SistersPlay.recordResult({ game: "spot", difficulty: "3", level: s.name, startedAt, moves: 3 });
-      }
-    };
+    const host = document.getElementById("scene");
+    host.innerHTML = `<div class="pair"><figure><figcaption>原圖 · ${s.name}</figcaption><img src="${s.a}" alt="${s.name}"></figure><figure><figcaption>找這裡</figcaption><div class="find"><img src="${s.b}" alt="${s.name}找不同"><div class="hits"></div></div></figure></div>`;
+    const hits = host.querySelector(".hits");
+    s.spots.forEach(sp => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "hit" + (found.has(sp.id) ? " found" : "");
+      b.style.left = sp.x + "%"; b.style.top = sp.y + "%"; b.style.width = sp.w + "%"; b.style.height = sp.h + "%";
+      b.onclick = () => mark(sp.id);
+      hits.append(b);
+    });
+    chips();
+    document.getElementById("status").textContent = `左邊原圖，點右邊不一樣的 · ${found.size}/${s.spots.length}`;
+  }
+  function mark(id) {
+    if (found.has(id)) return;
+    found.add(id);
+    SistersPlay.playSound("ok");
+    render();
+    if (found.size === scenes[scene].spots.length) {
+      SistersPlay.showComplete(`${scenes[scene].name}找到了`);
+      SistersPlay.recordResult({ game: "spot", difficulty: "3", level: scenes[scene].name, startedAt, moves: found.size });
+    }
+  }
+  function chips() {
+    let row = document.getElementById("diff-row");
+    if (!row) return;
+    row.replaceChildren();
+    scenes.forEach((s, i) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "chip" + (i === scene ? " selected" : ""); b.textContent = s.name;
+      b.onclick = () => { scene = i; start(); };
+      row.append(b);
+    });
   }
   SistersPlay.showCoach("spot", [{ demo: "👀", line: "左邊原圖，點右邊不一樣的" }]);
   SistersPlay.mount({ title: "找不同", onRestart: start });
