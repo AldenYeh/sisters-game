@@ -24,7 +24,7 @@
       el.type="button"; el.className="block"+(p.target?" target":"")+(p.w>=p.h?" hcar":" vcar");
       el.style.left=(p.c/L.cols*100)+"%"; el.style.top=(p.r/L.rows*100)+"%";
       el.style.width=(p.w/L.cols*100)+"%"; el.style.height=(p.h/L.rows*100)+"%";
-      el.textContent=p.target?"紅車":"";
+      el.textContent=p.target?"紅車":""; el.dataset.axis = p.w===p.h?"free":(p.w>p.h?"x":"y");
       el.addEventListener("pointerdown", ev=>startDrag(ev,i,el));
       board.append(el);
     });

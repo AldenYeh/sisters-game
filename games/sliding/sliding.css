@@ -6,3 +6,6 @@
 .block.target{background:#d25b6a}
 .block.selected{transform:scale(1.03)}
 .door{position:absolute;display:grid;place-items:center;color:#2f6f4e;font-weight:800;font-size:13px;pointer-events:none}
+
+.block.selected[data-axis=x]::after{content:"↔";position:absolute;inset:0;display:grid;place-items:center}
+.block.selected[data-axis=y]::after{content:"↕";position:absolute;inset:0;display:grid;place-items:center}
