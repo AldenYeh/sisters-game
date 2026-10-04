@@ -51,7 +51,27 @@
     const p = el.querySelector("p");
     if (p) p.textContent = text;
   }
-  function showCoach(gameId, steps) {
+  
+  function tone(freq, dur, type) {
+    try {
+      const ctx = tone.ctx || (tone.ctx = new (window.AudioContext || window.webkitAudioContext)());
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = type || "sine";
+      o.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.08, ctx.currentTime + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(); o.stop(ctx.currentTime + dur);
+    } catch (_) {}
+  }
+  function playSound(name) {
+    if (name === "ok") { tone(520, 0.12); tone(680, 0.16); }
+    else if (name === "win") { tone(523, 0.12); setTimeout(() => tone(659, 0.12), 90); setTimeout(() => tone(784, 0.2), 180); }
+    else tone(240, 0.08, "triangle");
+  }
+function showCoach(gameId, steps) {
     if (!steps || !steps.length) return;
     const key = "sistersCoachSeenV1:" + gameId;
     try { if (localStorage.getItem(key)) return; } catch (_) {}
@@ -70,5 +90,5 @@
     draw();
     document.body.append(overlay);
   }
-  window.SistersPlay = Object.freeze({ RESULT_KEY, player, loadResults, recordResult, mount, showComplete, showCoach });
+  window.SistersPlay = Object.freeze({ RESULT_KEY, player, loadResults, recordResult, mount, showComplete, showCoach, playSound });
 })();

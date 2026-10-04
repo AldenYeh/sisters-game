@@ -37,7 +37,7 @@
       rows[by][bx] = b==="." ? "*" : "$";
       rows[ny][nx] = t==="*" ? "+" : "@";
     } else rows[ny][nx] = t==="." ? "+" : "@";
-    rows[py][px] = leave; moves++; render();
+    rows[py][px] = leave; moves++; SistersPlay.playSound('ok'); render();
     if (won()) {
       SistersPlay.showComplete(`你用了 ${moves} 步，最少 ${levels[index].minimumMoves} 步`);
       SistersPlay.recordResult({game:"sokoban", difficulty:levels[index].tier, level:levels[index].name, startedAt, moves, restartCount:restarts});

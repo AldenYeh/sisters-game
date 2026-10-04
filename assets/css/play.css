@@ -18,3 +18,6 @@ body{margin:0;font-family:"PingFang TC","Noto Sans TC",Nunito,sans-serif;backgro
 .coach-demo{font-size:36px}
 .coach-card p{font-size:20px;font-weight:800}
 @media(max-width:680px){.play-app{padding:12px}}
+
+.complete-overlay.pop{animation:pop .35s ease}
+@keyframes pop{from{transform:scale(.96);opacity:.6}to{transform:none;opacity:1}}

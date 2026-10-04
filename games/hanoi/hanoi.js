@@ -28,7 +28,7 @@
     if (!from.length) { selected=null; return; }
     const disc=from[from.length-1];
     if (to.length && to[to.length-1] < disc) { document.getElementById("status").textContent="大的不能放在小的上面"; selected=null; return; }
-    to.push(from.pop()); moves++; selected=null; render();
+    to.push(from.pop()); moves++; selected=null; SistersPlay.playSound('ok'); render();
     if (pegs[2].length===n) {
       SistersPlay.showComplete(`你用了 ${moves} 步，最少可以 ${2**n-1} 步喔！`);
       SistersPlay.recordResult({game:"hanoi", difficulty:String(n), level:n, startedAt, moves, restartCount:restarts});

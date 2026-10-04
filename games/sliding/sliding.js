@@ -56,7 +56,7 @@
       el.removeEventListener("pointermove", move);
       el.removeEventListener("pointerup", up);
       el.removeEventListener("pointercancel", up);
-      if(pieces[i].r===origin.r && pieces[i].c===origin.c) history.pop(); else moves++;
+      if(pieces[i].r===origin.r && pieces[i].c===origin.c) history.pop(); else { moves++; SistersPlay.playSound('ok'); }
       render();
     }
     el.addEventListener("pointermove", move);

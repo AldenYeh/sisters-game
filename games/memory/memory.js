@@ -35,7 +35,7 @@
   function flip(i) {
     const card=deck[i];
     if (lock || card.up || card.gone) return;
-    card.up=true; open.push(i); flips++; render();
+    card.up=true; open.push(i); flips++; SistersPlay.playSound('ok'); render();
     if (open.length===2) {
       const [a,b]=open;
       if (deck[a].icon===deck[b].icon) { deck[a].gone=deck[b].gone=true; open=[]; if (deck.every(c=>c.gone)) finish(); }
