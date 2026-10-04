@@ -1,3 +1,4 @@
+document.addEventListener('DOMContentLoaded',()=>{ if(window.SistersPlay) SistersPlay.showCoach('sudoku',[{demo:'1 2 3',line:'空格補上缺少的圖案'},{demo:'🚫',line:'同一排不能重複'}]); });
 (() => {
  "use strict";
  const ui=window.SistersShared,content=window.SISTERS_CONTENT,engine=window.SudokuEngine;

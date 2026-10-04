@@ -26,6 +26,7 @@
     }
   }
   function chips(){ const row=document.getElementById("disc-row"); row.replaceChildren(); [3,4,5,6,7].forEach(d=>{const b=document.createElement("button"); b.type="button"; b.className="chip"+(d===n?" selected":""); b.textContent=d+" 層"; b.onclick=()=>{n=d; chips(); start();}; row.append(b);}); }
+  SistersPlay.showCoach("hanoi", [{demo:"🔴➡️", line:"把圓盤搬到右邊柱子"},{demo:"🚫", line:"大的不能放在小的上面"}]);
   SistersPlay.mount({title:"河內塔", onRestart:()=>{restarts++; start();}});
   document.getElementById("overlay-next").onclick=()=>{ n=Math.min(7,n+1); chips(); start(); };
   chips(); start();

@@ -35,6 +35,7 @@
   }
   function hit(id){ found.add(id); render(); if(found.size===count){ SistersPlay.showComplete(`找到 ${count} 處不同`); SistersPlay.recordResult({game:"spot", difficulty:String(count), level:scenes[count%scenes.length], startedAt, moves:found.size}); } }
   function chips(){ const row=document.getElementById("diff-row"); row.replaceChildren(); counts.forEach(c=>{const b=document.createElement("button"); b.type="button"; b.className="chip"+(c===count?" selected":""); b.textContent=c+" 處"; b.onclick=()=>{count=c; chips(); start();}; row.append(b);}); }
+  SistersPlay.showCoach("spot", [{demo:"🔎", line:"點出不一樣的地方"}]);
   SistersPlay.mount({title:"找不同", onRestart:start});
   document.getElementById("overlay-next").onclick=start;
   chips(); start();

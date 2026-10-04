@@ -50,6 +50,7 @@
     } else document.getElementById("status").textContent="再看看重複的部分";
   }
   function chips(){ const row=document.getElementById("tier-row"); row.replaceChildren(); tiers.forEach(t=>{const b=document.createElement("button"); b.type="button"; b.className="chip"+(t===tier?" selected":""); b.textContent=t; b.onclick=()=>{tier=t; chips(); make();}; row.append(b);}); }
+  SistersPlay.showCoach("pattern", [{demo:"●▲●?", line:"看規律，選下一個"}]);
   SistersPlay.mount({title:"規律接龍", onRestart:make});
   document.getElementById("overlay-next").onclick=make;
   chips(); make();

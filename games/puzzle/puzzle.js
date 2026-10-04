@@ -161,7 +161,8 @@
     });
   }
   function boot() {
-    SistersPlay.mount({ title: "拼圖", onRestart: () => { state.restarts++; start(true); } });
+    SistersPlay.showCoach("puzzle", [{demo:"🧩➡️🖼", line:"抓住碎片，拖到圖上"}]);
+  SistersPlay.mount({ title: "拼圖", onRestart: () => { state.restarts++; start(true); } });
     chips("size-row", sizes.map(n => ({ value: n, label: n + " 片" })), state.pieces, n => { state.pieces = n; state.restarts = 0; start(false); bootChips(); });
     chips("art-row", arts.map(a => ({ value: a[0], label: a[2] + a[1] })), state.art[0], id => { state.art = arts.find(a => a[0] === id); start(false); bootChips(); });
     document.getElementById("hint").onclick = hint;

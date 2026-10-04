@@ -12,7 +12,7 @@
     super: { text: m.super, hint: m.superHint, size: 9, candidates: 14, percentile: .90 }
   });
   const DIRECTIONS = Object.freeze({ up: [-1, 0], down: [1, 0], left: [0, -1], right: [0, 1] });
-  const KEY_DIRECTIONS = Object.freeze({ ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right" });
+  const KEY_DIRECTIONS = Object.freeze({ ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right", w: "up", W: "up", a: "left", A: "left", s: "down", S: "down", d: "right", D: "right" });
   const byId = id => document.getElementById(id);
   const cellKey = (row, col) => `${row},${col}`;
 
@@ -181,6 +181,16 @@
   byId("start-game").addEventListener("click",()=>startGame());byId("show-records").addEventListener("click",showScoreboard);byId("setup-home").addEventListener("click",goHub);byId("home-from-game").addEventListener("click",goHub);byId("home-from-win").addEventListener("click",goHub);byId("records-back").addEventListener("click",showSetup);byId("restart").addEventListener("click",restartGame);byId("play-again").addEventListener("click",()=>startGame({replay:true}));elements.togglePath.addEventListener("click",togglePathDisplay);byId("clear-records").addEventListener("click",requestClearRecords);byId("cancel-clear").addEventListener("click",cancelClearRecords);byId("confirm-clear").addEventListener("click",clearRecords);
   document.querySelectorAll(".touch-direction").forEach(button=>button.addEventListener("click",event=>{event.preventDefault();movePlayer(button.dataset.move);}));
   byId("maze-wrap").addEventListener("pointerdown",handleSwipeStart,{passive:false});byId("maze-wrap").addEventListener("pointerup",handleSwipeEnd,{passive:false});byId("maze-wrap").addEventListener("pointercancel",cancelSwipe);
+  
+  const memoryMode = location.hash === "#memory";
+  if (memoryMode) {
+    const note = document.createElement("p");
+    note.className = "game-message";
+    note.textContent = "記憶迷宮：先看路徑，幾秒後牆壁會淡出";
+    document.querySelector("main").prepend(note);
+    setTimeout(() => document.body.classList.add("memory-maze"), 4000);
+  }
+  if (window.SistersPlay) SistersPlay.showCoach("maze", [{demo:"🐱🐟", line:"把貓咪走到小魚"}]);
   document.addEventListener("keydown",event=>{const direction=KEY_DIRECTIONS[event.key];if(!direction)return;event.preventDefault();movePlayer(direction);},{passive:false});
 
   window.MazeGame=Object.freeze({startGame,restartGame,move:movePlayer,togglePath:togglePathDisplay,generateMaze:generateAndValidateMaze,mazeComplexity,bfs,showRecords:showScoreboard,loadRecords,getState:()=>({...gameState,maze:gameState.maze.map(row=>[...row]),visited:[...gameState.visited]}),constants:{DIFFICULTIES,STORAGE_KEY}});

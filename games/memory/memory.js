@@ -53,6 +53,7 @@
     const t=document.getElementById("theme-row"); t.replaceChildren();
     Object.keys(themes).forEach(name=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"+(name===theme?" selected":""); b.textContent=name; b.onclick=()=>{theme=name; chips(); start();}; t.append(b); });
   }
+  SistersPlay.showCoach("memory", [{demo:"🃏🃏", line:"翻兩張，一樣的留著"}]);
   SistersPlay.mount({title:"記憶翻牌", onRestart:()=>{restarts++; start();}});
   document.getElementById("overlay-next").onclick=start;
   chips(); start();

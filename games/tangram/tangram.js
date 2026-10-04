@@ -108,7 +108,8 @@
     SistersPlay.recordResult({game:"tangram", difficulty:shapes[idx].tier, level:shapes[idx].name, startedAt, moves, hintsUsed:hints, restartCount:restarts});
   }
   function boot() {
-    SistersPlay.mount({title:"七巧板", onRestart:()=>{restarts++; hints=0; scatter(); render();}});
+    SistersPlay.showCoach("tangram", [{demo:"🔺➡️", line:"把形狀拖去蓋住影子"}]);
+  SistersPlay.mount({title:"七巧板", onRestart:()=>{restarts++; hints=0; scatter(); render();}});
     document.getElementById("rotate").onclick = () => { pieces[selected][2] = (pieces[selected][2]+1)%4; moves++; render(); };
     document.getElementById("flip").onclick = () => { if (selected==="P") { pieces[selected][3]=!pieces[selected][3]; render(); } };
     document.getElementById("hint").onclick = () => {

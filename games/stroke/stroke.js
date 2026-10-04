@@ -26,6 +26,7 @@
     used.add(ei); last=n; moves++; render();
   }
   function chips(){ const row=document.getElementById("level-row"); row.replaceChildren(); levels.forEach((L,i)=>{const b=document.createElement("button"); b.type="button"; b.className="chip"+(i===index?" selected":""); b.textContent=String(i+1); b.onclick=()=>{load(i); chips();}; row.append(b);}); }
+  SistersPlay.showCoach("stroke", [{demo:"✏️", line:"沿著線走，每條只走一次"}]);
   SistersPlay.mount({title:"一筆畫", onRestart:()=>{restarts++; load(index);}});
   document.getElementById("overlay-next").onclick=()=>{load((index+1)%levels.length); chips();};
   chips(); load(0);

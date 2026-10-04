@@ -3,3 +3,8 @@
 .block{position:absolute;border:0;border-radius:12px;background:#f3b6c8;color:#543c4e;font-weight:900;font-size:22px;box-shadow:0 4px 0 #d8bcc9}
 .block.target{background:#8d5b73;color:#fff}
 .block.selected{outline:3px solid #543c4e}
+
+.slide-board{touch-action:none}
+.block{touch-action:none;cursor:grab}
+.block.selected{outline:3px solid #543c4e;cursor:grabbing}
+.exit-mark{position:absolute;right:0;width:8px;background:#b7e4c7;border-radius:6px}

@@ -43,6 +43,7 @@
     }
   }
   function chips(){ const row=document.getElementById("level-row"); row.replaceChildren(); levels.forEach((L,i)=>{const b=document.createElement("button"); b.type="button"; b.className="chip"+(i===idx?" selected":""); b.textContent=L.name; b.onclick=()=>{idx=i; chips(); start();}; row.append(b);}); }
+  SistersPlay.showCoach("visual", [{demo:"🐱", line:"先記住貓在哪裡"},{demo:"👆", line:"消失後點回來"}]);
   SistersPlay.mount({title:"視覺記憶", onRestart:start});
   document.getElementById("overlay-next").onclick=()=>{idx=(idx+1)%levels.length; chips(); start();};
   chips(); start();

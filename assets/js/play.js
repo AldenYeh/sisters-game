@@ -51,5 +51,24 @@
     const p = el.querySelector("p");
     if (p) p.textContent = text;
   }
-  window.SistersPlay = Object.freeze({ RESULT_KEY, player, loadResults, recordResult, mount, showComplete });
+  function showCoach(gameId, steps) {
+    if (!steps || !steps.length) return;
+    const key = "sistersCoachSeenV1:" + gameId;
+    try { if (localStorage.getItem(key)) return; } catch (_) {}
+    const overlay = document.createElement("div");
+    overlay.className = "coach";
+    let i = 0;
+    function draw() {
+      const step = steps[i];
+      overlay.innerHTML = `<div class="coach-card"><div class="coach-demo">${step.demo}</div><p>${step.line}</p><button type="button" class="primary-button">${i === steps.length-1 ? "開始" : "下一步"}</button></div>`;
+      overlay.querySelector("button").onclick = () => {
+        i++;
+        if (i >= steps.length) { try { localStorage.setItem(key, "1"); } catch (_) {} overlay.remove(); }
+        else draw();
+      };
+    }
+    draw();
+    document.body.append(overlay);
+  }
+  window.SistersPlay = Object.freeze({ RESULT_KEY, player, loadResults, recordResult, mount, showComplete, showCoach });
 })();
