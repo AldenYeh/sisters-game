@@ -56,7 +56,7 @@
       const cell = document.createElement("div");
       cell.style.width = size.w + "px";
       cell.style.height = size.h + "px";
-      cell.style.background = state.placed[i] ? `url(${slice(i, size.w, size.h).toDataURL()}) center/cover` : "#f6efe6";
+      cell.style.background = state.placed[i] ? `url(${slice(i, size.w, size.h).toDataURL()}) center/cover` : `linear-gradient(rgba(255,253,249,.55), rgba(255,253,249,.55)), url(${slice(i, size.w, size.h).toDataURL()}) center/cover`;
       cell.style.boxShadow = "inset 0 0 0 1px #eadfd6";
       board.append(cell);
     }
