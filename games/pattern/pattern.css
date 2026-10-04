@@ -1,6 +1,4 @@
 
-.q-board,.a-board{background:#fff;border:1px solid #eadfd6;border-radius:18px;padding:14px;margin:10px 0}
-.q-board{background:#fffaf2}
-.seq,.choices{display:flex;gap:10px;flex-wrap:wrap}
-.token{width:72px;height:72px;border-radius:16px;border:1px solid #eadfd6;display:grid;place-items:center;background:#fff;font-size:28px;cursor:pointer}
-.q-board .token{cursor:default}
+.seq,.choices{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+.token{min-width:64px;min-height:64px;border-radius:16px;background:#fff;border:1px solid #eadfd6;display:grid;place-items:center;font-size:28px;font-weight:800}
+.choices{margin-top:18px}
