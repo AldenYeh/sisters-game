@@ -38,7 +38,10 @@
     const c = i % state.cols, r = Math.floor(i / state.cols);
     const out = document.createElement("canvas");
     out.width = w; out.height = h;
-    out.getContext("2d").drawImage(src, c * src.width / state.cols, r * src.height / state.rows, src.width / state.cols, src.height / state.rows, 0, 0, w, h);
+    const g=out.getContext("2d");
+    g.drawImage(src, c * src.width / state.cols, r * src.height / state.rows, src.width / state.cols, src.height / state.rows, 0, 0, w, h);
+    g.strokeStyle="#fff"; g.lineWidth=3; g.strokeRect(1,1,w-2,h-2);
+    if(c<state.cols-1){ g.fillStyle="#fff"; g.beginPath(); g.arc(w-2,h/2,6,0,7); g.fill(); }
     return out;
   }
   function render() {
