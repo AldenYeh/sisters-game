@@ -46,3 +46,5 @@ h1,h2,h3,p{margin-top:0}
 @media(max-width:680px){.hub-shell{padding:8px}.hero-card{padding:78px 12px 20px;border-radius:24px}.cat-heading{padding-top:0}.player-list,.choice-list{grid-template-columns:1fr;gap:13px}.hub-player,.choice-card{min-height:91px;font-size:22px}.back-button{top:13px;left:13px}.site-heading h1{font-size:30px}.cat-mark{font-size:46px}.current-player-badge{margin-bottom:16px}}
 @media(max-height:700px) and (min-width:681px){.hub-shell{padding:8px}.hero-card{padding:18px 30px}.cat-mark{font-size:43px}.paw-divider{margin:6px 0}.hub-section{margin-top:10px}.hub-player,.choice-card{min-height:94px}.current-player-badge{margin:8px auto 14px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.game-how{display:block;font-size:13px;font-weight:700;color:#8a737c}

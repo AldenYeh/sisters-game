@@ -99,6 +99,7 @@
       button.className = `choice-card game-${game.id}`;
       button.disabled = !game.available;
       button.append(ui.makeReading(game.name, { icon: game.icon }), makeState(game.available ? content.site.available : content.site.developing));
+      if (game.how) { const how = document.createElement("span"); how.className = "game-how"; how.textContent = game.how; button.append(how); }
       if (game.available) button.addEventListener("click", () => { window.location.href = game.href; });
       list.append(button);
     });
