@@ -14,3 +14,8 @@
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important}}
 
 body.memory-maze .cell.wall{background:#f6efe4;color:transparent}
+
+.cell.goal{background:#fff4b5;box-shadow:inset 0 0 0 2px #e0b15a}
+.cell.path{background:#fffdf8}
+.player{font-size:22px}
+.goal-token{font-size:22px}
