@@ -24,7 +24,7 @@
   }
   function render() {
     const grid=document.getElementById("grid");
-    grid.style.gridTemplateColumns=`repeat(${size[0]},minmax(0,1fr))`;
+    grid.style.setProperty("--memory-cols",size[0]);grid.style.gridTemplateColumns=`repeat(${size[0]},minmax(0,1fr))`;
     grid.replaceChildren();
     deck.forEach((card,i)=>{
       const b=document.createElement("button");
@@ -56,7 +56,7 @@
     const s=document.getElementById("size-row"); s.replaceChildren();
     sizes.forEach(sz=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"+(sz===size?" selected":""); b.textContent=`${sz[0]}×${sz[1]}`; b.onclick=()=>start("new",sz,theme); s.append(b); });
     const t=document.getElementById("theme-row"); t.replaceChildren();
-    Object.keys(themes).forEach(name=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"+(name===theme?" selected":""); b.textContent=name; b.onclick=()=>start("new",size,name); t.append(b); });
+    Object.keys(themes).forEach(name=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"+(name===theme?" selected":""); b.textContent=({animal:"動物",fruit:"水果",car:"交通工具",food:"食物",shape:"形狀"})[name]; b.onclick=()=>start("new",size,name); t.append(b); });
   }
   SistersPlay.showCoach("memory", [{demo:"🃏🃏", line:"翻兩張，一樣的留著"}]);
   SistersPlay.mount({title:"記憶翻牌", onRestart:()=>start("restart")});

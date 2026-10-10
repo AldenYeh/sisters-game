@@ -18,7 +18,7 @@
     board.replaceChildren();
     rows.forEach(row => row.forEach(ch => {
       const d = document.createElement("div");
-      d.className = "cell" + (ch==="#"?" wall":"") + (" .*+".includes(ch)?" goal":"") + (ch==="$"||ch==="*"?" box":"") + (ch==="*"?" done":"");
+      d.className = "cell" + (ch==="#"?" wall":"") + (".*+".includes(ch)?" goal":"") + (ch==="$"||ch==="*"?" box":"") + (ch==="*"?" done":"");
       d.textContent = { "#":"", "@":"🐱", "+":"🐱", "$":"📦", "*":"📦", ".":"🐟", " ":"" }[ch] || "";
       board.append(d);
     }));

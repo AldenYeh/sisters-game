@@ -3,7 +3,7 @@
   'use strict';
   const KEY='sistersRoundLifecycleV1', LOCK_KEY='sistersRoundLockedV1', OWNER='sistersRoundOwnerV1';
   const game=location.pathname.match(/\/games\/([^/]+)\//)?.[1] || null;
-  let adapter, round=null, release, busy=false, restoring=false, error='', pending=null, canceled=false;
+  let adapter, round=null, release, busy=false, restoring=false, error='', pending=null, canceled=false,operation=0,leaving=false;
   const capable=!!(window.isSecureContext && navigator.locks && crypto.randomUUID);
   const empty=()=>({version:1,revision:0,round:null,events:[]});
   function read(){
@@ -71,11 +71,12 @@
     catch(e){pending={kind:'result',round:structuredClone(round)};fail(new Error('通關紀錄尚未保存：'+e.message+' 請保留此頁並重試。'));return false;}
   }
   async function start(factory,reason='new'){
-    if(busy||error)return false;
+    if(busy||error||restoring||leaving)return false;
     try{if(rawLocked())return false;}catch(e){fail(e);return false;}
-    busy=true;const previousLocal=round;
+    busy=true;refresh();const previousLocal=round,token=++operation;
     try{
       if(!await acquire()){notice('原局正在另一分頁操作，請回到該分頁或先關閉它。');return false;}
+      if(token!==operation||leaving){relinquish();return false;}
       const s=read();
       if(s.round?.status==='active'&&s.round.id!==round?.id){notice('尚有未完成的原局；請繼續原局，或明確放棄後再開始。');relinquish();return false;}
       if(s.round?.status==='completed'&&!s.round.resultSynced){round=s.round;if(!reconcile())return false;}
@@ -83,7 +84,9 @@
       const previous=s.round;
       const player=window.SistersShared.loadPlayer()||'guest';
       round={id:crypto.randomUUID(),game,player,href:location.pathname+location.hash,status:'active',startedAt:Date.now(),endedAt:null,payload:null,result:null,resultSynced:false};
-      await factory();round.payload=payload();
+      await factory();
+      if(token!==operation||leaving||!release){round=read().round;relinquish();return false;}
+      round.payload=payload();
       const next=read();
       if(previous?.status==='active')emit(next,'GameAbandoned',previous.id,{game:previous.game,player:previous.player,reason});
       next.round=round;
@@ -91,7 +94,7 @@
       if(reason==='restart')emit(next,'GameRestarted',round.id,{previousRoundId:previous?.id,game,player});
       try{persist(next);}catch(e){pending={kind:'start',state:next,round:structuredClone(round)};throw new Error('新局無法保存，操作已暫停。請保留此頁並重試。');}
       pending=null;message='';refresh();return true;
-    }catch(e){if(!pending){round=previousLocal;pending={kind:"factory",factory,reason};}fail(e);return false;}finally{busy=false;refresh();}
+    }catch(e){if(token!==operation||leaving){round=read().round;relinquish();return false;}if(!pending){round=previousLocal;pending={kind:"factory",factory,reason};}fail(e);return false;}finally{busy=false;refresh();}
   }
   function complete(entry={}){
     if(restoring||!round||round.status!=='active'||!owns()||error||rawLocked())return false;
@@ -105,7 +108,7 @@
     catch(e){pending={kind:'complete',round:structuredClone(round)};fail(new Error('完成狀態尚未保存，請保留此頁並重試。'));return false;}
   }
   async function attach(nextAdapter){
-    adapter=nextAdapter;
+    adapter=nextAdapter;const token=operation;
     try{
       const s=read();if(s.round?.game!==game||s.round.status==='abandoned')return false;
       if(!await acquire()){notice('原局正在另一分頁操作。');return false;}
@@ -113,25 +116,27 @@
       round=structuredClone(s.round);restoring=true;
       await adapter.restore(round.payload,round);
       restoring=false;
+      if(token!==operation||leaving){round=read().round;relinquish();return true;}
       if(round.status==='completed'){
         const panel=document.getElementById('complete');if(panel){panel.hidden=false;const p=panel.querySelector('p');if(p)p.textContent=round.summary;}
         if(reconcile())relinquish();else return true;
       }
       pending=null;message='';refresh();return true;
-    }catch(e){restoring=false;pending={kind:'restore'};fail(new Error('原局無法恢復：'+e.message+' 沒有生成新局。'));return true;}
+    }catch(e){restoring=false;if(token!==operation||leaving)return true;pending={kind:'restore'};fail(new Error('原局無法恢復：'+e.message+' 沒有生成新局。'));return true;}
   }
   async function abandon(destination){
-    if(busy||error)return false;
+    if(error)return false;
+    operation++;cancelTransient();
     if(!await acquire()){notice('請先在正在遊玩的分頁放棄原局。');return false;}
     try{
       const s=read();if(s.round?.status==='active'){
-        if(round?.id===s.round.id){cancelTransient();round.payload=payload();s.round=round;}
+        if(!busy&&!restoring&&round?.id===s.round.id){cancelTransient();round.payload=payload();s.round=round;}
         s.round.status='abandoned';s.round.endedAt=Date.now();emit(s,'GameAbandoned',s.round.id,{game:s.round.game,player:s.round.player,reason:'explicit'});persist(s);round=s.round;
       }
       relinquish();refresh();if(destination)location.href=destination;return true;
     }catch(e){fail(new Error('放棄狀態未保存，原局仍保留：'+e.message));return false;}
   }
-  function leave(destination){cancelTransient();if(round?.status==='active'&&!checkpoint())return false;location.href=destination;return true;}
+  function leave(destination){cancelTransient();if(error)return false;if(!busy&&!restoring&&round?.status==='active'&&!checkpoint())return false;operation++;leaving=true;location.href=destination;return true;}
   function retry(){
     if(!pending){error='';refresh();return;}
     try{
@@ -149,7 +154,7 @@
   document.body.prepend(bar);new ResizeObserver(()=>document.documentElement.style.setProperty('--round-bar-height',bar.getBoundingClientRect().height+'px')).observe(bar);const el=id=>document.getElementById(id);
   let message='';function notice(text){message=text;refresh();}
   function refresh(){
-    try{const s=read(),r=s.round;el('round-status').textContent=error||message||(rawLocked()?'當局已暫停；解鎖後可接續。':r?.status==='active'?`當局已保存 · ${window.SISTERS_CONTENT.players[r.player]?.name.zh||r.player}`:r?.status==='completed'?'完成當局 · 紀錄已保存':'遊戲進度會自動保存');
+    try{const s=read(),r=s.round;el('round-status').textContent=error||message||(busy?'新局載入中…':rawLocked()?'當局已暫停；解鎖後可接續。':r?.status==='active'?`當局已保存 · ${window.SISTERS_CONTENT.players[r.player]?.name.zh||r.player}`:r?.status==='completed'?'完成當局 · 紀錄已保存':'遊戲進度會自動保存');
       el('round-resume').hidden=!r||r.status!=='active'||(round?.id===r.id&&release);
       el('round-abandon').hidden=!r||r.status!=='active';el('round-retry').hidden=!error;
       bar.dataset.error=String(!!error);
@@ -164,11 +169,11 @@
     if(type==='keydown'&&['Tab','Escape'].includes(event.key))return;
     const settings=event.target.closest?.('.toolbar,.game-controls,.play-top,#setup,#setup-screen,#records-screen,[data-setting],.difficulty-choice,#back-setup,#home-from-game,#home-from-win,#win-panel,#complete');
     const operation=event.target.closest?.('#hint,#undo,#rotate,#flip,#toggle-path');
-    if((!canInteract()&&(!settings||operation||(type==='keydown'&&!settings)))||((busy||error||rawLocked())&&event.target.closest?.('button')&&!event.target.closest?.('#back-home,#back-list,#setup-home,#home-from-game,#home-from-win,#overlay-list'))){event.preventDefault();event.stopImmediatePropagation();}
+    if((!canInteract()&&(!settings||operation||(type==='keydown'&&!settings)))||((error||rawLocked()||(busy&&!event.target.closest?.('[data-round-switch]')))&&event.target.closest?.('button')&&!event.target.closest?.('#back-home,#back-list,#setup-home,#home-from-game,#home-from-win,#overlay-list'))){event.preventDefault();event.stopImmediatePropagation();}
   },true);
   for(const type of ['click','pointerup','keydown'])document.addEventListener(type,()=>queueMicrotask(checkpoint));
-  window.addEventListener('pagehide',()=>{cancelTransient();checkpoint();relinquish();});
-  window.addEventListener('pageshow',e=>{if(e.persisted&&adapter){message='';attach(adapter);}});
+  window.addEventListener('pagehide',()=>{operation++;leaving=true;cancelTransient();checkpoint();relinquish();});
+  window.addEventListener('pageshow',e=>{if(e.persisted&&adapter){leaving=false;busy=false;restoring=false;message='';attach(adapter);}});
   window.addEventListener('storage',e=>{if(e.key===LOCK_KEY){if(rawLocked()){cancelTransient();checkpoint();}else if(round?.status==='active')adapter?.resume?.();}refresh();});
   window.SistersRound=Object.freeze({KEY,LOCK_KEY,attach,start,complete,abandon,checkpoint,leave,canInteract,setLocked,retry,
     current:()=>round&&structuredClone(round),isRestoring:()=>restoring,

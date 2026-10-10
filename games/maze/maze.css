@@ -19,3 +19,16 @@ body.memory-maze .cell.wall{background:#f6efe4;color:transparent}
 .cell.path{background:#fffdf8}
 .player{font-size:22px}
 .goal-token{font-size:22px}
+
+/* Size the board from available space, retaining a usable minimum and scrolling. */
+body{overflow:auto}.maze-app .game-screen{height:auto;min-height:calc(100svh - var(--round-bar-height,0px));padding:14px 16px 22px;gap:16px}
+.game-header{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}.game-heading{display:block;flex:1 1 190px;text-align:center}.game-info{flex:1 1 270px}.game-actions{flex-wrap:wrap;justify-content:center}
+.maze-card{flex:none;min-height:0;padding:16px;gap:14px;display:flex;flex-direction:column;justify-content:flex-start}.maze-wrap{overflow:hidden;max-width:100%}.maze-card .status{height:auto;flex-shrink:0}.touch-controls{flex-shrink:0}
+:root{--cell-size:max(14px,min(calc((100vw - 72px)/var(--maze-cols)),max(24px,calc(var(--maze-available-height,468px)/var(--maze-rows))),36px))}
+.player,.goal-token{font-size:calc(var(--cell-size)*.75)}
+@media(max-width:850px){.game-header{flex-direction:row}.game-heading{display:block}.game-info{display:flex;flex-wrap:wrap}.maze-card{display:flex}.maze-wrap{align-self:center}.game-screen{padding:12px 8px}.game-info span,#timer{padding:6px}.touch-controls{grid-template-columns:repeat(3,52px);grid-template-rows:repeat(3,52px);gap:8px}.touch-direction{width:52px;height:52px}}
+@media(max-width:600px){.maze-app .game-screen{padding:12px 8px}.game-heading{flex-basis:100%}:root{--cell-size:max(14px,min(calc((100vw - 64px)/var(--maze-cols)),32px))}}
+
+@media(min-width:1100px){.game-heading{flex:0 1 180px}.game-info{flex:2 1 500px}}
+
+.maze-mode-note{flex-basis:100%;margin:0;text-align:center;font-size:14px;font-weight:800;color:var(--green-dark)}

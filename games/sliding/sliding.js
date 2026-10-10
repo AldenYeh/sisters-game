@@ -1,7 +1,9 @@
 (async () => {
   "use strict";
   const levels = window.SlidingLevels;
-  const tierName = {tutorial:"教學",easy:"簡單",medium:"普通",hard:"困難",challenge:"挑戰",master:"大師"};
+  const tierName = {tutorial:"1 步",easy:"2 步",medium:"3 步",hard:"4 步",challenge:"5 步以上"};
+  // Difficulty here is the verified shortest move count, not an invented tier.
+  const difficulty=L=>L.minimumMoves===1?"tutorial":L.minimumMoves===2?"easy":L.minimumMoves===3?"medium":L.minimumMoves===4?"hard":"challenge";
   let filter="all", index=0, pieces=[], moves=0, hints=0, restarts=0, startedAt=Date.now(), history=[],cancelDrag=null,dragSnapshot=null;
   const board=document.getElementById("board");
   const level=()=>levels[index];
@@ -28,7 +30,7 @@
       el.setAttribute("aria-label",p.target?"紅車，方向鍵移動":"車輛，方向鍵移動");el.onkeydown=e=>{const delta={ArrowLeft:[0,-1],ArrowRight:[0,1],ArrowUp:[-1,0],ArrowDown:[1,0]}[e.key];if(!delta||!SistersRound.canInteract())return;e.preventDefault();const [dr,dc]=delta;if((p.w>p.h&&dr)||(p.h>p.w&&dc)||!can(i,dr,dc))return;history.push(clone(pieces));slide(i,dr,dc,1);moves++;render();board.querySelectorAll(".block")[i]?.focus();SistersRound.checkpoint();};el.addEventListener("pointerdown", ev=>startDrag(ev,i,el));
       board.append(el);
     });
-    document.getElementById("status").textContent=`把紅車拖到右邊「出口」 · ${L.name} · ${tierName[L.tier]||L.tier} · ${moves} 步 · 最少 ${L.minimumMoves}`;
+    document.getElementById("status").textContent=`把紅車拖到右邊「出口」 · ${"第 "+(index+1)+" 關"} · 最短解 ${L.minimumMoves} 步 · ${moves} 步`;
     if(won()) finish();
   }
   function startDrag(ev,i,el){
@@ -60,7 +62,7 @@
   }
   function finish(){
     SistersPlay.showComplete(`紅車開出去了。你用了 ${moves} 步，最少 ${level().minimumMoves} 步`);
-    SistersPlay.recordResult({game:"sliding", difficulty:level().tier, level:level().name, startedAt, moves, hintsUsed:hints, restartCount:restarts});
+    SistersPlay.recordResult({game:"sliding", difficulty:"最短解 "+level().minimumMoves+" 步", level:index+1, startedAt, moves, hintsUsed:hints, restartCount:restarts});
   }
   function hint(){
     if(!SistersRound.canInteract())return;
@@ -74,9 +76,9 @@
   }
   function chips(){
     const tierRow=document.getElementById("tier-row"); tierRow.replaceChildren();
-    ["all","tutorial","easy","medium","hard","challenge","master"].forEach(t=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"+(filter===t?" selected":""); b.textContent=t==="all"?"全部":tierName[t]; b.onclick=()=>{filter=t; chips();}; tierRow.append(b); });
+    ["all","tutorial","easy","medium","hard"].forEach(t=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"+(filter===t?" selected":""); b.textContent=t==="all"?"全部":"最短 "+tierName[t]; b.onclick=()=>{filter=t; chips();}; tierRow.append(b); });
     const row=document.getElementById("level-row"); row.replaceChildren();
-    levels.forEach((L,i)=>{ if(filter!=="all" && L.tier!==filter) return; const b=document.createElement("button"); b.type="button"; b.className="chip"+(i===index?" selected":""); b.textContent=(i+1)+" "+L.name; b.onclick=()=>load(i); row.append(b); });
+    levels.forEach((L,i)=>{ if(filter!=="all" && difficulty(L)!==filter) return; const b=document.createElement("button"); b.type="button"; b.className="chip"+(i===index?" selected":""); b.textContent=String(i+1);b.setAttribute("aria-label",`第 ${i+1} 關，最短解 ${L.minimumMoves} 步`); b.onclick=()=>load(i); row.append(b); });
   }
   document.getElementById("hint").onclick=hint;
   document.getElementById("undo").onclick=()=>{ if(!SistersRound.canInteract()||!history.length) return; pieces=history.pop(); moves=Math.max(0,moves-1); render();SistersRound.checkpoint(); };

@@ -1,7 +1,19 @@
-.round-bar{position:sticky;top:0;z-index:30;display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;justify-content:center;padding:.55rem 1rem;background:#fff8e8;border-bottom:1px solid #dccab8;font-size:14px}
+/* The save row participates in normal document flow on every page. */
+.round-bar{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;justify-content:center;padding:.55rem 1rem;background:#fff8e8;border-bottom:1px solid #dccab8;font-size:14px}
 .round-bar button{min-height:42px;border:1px solid #b78e9e;border-radius:12px;padding:.5rem .8rem;background:#fff;color:#543c4e;cursor:pointer}
 .round-bar[data-error=true]{background:#ffe4dd;color:#8b2935}
 .hub-shell,.sudoku-screen,.maze-app .screen{min-height:calc(100svh - var(--round-bar-height,0px))}
-.maze-app .game-screen{height:calc(100svh - var(--round-bar-height,0px))}
-.maze-app .win-panel{position:fixed;inset:auto;top:calc(50% + var(--round-bar-height,0px)/2);left:50%;transform:translate(-50%,-50%);width:min(520px,calc(100vw - 28px));max-height:calc(100svh - var(--round-bar-height,0px) - 28px);overflow:auto;z-index:25;animation:none}
-@media(max-width:850px){.maze-app .game-screen{height:auto}}
+/* Game headers use flow; only the home card owns its positioned back button. */
+.play-top .back-button,.sudoku-card>.back-button{position:static;flex-shrink:0}
+.sudoku-card>.back-button{display:block;margin-bottom:12px}
+.play-top{flex-wrap:wrap}
+/* One completion-card layout, including short/zoomed viewports. */
+.complete-overlay,.maze-app .win-panel{position:fixed;inset:auto;top:50%;left:50%;transform:translate(-50%,-50%);width:min(520px,calc(100vw - 24px));max-height:calc(100svh - 24px);overflow:auto;z-index:40;padding:24px;border:3px solid #df9a43;border-radius:18px;background:#fff9e0;text-align:center;box-shadow:0 8px 24px #35443240;animation:none}
+.complete-overlay:not([hidden]){display:flex;flex-direction:column;align-items:center;gap:12px}
+.complete-overlay h2,.complete-overlay p{margin:0}
+.complete-overlay button{flex-shrink:0;min-height:44px}
+.maze-app .win-panel:not([hidden]){display:flex;flex-direction:column;align-items:center;gap:8px}
+
+.coach{position:fixed;inset:0;padding:16px;overflow:auto;background:#3d333848;display:grid;place-items:center;z-index:50}
+.coach-card{background:#fff;border-radius:20px;padding:22px;text-align:center;width:min(320px,100%);box-shadow:0 12px 32px #3d333820}
+.coach-demo{font-size:36px}.coach-card p{font-size:20px;font-weight:800}

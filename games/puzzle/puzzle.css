@@ -9,3 +9,6 @@
 .piece{touch-action:none}.piece:focus-visible,#board>div:focus-visible{outline:3px solid #8d5b73}
 
 .puzzle-layout>div{min-width:0}@media(max-width:760px){.puzzle-layout{grid-template-columns:minmax(0,1fr)}}
+
+.puzzle-slot{background-color:#f5efe5;border:1px dashed #c8b5a4;border-radius:4px;min-width:0}
+.ref-thumb{background-size:contain;background-repeat:no-repeat;background-position:center}

@@ -1,1 +1,4 @@
 .tan-board{display:block;width:min(100%,400px);height:auto;aspect-ratio:5/8;margin:0 auto;background:#fffdf9;border-radius:16px;touch-action:none;overflow:hidden}.board-wrap{overflow:hidden}polygon[data-id]{touch-action:none;cursor:grab}polygon:focus-visible{stroke:#543c4e;stroke-width:5px}
+
+/* Retain usable piece sizes while fitting the board on ordinary PC viewports. */
+.tan-board{height:min(640px,max(448px,calc(100svh - 330px)));width:auto;max-width:100%}

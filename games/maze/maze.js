@@ -196,18 +196,23 @@
   document.querySelectorAll(".touch-direction").forEach(button=>button.addEventListener("click",event=>{event.preventDefault();movePlayer(button.dataset.move);}));
   byId("maze-wrap").addEventListener("pointerdown",handleSwipeStart,{passive:false});byId("maze-wrap").addEventListener("pointerup",handleSwipeEnd,{passive:false});byId("maze-wrap").addEventListener("pointercancel",cancelSwipe);
   
-  const memoryMode = location.hash === "#memory";
-  if (memoryMode) {
-    const note = document.createElement("p");
-    note.className = "game-message";
-    note.textContent = "記憶迷宮：先看路徑，幾秒後牆壁會淡出";
-    document.querySelector("main").prepend(note);
-
+  const modeNote=document.createElement("p");modeNote.className="maze-mode-note";
+  document.querySelector(".game-header").append(modeNote);
+  function updateModeNote(){modeNote.hidden=!gameState.memoryMode;modeNote.textContent="記憶迷宮：先看路徑 4 秒，再憑記憶走到小魚。";}
+  window.addEventListener("hashchange",()=>{if(!gameState.maze.length){gameState.memoryMode=location.hash==="#memory";updateModeNote();}});
+  updateModeNote();
+  function fitBoard(){
+    const visible=el=>!el.hidden&&getComputedStyle(el).display!=="none";
+    const screen=byId("game-screen"),header=document.querySelector(".game-header"),card=document.querySelector(".maze-card"),touch=byId("touch-controls"),status=byId("status");
+    const style=getComputedStyle(screen),cs=getComputedStyle(card);
+    const extras=parseFloat(style.paddingTop)+parseFloat(style.paddingBottom)+parseFloat(style.gap)+parseFloat(cs.paddingTop)+parseFloat(cs.paddingBottom)+6+status.getBoundingClientRect().height+(visible(touch)?touch.getBoundingClientRect().height:0)+parseFloat(cs.gap)*(visible(touch)?2:1);
+    document.documentElement.style.setProperty("--maze-available-height",Math.max(0,innerHeight-document.querySelector(".round-bar").getBoundingClientRect().height-header.getBoundingClientRect().height-extras)+"px");
   }
+  const boardObserver=new ResizeObserver(fitBoard);for(const el of [document.querySelector(".game-header"),document.querySelector(".round-bar"),byId("touch-controls"),byId("status")])boardObserver.observe(el);window.addEventListener("resize",fitBoard);
   if (window.SistersPlay) SistersPlay.showCoach("maze", [{demo:"🐱🐟", line:"把貓咪走到小魚"}]);
   document.addEventListener("keydown",event=>{const direction=KEY_DIRECTIONS[event.key];if(!direction)return;event.preventDefault();movePlayer(direction);},{passive:false});
 
   window.MazeGame=Object.freeze({startGame,restartGame,move:movePlayer,togglePath:togglePathDisplay,generateMaze:generateAndValidateMaze,mazeComplexity,bfs,showRecords:showScoreboard,loadRecords,getState:()=>({...gameState,maze:gameState.maze.map(row=>[...row]),visited:[...gameState.visited]}),constants:{DIFFICULTIES,STORAGE_KEY}});
   if(!gameState.playerId){goHub();return;} configureText(); showSetup();
-  await SistersRound.attach({snapshot:()=>{const {timerId,records,swipe,visited,...saved}=gameState;return {...saved,moveLocked:false,visited:[...visited]};},cancel:()=>{gameState.swipe.pointerId=null;clearTimeout(memoryTimer);},resume:syncMemory,restore:p=>{if(!p.maze?.length||!DIFFICULTIES[p.difficultyId])throw Error("迷宮存檔格式錯誤");Object.assign(gameState,p,{visited:new Set(p.visited),moveLocked:false});setLabeledValue(elements.currentPlayer,m.player,content.players[gameState.playerId].name);setLabeledValue(elements.currentDifficulty,m.difficulty,DIFFICULTIES[gameState.difficultyId].text);setPage("game");renderMaze();syncMemory();setTouchControlsDisabled(gameState.completed);if(!gameState.completed){updateTimer();gameState.timerId=setInterval(updateTimer,250);}else renderWin();}});
+  await SistersRound.attach({snapshot:()=>{const {timerId,records,swipe,visited,...saved}=gameState;return {...saved,moveLocked:false,visited:[...visited]};},cancel:()=>{gameState.swipe.pointerId=null;clearTimeout(memoryTimer);},resume:syncMemory,restore:p=>{if(!p.maze?.length||!DIFFICULTIES[p.difficultyId])throw Error("迷宮存檔格式錯誤");Object.assign(gameState,p,{visited:new Set(p.visited),moveLocked:false});updateModeNote();setLabeledValue(elements.currentPlayer,m.player,content.players[gameState.playerId].name);setLabeledValue(elements.currentDifficulty,m.difficulty,DIFFICULTIES[gameState.difficultyId].text);setPage("game");renderMaze();syncMemory();setTouchControlsDisabled(gameState.completed);if(!gameState.completed){updateTimer();gameState.timerId=setInterval(updateTimer,250);}else renderWin();}});
 })();
