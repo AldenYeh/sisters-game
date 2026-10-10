@@ -7,7 +7,7 @@
   <title></title>
   <link rel="stylesheet" href="../../assets/css/site.css">
   <link rel="stylesheet" href="maze.css">
-<link rel="stylesheet" href="../../assets/css/lifecycle.css"></head>
+<link rel="stylesheet" href="../../assets/css/lifecycle.css"><link rel="stylesheet" href="../../assets/css/family.css"><link rel="stylesheet" href="../../assets/css/game-layout.css"></head>
 <body>
   <main class="maze-app">
     <section id="setup-screen" class="screen setup-screen" aria-labelledby="setup-title">
@@ -47,7 +47,7 @@
       <section class="maze-card">
         <div class="maze-wrap" id="maze-wrap">
           <div id="maze" class="maze" role="grid"></div>
-          <div class="win-panel" id="win-panel" role="dialog" aria-modal="true" hidden>
+          <div class="win-panel" id="win-panel" role="status" hidden>
             <div class="celebration" aria-hidden="true">✦ 🐾 ✦</div><div class="win-mascot" aria-hidden="true">🐱🐟</div>
             <h2 id="win-title"></h2><div id="win-details" class="win-details"></div><p id="new-record" class="new-record" hidden></p>
             <div class="win-actions"><button id="play-again" class="primary-button" type="button"></button><button id="home-from-win" class="secondary-button" type="button"></button></div>
@@ -74,8 +74,8 @@
     </section>
   </main>
   <script src="../../assets/js/content.js"></script>
-  <script src="../../assets/js/shared.js"></script><script src="../../assets/js/lifecycle.js"></script>
-<script src="../../assets/js/play.js"></script>
+  <script src="../../assets/js/shared.js"></script><script src="../../assets/js/family-core.js"></script><script src="../../assets/js/family.js"></script><script src="../../assets/js/lifecycle.js"></script><script src="../../assets/js/challenges.js"></script>
+<script src="../../assets/data/maze-bank.js"></script><script src="../../assets/js/play.js"></script>
   <script src="maze.js"></script>
 </body>
 </html>

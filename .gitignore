@@ -9,6 +9,7 @@ node_modules/
 # 測試與除錯產物
 coverage/
 *.log
+__pycache__/
 
 # 編輯器設定
 .vscode/

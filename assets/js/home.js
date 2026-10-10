@@ -55,10 +55,10 @@
     else status.append(ui.makeReading(content.site.currentPlayer, { compact: true }), document.createTextNode("："), ui.makeReading(content.players[currentPlayer].name, { compact: true }));
   }
 
-  function selectPlayer(id) {
+  async function selectPlayer(id) {
     if (!content.players[id]) return;
+    if (!await SistersFamily.switchPlayer(id)) return;
     currentPlayer = id;
-    ui.savePlayer(id);
     renderPlayers();
     renderCategories();
     setPlayerBadge(document.getElementById("category-player"));

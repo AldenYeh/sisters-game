@@ -32,14 +32,14 @@
         games: Object.freeze([
           { id: "maze", how: "把貓咪走到小魚", icon: "🐾", name: t("迷宮", "ㄇㄧˊ ㄍㄨㄥ"), href: "games/maze/index.html", available: true },
           { id: "sudoku", how: "空格補上缺少的圖案", icon: "🐟", name: t("兒童數獨", "ㄦˊ ㄊㄨㄥˊ ㄕㄨˋ ㄉㄨˊ"), href: "games/sudoku/index.html", available: true },
-          { id: "puzzle", how: "把碎片拖到淡色的同一格", icon: "🧩", name: t("拼圖", "ㄆㄧㄣ ㄊㄨˊ"), href: "games/puzzle/index.html", available: true },
+          { id: "puzzle", how: "把碎片拖到正確的空格", icon: "🧩", name: t("拼圖", "ㄆㄧㄣ ㄊㄨˊ"), href: "games/puzzle/index.html", available: true },
           { id: "sliding", how: "把紅車往右拖到出口", icon: "🚪", name: t("滑塊闖關", "ㄏㄨㄚˊ ㄎㄨㄞˋ ㄔㄨㄤˋ ㄍㄨㄢ"), href: "games/sliding/index.html", available: true },
           { id: "tangram", how: "把形狀拖到影子上", icon: "🔺", name: t("七巧板", "ㄑㄧ ㄑㄧㄠˇ ㄅㄢˇ"), href: "games/tangram/index.html", available: true },
           { id: "memory", how: "翻兩張一樣的", icon: "🃏", name: t("記憶翻牌", "ㄐㄧˋ ㄧˋ ㄈㄢ ㄆㄞˊ"), href: "games/memory/index.html", available: true },
-          { id: "visual", how: "記住貓在哪裡", icon: "👀", name: t("視覺記憶", "ㄕˋ ㄐㄧㄝˋ ㄐㄧˋ ㄧˋ"), href: "games/visual/index.html", available: true },
+          { id: "visual", how: "記住亮起來的格子", icon: "👀", name: t("視覺記憶", "ㄕˋ ㄐㄧㄝˋ ㄐㄧˋ ㄧˋ"), href: "games/visual/index.html", available: true },
           { id: "sokoban", how: "把箱子推到小魚", icon: "📦", name: t("推箱子", "ㄊㄨㄟ ㄒㄧㄤ ㄗˇ"), href: "games/sokoban/index.html", available: true },
           { id: "pattern", how: "選出下一個", icon: "🔁", name: t("規律接龍", "ㄍㄨㄟ ㄌㄩˋ ㄐㄧㄝ ㄌㄨㄥˊ"), href: "games/pattern/index.html", available: true },
-          { id: "hanoi", how: "抓住圓盤拖到右邊", icon: "🗼", name: t("河內塔", "ㄏㄜˊ ㄋㄟˋ ㄊㄚˇ"), href: "games/hanoi/index.html", available: true },
+          { id: "hanoi", how: "把圓盤排成上方目標", icon: "🗼", name: t("河內塔", "ㄏㄜˊ ㄋㄟˋ ㄊㄚˇ"), href: "games/hanoi/index.html", available: true },
           { id: "stroke", how: "每條線只走一次", icon: "✏️", name: t("一筆畫", "ㄧ ㄅㄧˇ ㄏㄨㄚˋ"), href: "games/stroke/index.html", available: true },
           { id: "spot", how: "點右邊不一樣的地方", icon: "🔎", name: t("找不同", "ㄓㄠˇ ㄅㄨˋ ㄊㄨㄥˊ"), href: "games/spot/index.html", available: true }
         ])

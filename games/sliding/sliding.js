@@ -4,11 +4,11 @@
   const tierName = {tutorial:"1 步",easy:"2 步",medium:"3 步",hard:"4 步",challenge:"5 步以上"};
   // Difficulty here is the verified shortest move count, not an invented tier.
   const difficulty=L=>L.minimumMoves===1?"tutorial":L.minimumMoves===2?"easy":L.minimumMoves===3?"medium":L.minimumMoves===4?"hard":"challenge";
-  let filter="all", index=0, pieces=[], moves=0, hints=0, restarts=0, startedAt=Date.now(), history=[],cancelDrag=null,dragSnapshot=null;
+  let question=null,tier="1",filter="all", index=0, pieces=[], moves=0, hints=0, restarts=0, startedAt=Date.now(), history=[],cancelDrag=null,dragSnapshot=null;
   const board=document.getElementById("board");
-  const level=()=>levels[index];
+  const level=()=>question||levels[index];
   const clone=ps=>ps.map(p=>({...p}));
-  async function load(i,reason="new"){return SistersRound.start(()=>{if(reason==="restart")restarts++;index=i; pieces=clone(level().pieces); moves=0; hints=0; startedAt=Date.now(); history=[]; document.getElementById("complete").hidden=true;chips(); render();},reason); }
+  async function load(i=index,reason="new",nextTier=tier){return SistersRound.start(async()=>{if(reason==="restart")restarts++;const old=level();tier=nextTier;question=reason==="restart"?structuredClone(old):await SistersChallenges.draw('sliding:'+tier,SistersBanks.sliding[tier]);index=i;pieces=clone(level().pieces);moves=0;hints=0;startedAt=Date.now();history=[];document.getElementById("complete").hidden=true;chips();render();},reason);}
   function occ(skip){ const m=new Set(); pieces.forEach((p,i)=>{ if(i===skip)return; for(let y=0;y<p.h;y++) for(let x=0;x<p.w;x++) m.add((p.r+y)+","+(p.c+x)); }); return m; }
   function can(i,dr,dc){ const L=level(), p=pieces[i], nr=p.r+dr, nc=p.c+dc; if(nr<0||nc<0||nr+p.h>L.rows||nc+p.w>L.cols) return false; const used=occ(i); for(let y=0;y<p.h;y++) for(let x=0;x<p.w;x++) if(used.has((nr+y)+","+(nc+x))) return false; return true; }
   function slide(i,dr,dc,steps){ let n=0; while(n<steps && can(i,dr,dc)){ pieces[i].r+=dr; pieces[i].c+=dc; n++; } return n; }
@@ -30,7 +30,7 @@
       el.setAttribute("aria-label",p.target?"紅車，方向鍵移動":"車輛，方向鍵移動");el.onkeydown=e=>{const delta={ArrowLeft:[0,-1],ArrowRight:[0,1],ArrowUp:[-1,0],ArrowDown:[1,0]}[e.key];if(!delta||!SistersRound.canInteract())return;e.preventDefault();const [dr,dc]=delta;if((p.w>p.h&&dr)||(p.h>p.w&&dc)||!can(i,dr,dc))return;history.push(clone(pieces));slide(i,dr,dc,1);moves++;render();board.querySelectorAll(".block")[i]?.focus();SistersRound.checkpoint();};el.addEventListener("pointerdown", ev=>startDrag(ev,i,el));
       board.append(el);
     });
-    document.getElementById("status").textContent=`把紅車拖到右邊「出口」 · ${"第 "+(index+1)+" 關"} · 最短解 ${L.minimumMoves} 步 · ${moves} 步`;
+    document.getElementById("status").textContent=`把紅車拖到右邊「出口」 · ${question?"隨機題":"保留舊第 "+(index+1)+" 關"} · 最短解 ${L.minimumMoves} 步 · ${moves} 步`;
     if(won()) finish();
   }
   function startDrag(ev,i,el){
@@ -44,7 +44,7 @@
     const cellW=rect.width/level().cols, cellH=rect.height/level().rows;
     const p=pieces[i];
     const axis = p.w===p.h ? "free" : (p.w>p.h ? "x" : "y");
-    const before=clone(pieces);dragSnapshot={filter,index,pieces:clone(pieces),moves,hints,restarts,startedAt,history:structuredClone(history)};
+    const before=clone(pieces);dragSnapshot={question,tier,filter,index,pieces:clone(pieces),moves,hints,restarts,startedAt,history:structuredClone(history)};
     function move(e){
       if(e.pointerId!==ev.pointerId||!SistersRound.canInteract()) return;
       pieces[i].r=origin.r; pieces[i].c=origin.c;
@@ -74,16 +74,11 @@
     hints++;
     document.getElementById("status").textContent="提示：先把擋住紅車的車移開";SistersRound.checkpoint();
   }
-  function chips(){
-    const tierRow=document.getElementById("tier-row"); tierRow.replaceChildren();
-    ["all","tutorial","easy","medium","hard"].forEach(t=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"+(filter===t?" selected":""); b.textContent=t==="all"?"全部":"最短 "+tierName[t]; b.onclick=()=>{filter=t; chips();}; tierRow.append(b); });
-    const row=document.getElementById("level-row"); row.replaceChildren();
-    levels.forEach((L,i)=>{ if(filter!=="all" && difficulty(L)!==filter) return; const b=document.createElement("button"); b.type="button"; b.className="chip"+(i===index?" selected":""); b.textContent=String(i+1);b.setAttribute("aria-label",`第 ${i+1} 關，最短解 ${L.minimumMoves} 步`); b.onclick=()=>load(i); row.append(b); });
-  }
+  function chips(){SistersChallenges.selector(document.getElementById('tier-row'),[1,2,3,4].map(v=>({value:v,label:'最短 '+v+' 步'})),tier,v=>load(index,'new',v),'最短解步數');document.getElementById('level-row').replaceChildren();}
   document.getElementById("hint").onclick=hint;
   document.getElementById("undo").onclick=()=>{ if(!SistersRound.canInteract()||!history.length) return; pieces=history.pop(); moves=Math.max(0,moves-1); render();SistersRound.checkpoint(); };
   document.getElementById("overlay-next").onclick=()=>{ load((index+1)%levels.length); chips(); };
   SistersPlay.showCoach("sliding", [{demo:"🚗➡️🚪", line:"抓住紅車，拖到右邊出口"},{demo:"🚙", line:"其他車要先讓路"}]);
   SistersPlay.mount({ title:"滑塊闖關", onRestart: () => load(index,"restart") });
-  chips();if(!await SistersRound.attach({snapshot:()=>dragSnapshot||({filter,index,pieces,moves,hints,restarts,startedAt,history}),cancel:()=>cancelDrag?.(),restore:p=>{if(!levels[p.index]||p.pieces.length!==levels[p.index].pieces.length)throw Error("滑塊存檔格式錯誤");({filter,index,pieces,moves,hints,restarts,startedAt,history}=p);chips();render();}}))await load(0);
+  chips();if(!await SistersRound.attach({snapshot:()=>dragSnapshot||({question,tier,filter,index,pieces,moves,hints,restarts,startedAt,history}),cancel:()=>cancelDrag?.(),restore:p=>{if(!(p.question||levels[p.index])||p.pieces.length!==(p.question||levels[p.index]).pieces.length)throw Error("滑塊存檔格式錯誤");question=p.question||null;tier=p.tier||"1";({filter,index,pieces,moves,hints,restarts,startedAt,history}=p);chips();render();}}))await load(0);
 })();

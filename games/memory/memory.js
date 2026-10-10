@@ -9,14 +9,14 @@
     shape:["●","▲","■","◆","★","✚","✿","♥","☀","☂","☾","♫","⚑","✦","⬟","⬡","◈","◉"]
   };
   const sizes = [[4,3],[4,4],[6,4],[6,6]];
-  let size = sizes[0], theme="animal", deck=[], open=[], lock=false, flips=0, startedAt=Date.now(), restarts=0, mismatchTimer=null;
+  let size = sizes[0], theme="animal", deck=[], open=[], lock=false, flips=0, startedAt=Date.now(), restarts=0, mismatchTimer=null,mismatchHideAt=0;
   async function start(reason="new", nextSize=size, nextTheme=theme) {
-    return SistersRound.start(()=>{
+    return SistersRound.start(async()=>{
     size=nextSize; theme=nextTheme; if(reason==="restart") restarts++; chips();
     const n = size[0]*size[1]/2;
     const icons = themes[theme].slice(0,n);
-    deck = icons.concat(icons).map((icon,i)=>({id:i, icon, up:false, gone:false}));
-    for (let i=deck.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
+    const q=await SistersChallenges.draw('memory:'+size.join('x')+':'+theme,SistersBanks.memory[n*2]);
+    deck=q.layout.map((pair,i)=>({id:i,icon:icons[pair],up:false,gone:false}));
     open=[]; lock=false; flips=0; startedAt=Date.now();
     document.getElementById("complete").hidden=true;
     render();
@@ -33,7 +33,7 @@
       b.onclick=()=>flip(i);
       grid.append(b);
     });
-    document.getElementById("status").textContent=`翻牌 ${flips} 次 · 時間只給家長看，不扣分`;
+    document.getElementById("status").textContent=`翻牌 ${flips} 次 · 找出所有配對`;
   }
   function flip(i) {
     if(!SistersRound.canInteract()) return;
@@ -43,25 +43,22 @@
     if (open.length===2) {
       const [a,b]=open;
       if (deck[a].icon===deck[b].icon) { deck[a].gone=deck[b].gone=true; open=[]; if (deck.every(c=>c.gone)) finish(); }
-      else { lock=true; mismatchTimer=setTimeout(()=>{ mismatchTimer=null; if(!SistersRound.canInteract()) return; SistersPlay.playSound('soft'); deck[a].up=deck[b].up=false; open=[]; lock=false; render(); SistersRound.checkpoint(); }, 700); }
+      else { lock=true;mismatchHideAt=Date.now()+700;hideMismatch(); }
     }
     render(); SistersRound.checkpoint();
   }
+  function hideMismatch(){clearTimeout(mismatchTimer);mismatchTimer=setTimeout(()=>{mismatchTimer=null;if(!SistersRound.canInteract()){if(SistersFamily.canPlay(SistersRound.current()))hideMismatch();return;}open.forEach(i=>{if(deck[i]&&!deck[i].gone)deck[i].up=false;});open=[];lock=false;SistersPlay.playSound('soft');render();SistersRound.checkpoint();},Math.max(100,mismatchHideAt-Date.now()));}
   function finish() {
     const sec=Math.round((Date.now()-startedAt)/1000);
     SistersPlay.showComplete(`翻了 ${flips} 次，用了 ${sec} 秒`);
     SistersPlay.recordResult({game:"memory", difficulty:`${size[0]}x${size[1]}`, level:theme, startedAt, moves:flips, restartCount:restarts, duration:Date.now()-startedAt});
   }
-  function chips() {
-    const s=document.getElementById("size-row"); s.replaceChildren();
-    sizes.forEach(sz=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"+(sz===size?" selected":""); b.textContent=`${sz[0]}×${sz[1]}`; b.onclick=()=>start("new",sz,theme); s.append(b); });
-    const t=document.getElementById("theme-row"); t.replaceChildren();
-    Object.keys(themes).forEach(name=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"+(name===theme?" selected":""); b.textContent=({animal:"動物",fruit:"水果",car:"交通工具",food:"食物",shape:"形狀"})[name]; b.onclick=()=>start("new",size,name); t.append(b); });
-  }
+  function chips(){SistersChallenges.selector(document.getElementById('size-row'),sizes.map((sz,i)=>({value:i,label:sz[0]+'×'+sz[1]})),sizes.findIndex(sz=>String(sz)===String(size)),v=>start('new',sizes[+v],theme),'棋盤大小');SistersChallenges.selector(document.getElementById('theme-row'),Object.keys(themes).map(value=>({value,label:({animal:'動物',fruit:'水果',car:'交通工具',food:'食物',shape:'形狀'})[value]})),theme,v=>start('new',size,v),'圖案主題');}
   SistersPlay.showCoach("memory", [{demo:"🃏🃏", line:"翻兩張，一樣的留著"}]);
   SistersPlay.mount({title:"記憶翻牌", onRestart:()=>start("restart")});
   document.getElementById("overlay-next").onclick=()=>start();
-  function cancel(){ clearTimeout(mismatchTimer); mismatchTimer=null; if(lock){open.forEach(i=>{if(deck[i]&&!deck[i].gone)deck[i].up=false;});open=[];lock=false;render();} }
-  function snapshot(){const cards=deck.map(c=>({...c}));const showing=lock?[]:[...open];if(lock)open.forEach(i=>{if(!cards[i].gone)cards[i].up=false;});return {size,theme,deck:cards,open:showing,flips,startedAt,restarts};}
-  chips(); if(!await SistersRound.attach({snapshot,cancel,restore:p=>{size=sizes.find(sz=>String(sz)===String(p.size));if(!size||!themes[p.theme]||p.deck.length!==size[0]*size[1])throw Error("翻牌存檔格式錯誤");theme=p.theme;deck=p.deck;open=p.open;flips=p.flips;startedAt=p.startedAt;restarts=p.restarts;lock=false;chips();render();}})) await start();
+  function cancel(){clearTimeout(mismatchTimer);mismatchTimer=null;}
+  function snapshot(){return{size,theme,deck:deck.map(c=>({...c})),open:[...open],lock,mismatchHideAt,flips,startedAt,restarts};}
+  function resume(){if(lock)hideMismatch();}
+  chips(); if(!await SistersRound.attach({snapshot,cancel,resume,restore:p=>{size=sizes.find(sz=>String(sz)===String(p.size));if(!size||!themes[p.theme]||p.deck.length!==size[0]*size[1])throw Error("翻牌存檔格式錯誤");theme=p.theme;deck=p.deck;open=p.open;flips=p.flips;startedAt=p.startedAt;restarts=p.restarts;lock=!!p.lock;mismatchHideAt=p.mismatchHideAt||0;chips();render();}})) await start();
 })();

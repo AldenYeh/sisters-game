@@ -1,6 +1,8 @@
 
 (() => {
   "use strict";
+  const completedPanel=document.getElementById('complete');
+  if(completedPanel?.parentElement.classList.contains('board-wrap'))completedPanel.parentElement.after(completedPanel);
   const RESULT_KEY = "sistersGameResultsV1";
   function player() {
     try { return window.SistersRound?.player() || window.SistersShared.loadPlayer() || "guest"; } catch (_) { return "guest"; }
@@ -16,6 +18,7 @@
   }
 
   function mount(opts) {
+    const complete=document.getElementById("complete");if(complete?.parentElement.classList.contains("board-wrap"))complete.parentElement.after(complete);
     const title = document.getElementById("play-title");
     if (title) title.textContent = opts.title;
     const badge = document.getElementById("player-badge");
@@ -78,7 +81,7 @@ function showCoach(gameId, steps) {
       overlay.innerHTML = `<div class="coach-card"><div class="coach-demo">${step.demo}</div><p>${step.line}</p><button type="button" class="primary-button">${i === steps.length-1 ? "開始" : "下一步"}</button></div>`;
       overlay.querySelector("button").onclick = () => {
         i++;
-        if (i >= steps.length) { try { localStorage.setItem(key, "1"); } catch (_) {} overlay.remove(); }
+        if (i >= steps.length) { try { localStorage.setItem(key, "1"); } catch (_) {} overlay.remove();document.dispatchEvent(new Event('sisters:coach-ended')); }
         else draw();
       };
     }

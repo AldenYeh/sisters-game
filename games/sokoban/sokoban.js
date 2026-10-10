@@ -1,10 +1,12 @@
 (async () => {
   "use strict";
   const levels = window.SokobanLevels;
+  let question=null,tier="1";const level=()=>question||levels[index];
   let index = 0, rows = [], moves = 0, history = [], restarts = 0, startedAt = Date.now(), completed=false;
-  async function load(i,reason="new") { return SistersRound.start(()=>{
+  async function load(i=index,reason="new",nextTier=tier) { return SistersRound.start(async()=>{
+    const old=level();tier=nextTier;question=reason==="restart"?structuredClone(old):await SistersChallenges.draw("sokoban:"+tier,SistersBanks.sokoban[tier]);
     if(reason==="restart")restarts++;completed=false;
-    index = i; rows = levels[i].rows.map(r => r.split("")); moves = 0; history = []; startedAt = Date.now();
+    index = i; rows = level().rows.map(r => r.split("")); moves = 0; history = []; startedAt = Date.now();
     document.getElementById("complete").hidden = true; chips(); render();
   },reason); }
   function find(ch) {
@@ -22,7 +24,7 @@
       d.textContent = { "#":"", "@":"🐱", "+":"🐱", "$":"📦", "*":"📦", ".":"🐟", " ":"" }[ch] || "";
       board.append(d);
     }));
-    const L = levels[index];
+    const L = level();
     document.getElementById("status").textContent = `把箱子推到小魚上 · ${L.name} · ${moves} 步`;
   }
   function move(dx, dy) {
@@ -42,17 +44,14 @@
     rows[py][px] = leave; moves++; SistersPlay.playSound('ok'); render();
     if (won()) {
       completed=true;
-      SistersPlay.showComplete(`你用了 ${moves} 步，最少 ${levels[index].minimumMoves} 步`);
-      SistersPlay.recordResult({game:"sokoban", difficulty:levels[index].tier, level:levels[index].name, startedAt, moves, restartCount:restarts});
+      SistersPlay.showComplete(`你用了 ${moves} 步，最少 ${level().minimumMoves} 步`);
+      SistersPlay.recordResult({game:"sokoban", difficulty:level().tier, level:level().name, startedAt, moves, restartCount:restarts});
     }
     SistersRound.checkpoint();
   }
-  function chips() {
-    const row=document.getElementById("level-row"); row.replaceChildren();
-    levels.forEach((L,i)=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"+(i===index?" selected":""); b.textContent=String(i+1); b.onclick=()=>{load(i); chips();}; row.append(b); });
-  }
+  function chips(){SistersChallenges.selector(document.getElementById('level-row'),[1,2,3].map(v=>({value:v,label:v+' 箱'})),tier,v=>load(index,'new',v),'箱子數');}
   document.querySelectorAll(".pad button").forEach(b=>b.onclick=()=>{ const [dx,dy]=b.dataset.d.split(",").map(Number); move(dx,dy); });
-  window.addEventListener("keydown", ev=>{ const map={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],W:[0,-1],a:[-1,0],A:[-1,0],s:[0,1],S:[0,1],d:[1,0],D:[1,0]}; if(map[ev.key]){ev.preventDefault(); move(...map[ev.key]);} if(ev.key==='z'||ev.key==='Z') document.getElementById('undo').click(); if(ev.key==='r'||ev.key==='R') document.getElementById('restart').click(); });
+  window.addEventListener("keydown", ev=>{if(!SistersRound.canInteract())return;const map={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],W:[0,-1],a:[-1,0],A:[-1,0],s:[0,1],S:[0,1],d:[1,0],D:[1,0]}; if(map[ev.key]){ev.preventDefault(); move(...map[ev.key]);} if(ev.key==='z'||ev.key==='Z') document.getElementById('undo').click(); if(ev.key==='r'||ev.key==='R') document.getElementById('restart').click(); });
   let sx,sy,pointerId; document.getElementById("board").addEventListener("pointerdown", e=>{if(pointerId!==undefined)return;pointerId=e.pointerId;sx=e.clientX; sy=e.clientY;});
   document.getElementById("board").addEventListener("pointerup", e=>{ if(sx===undefined||e.pointerId!==pointerId)return;pointerId=undefined; const dx=e.clientX-sx, dy=e.clientY-sy;sx=sy=undefined; if(Math.hypot(dx,dy)<24) return; if(Math.abs(dx)>Math.abs(dy)) move(dx>0?1:-1,0); else move(0,dy>0?1:-1); });
   document.getElementById("board").addEventListener("pointercancel",()=>{sx=sy=pointerId=undefined;});
@@ -60,5 +59,5 @@
   document.getElementById("overlay-next").onclick=()=>{ load((index+1)%levels.length); chips(); };
   SistersPlay.showCoach("sokoban", [{demo:"🐱📦🐟", line:"把箱子推到小魚上"}]);
   SistersPlay.mount({title:"推箱子", onRestart:()=>load(index,"restart")});
-  chips(); if(!await SistersRound.attach({snapshot:()=>({index,rows,moves,history,restarts,startedAt,completed}),cancel:()=>{sx=sy=pointerId=undefined;},restore:p=>{if(!levels[p.index]||!Array.isArray(p.rows))throw Error("推箱子存檔格式錯誤");({index,rows,moves,history,restarts,startedAt,completed}=p);chips();render();}})) await load(0);
+  chips(); if(!await SistersRound.attach({snapshot:()=>({question,tier,index,rows,moves,history,restarts,startedAt,completed}),cancel:()=>{sx=sy=pointerId=undefined;},restore:p=>{if(!(p.question||levels[p.index])||!Array.isArray(p.rows))throw Error("推箱子存檔格式錯誤");question=p.question||null;tier=p.tier||"1";({index,rows,moves,history,restarts,startedAt,completed}=p);chips();render();}})) await load(0);
 })();

@@ -6,7 +6,7 @@
   const m = content.maze;
   const STORAGE_KEY = "mazeAdventureRecordsV1";
   const DIFFICULTIES = Object.freeze({
-    easy: { text: m.easy, hint: m.easyHint, size: 3, candidates: 8, percentile: .20 },
+    easy: { text: m.easy, hint: m.easyHint, size: 4, candidates: 8, percentile: .20 },
     normal: { text: m.normal, hint: m.normalHint, size: 5, candidates: 10, percentile: .50 },
     hard: { text: m.hard, hint: m.hardHint, size: 7, candidates: 12, percentile: .78 },
     super: { text: m.super, hint: m.superHint, size: 9, candidates: 14, percentile: .90 }
@@ -22,6 +22,10 @@
     currentDifficulty: byId("current-difficulty"), timer: byId("timer"), togglePath: byId("toggle-path"),
     winPanel: byId("win-panel"), winDetails: byId("win-details"), newRecord: byId("new-record"), recordsBody: byId("records-body")
   };
+  if(elements.winPanel.parentElement.classList.contains('maze-wrap'))elements.winPanel.parentElement.after(elements.winPanel);
+  const difficultySelect=document.createElement('select');difficultySelect.className='challenge-select';difficultySelect.dataset.roundSwitch='true';difficultySelect.setAttribute('aria-label','迷宮難度');
+  for(const[id,config]of Object.entries(DIFFICULTIES)){const option=document.createElement('option');option.value=id;option.textContent=config.text.zh;difficultySelect.append(option);}
+  document.querySelector('.game-actions').prepend(difficultySelect);elements.currentDifficulty.hidden=true;difficultySelect.onchange=()=>startGame({difficulty:difficultySelect.value});
 
   const gameState = {
     page: "setup", playerId: ui.loadPlayer(), difficultyId: "easy", maze: [], mazeSnapshot: [],
@@ -134,16 +138,17 @@
   function mazeComplexity(grid,start,goal){const path=pathBetween(grid,start,goal),pathKeys=new Set(path.map(p=>cellKey(p.row,p.col)));let deadEnds=0,totalDepth=0,maxDepth=0,nearBranches=0,awaySteps=0;grid.forEach((line,row)=>line.forEach((tile,col)=>{if(tile!==0)return;const degree=Object.values(DIRECTIONS).filter(([dr,dc])=>grid[row+dr]?.[col+dc]===0).length;if(degree===1&&!pathKeys.has(cellKey(row,col))){deadEnds+=1;let depth=0,current={row,col},previous=null;while(current){const next=Object.values(DIRECTIONS).map(([dr,dc])=>({row:current.row+dr,col:current.col+dc})).filter(p=>grid[p.row]?.[p.col]===0&&(!previous||p.row!==previous.row||p.col!==previous.col));const onward=next.find(p=>!pathKeys.has(cellKey(p.row,p.col)));if(next.some(p=>pathKeys.has(cellKey(p.row,p.col)))){depth+=1;break;}if(!onward)break;previous=current;current=onward;depth+=1;}totalDepth+=depth;maxDepth=Math.max(maxDepth,depth);}}));path.forEach((point,index)=>{const branches=Object.values(DIRECTIONS).filter(([dr,dc])=>{const key=cellKey(point.row+dr,point.col+dc);return grid[point.row+dr]?.[point.col+dc]===0&&!pathKeys.has(key);}).length;nearBranches+=branches;if(index&&Math.abs(point.row-goal.row)+Math.abs(point.col-goal.col)>Math.abs(path[index-1].row-goal.row)+Math.abs(path[index-1].col-goal.col))awaySteps+=1;});const score=path.length*1.2+deadEnds*9+(deadEnds?totalDepth/deadEnds:0)*5+maxDepth*4+nearBranches*7+awaySteps*8;return {score,pathLength:path.length-1,deadEnds,maxDepth,nearBranches,awaySteps};}
   function generateAndValidateMaze(id) {const config=DIFFICULTIES[id],start={row:1,col:1},candidates=[];for(let attempt=0;attempt<config.candidates;attempt+=1){const grid=makeGrid(config.size),result=bfs(grid,start),goal={...result.farthest};if(!result.distances.has(cellKey(goal.row,goal.col)))continue;const complexity=mazeComplexity(grid,start,goal);candidates.push({grid,start,goal,pathLength:result.distance,complexity});}candidates.sort((a,b)=>a.complexity.score-b.complexity.score);return candidates[Math.min(candidates.length-1,Math.floor((candidates.length-1)*config.percentile))];}
 
-  async function startGame(options={}) { return SistersRound.start(()=>{
+  async function startGame(options={}) { const ok=await SistersRound.start(async()=>{
+    if(options.difficulty&&DIFFICULTIES[options.difficulty])gameState.difficultyId=options.difficulty;
     gameState.playerId=SistersRound.player();
     if (!content.players[gameState.playerId]) { goHub(); return false; }
-    stopTimer(); const generated=generateAndValidateMaze(gameState.difficultyId);
+    stopTimer(); const generated=await SistersChallenges.draw('maze:'+gameState.difficultyId+':'+gameState.memoryMode,SistersBanks.maze[gameState.difficultyId]);gameState.challengeId=generated.id;
     gameState.maze=generated.grid; gameState.mazeSnapshot=generated.grid.map(row=>[...row]); gameState.start={...generated.start}; gameState.goal={...generated.goal};
     gameState.playerPosition={...generated.start}; gameState.lastPathLength=generated.pathLength; gameState.visited=new Set([cellKey(generated.start.row,generated.start.col)]);
     gameState.completed=false; gameState.moveLocked=false; setTouchControlsDisabled(false); elements.winPanel.hidden=true;
     setLabeledValue(elements.currentPlayer,m.player,content.players[gameState.playerId].name); setLabeledValue(elements.currentDifficulty,m.difficulty,DIFFICULTIES[gameState.difficultyId].text);
     setStatus(options.replay?m.newMaze:m.ready); setPage("game"); renderMaze(); startTimer(); return true;
-  }); }
+  });difficultySelect.value=gameState.difficultyId;return ok; }
 
   async function restartGame(){if(!gameState.mazeSnapshot.length)return;return SistersRound.start(()=>{stopTimer();gameState.maze=gameState.mazeSnapshot.map(row=>[...row]);gameState.playerPosition={...gameState.start};gameState.visited=new Set([cellKey(gameState.start.row,gameState.start.col)]);gameState.completed=false;gameState.moveLocked=false;setTouchControlsDisabled(false);elements.winPanel.hidden=true;setStatus(m.restartMessage);renderMaze();startTimer();},"restart");}
   function isWalkable(row,col){return Number.isInteger(row)&&Number.isInteger(col)&&gameState.maze[row]?.[col]===0;}
@@ -210,9 +215,9 @@
   }
   const boardObserver=new ResizeObserver(fitBoard);for(const el of [document.querySelector(".game-header"),document.querySelector(".round-bar"),byId("touch-controls"),byId("status")])boardObserver.observe(el);window.addEventListener("resize",fitBoard);
   if (window.SistersPlay) SistersPlay.showCoach("maze", [{demo:"🐱🐟", line:"把貓咪走到小魚"}]);
-  document.addEventListener("keydown",event=>{const direction=KEY_DIRECTIONS[event.key];if(!direction)return;event.preventDefault();movePlayer(direction);},{passive:false});
+  document.addEventListener("keydown",event=>{const direction=KEY_DIRECTIONS[event.key];if(!direction||!SistersRound.canInteract())return;event.preventDefault();movePlayer(direction);},{passive:false});
 
   window.MazeGame=Object.freeze({startGame,restartGame,move:movePlayer,togglePath:togglePathDisplay,generateMaze:generateAndValidateMaze,mazeComplexity,bfs,showRecords:showScoreboard,loadRecords,getState:()=>({...gameState,maze:gameState.maze.map(row=>[...row]),visited:[...gameState.visited]}),constants:{DIFFICULTIES,STORAGE_KEY}});
   if(!gameState.playerId){goHub();return;} configureText(); showSetup();
-  await SistersRound.attach({snapshot:()=>{const {timerId,records,swipe,visited,...saved}=gameState;return {...saved,moveLocked:false,visited:[...visited]};},cancel:()=>{gameState.swipe.pointerId=null;clearTimeout(memoryTimer);},resume:syncMemory,restore:p=>{if(!p.maze?.length||!DIFFICULTIES[p.difficultyId])throw Error("迷宮存檔格式錯誤");Object.assign(gameState,p,{visited:new Set(p.visited),moveLocked:false});updateModeNote();setLabeledValue(elements.currentPlayer,m.player,content.players[gameState.playerId].name);setLabeledValue(elements.currentDifficulty,m.difficulty,DIFFICULTIES[gameState.difficultyId].text);setPage("game");renderMaze();syncMemory();setTouchControlsDisabled(gameState.completed);if(!gameState.completed){updateTimer();gameState.timerId=setInterval(updateTimer,250);}else renderWin();}});
+  await SistersRound.attach({snapshot:()=>{const {timerId,records,swipe,visited,...saved}=gameState;return {...saved,moveLocked:false,visited:[...visited]};},cancel:()=>{gameState.swipe.pointerId=null;clearTimeout(memoryTimer);stopTimer();},resume:()=>{if(!gameState.completed&&gameState.timerId===null){gameState.timerStartedAt=Date.now()-gameState.elapsedMs;gameState.timerId=setInterval(updateTimer,250);}syncMemory();},restore:p=>{if(!p.maze?.length||!DIFFICULTIES[p.difficultyId])throw Error("迷宮存檔格式錯誤");Object.assign(gameState,p,{visited:new Set(p.visited),moveLocked:false});difficultySelect.value=gameState.difficultyId;updateModeNote();setLabeledValue(elements.currentPlayer,m.player,content.players[gameState.playerId].name);setLabeledValue(elements.currentDifficulty,m.difficulty,DIFFICULTIES[gameState.difficultyId].text);setPage("game");renderMaze();syncMemory();setTouchControlsDisabled(gameState.completed);gameState.timerStartedAt=null;gameState.timerId=null;updateTimer();if(gameState.completed)renderWin();}});
 })();

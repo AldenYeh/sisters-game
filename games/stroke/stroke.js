@@ -1,10 +1,11 @@
 (async () => {
   "use strict";
   const levels = window.StrokeLevels;
+  let question=null,tier="easy";const level=()=>question||levels[index];
   let index=0, used=new Set(), last=null, moves=0, startedAt=Date.now(), restarts=0;
-  async function load(i,reason="new"){return SistersRound.start(()=>{if(reason==="restart")restarts++;index=i; used=new Set(); last=null; moves=0; startedAt=Date.now(); document.getElementById("complete").hidden=true;chips(); render();},reason); }
+  async function load(i=index,reason="new",nextTier=tier){return SistersRound.start(async()=>{if(reason==="restart")restarts++;const old=level();tier=nextTier;question=reason==="restart"?structuredClone(old):await SistersChallenges.draw('stroke:'+tier,SistersBanks.stroke[tier]);index=i;used=new Set();last=null;moves=0;startedAt=Date.now();document.getElementById('complete').hidden=true;chips();render();},reason);}
   function render(){
-    const L=levels[index]; const svg=document.getElementById("board");
+    const L=level(); const svg=document.getElementById("board");
     const edges=L.edges.map((e,i)=>{
       const a=L.nodes[e[0]], b=L.nodes[e[1]];
       return `<line data-i="${i}" x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${used.has(i)?"#2f6f4e":"#d7c9cf"}" stroke-width="${used.has(i)?14:8}" stroke-linecap="round"/>`;
@@ -21,14 +22,14 @@
   function tap(n){
     if(!SistersRound.canInteract())return;
     if (last==null) { last=n; render();SistersRound.checkpoint(); return; }
-    const L=levels[index];
+    const L=level();
     const ei=L.edges.findIndex((e,i)=>!used.has(i) && ((e[0]===last && e[1]===n) || (e[1]===last && e[0]===n)));
     if (ei<0) { document.getElementById("status").textContent="這條線沒有，或已經走過"; return; }
     used.add(ei); last=n; moves++; render();SistersRound.checkpoint();
   }
-  function chips(){ const row=document.getElementById("level-row"); row.replaceChildren(); levels.forEach((L,i)=>{const b=document.createElement("button"); b.type="button"; b.className="chip"+(i===index?" selected":""); b.textContent=String(i+1); b.onclick=()=>{load(i); chips();}; row.append(b);}); }
+  function chips(){SistersChallenges.selector(document.getElementById('level-row'),[{value:'easy',label:'8–24 條線'},{value:'normal',label:'26–40 條線'},{value:'hard',label:'42–60 條線'}],tier,v=>load(index,'new',v),'線圖大小');}
   SistersPlay.showCoach("stroke", [{demo:"✏️", line:"沿著線走，每條只走一次"}]);
   SistersPlay.mount({title:"一筆畫", onRestart:()=>load(index,"restart")});
   document.getElementById("overlay-next").onclick=()=>{load((index+1)%levels.length); chips();};
-  chips();if(!await SistersRound.attach({snapshot:()=>({index,used:[...used],last,moves,startedAt,restarts}),restore:p=>{({index,last,moves,startedAt,restarts}=p);used=new Set(p.used);chips();render();}}))await load(0);
+  chips();if(!await SistersRound.attach({snapshot:()=>({question,tier,index,used:[...used],last,moves,startedAt,restarts}),restore:p=>{question=p.question||null;tier=p.tier||"easy";({index,last,moves,startedAt,restarts}=p);used=new Set(p.used);chips();render();}}))await load(0);
 })();
