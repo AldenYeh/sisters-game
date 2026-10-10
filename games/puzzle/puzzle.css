@@ -12,3 +12,10 @@
 
 .puzzle-slot{background-color:#f5efe5;border:1px dashed #c8b5a4;border-radius:4px;min-width:0}
 .ref-thumb{background-size:contain;background-repeat:no-repeat;background-position:center}
+
+/* Keep the optional reference outside the board and within the tray column. */
+.puzzle-side{display:flex;flex-direction:column;gap:6px;min-height:0}
+.puzzle-side .ref-row{flex:0 0 auto;flex-wrap:wrap;align-items:flex-start;margin:0}
+.puzzle-side .ref-thumb{width:160px;height:auto;aspect-ratio:960/644;flex:0 0 160px;overflow:hidden}
+.puzzle-side .ref-thumb img{display:block;width:100%;height:100%;object-fit:contain}
+.puzzle-side .tray{flex:1 1 0;min-height:0;max-height:none;overflow-y:auto}

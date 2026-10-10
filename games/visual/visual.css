@@ -4,3 +4,6 @@
 .cell.on{background:#ffe08a}
 .cell.ok{background:#d7efd4}
 .cell.no{background:#f6d5d5}
+
+/* Leave room for the game controls on short desktop windows. */
+.vgrid{max-width:min(540px,max(288px,calc(100svh - var(--round-bar-height,60px) - 240px)))}

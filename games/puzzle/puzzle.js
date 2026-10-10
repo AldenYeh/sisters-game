@@ -62,7 +62,7 @@
     board.style.margin = "0 auto";
     board.replaceChildren();
     const ref = document.getElementById("reference");
-    if(ref){ref.style.backgroundImage=`url(${state.art.src})`;ref.hidden=!state.referenceShown;document.getElementById('reference-toggle').checked=state.referenceShown;}
+    if(ref){ref.querySelector('img').src=state.art.src;ref.hidden=!state.referenceShown;document.getElementById('reference-toggle').checked=state.referenceShown;}
     for (let i = 0; i < state.placed.length; i++) {
       const cell = document.createElement("div");
       cell.style.width = size.w + "px";
@@ -72,7 +72,7 @@
       board.append(cell);
     }
     tray.replaceChildren();
-    tray.style.maxHeight=Math.max(240,size.h*state.rows)+'px';
+    document.querySelector('.puzzle-side').style.height=(size.h*state.rows+16)+'px';
     (state.trayOrder.length===state.pieces?state.trayOrder:Array.from({length:state.pieces},(_,i)=>i)).forEach(i => {
       const on=state.placed[i];
       if (on) return;

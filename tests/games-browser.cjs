@@ -9,7 +9,7 @@ async function coach(){for(let i=0;i<6&&await page.locator('.coach button').coun
 async function click(selector){await page.locator(selector).click();await idle();}
 const solve=require('./browser-helpers.cjs').makeSolver(page,idle,payload);
 try{await page.goto(url+'/');await page.evaluate(async c=>{await SistersFamily.ready;SistersShared.savePlayer('guest');await SistersFamily.transact(s=>{s.credential=c;SistersFamilyCore.grant(s,'guest',1200000,Date.now(),crypto.randomUUID());});},{algorithm:'PBKDF2-SHA256',iterations:600000,salt,hash});
-for(const game of['maze','sudoku','puzzle','memory','hanoi','sliding','sokoban','stroke','tangram','visual','pattern','spot']){
+for(const game of['maze','sudoku','puzzle','memory','hanoi','sliding','sokoban','stroke','tangram','visual','pattern','spot'].filter(g=>!process.env.TEST_GAMES||process.env.TEST_GAMES.split(',').includes(g))){
  if(passed.length)await grant();await page.goto(url+'/games/'+game+'/');await coach();if(game==='maze')await page.click('#start-game');if(game==='sudoku')await page.click('#start');await idle();
  await page.screenshot({path:out+'/'+game+'-before.png',fullPage:true});const original=await page.evaluate(()=>SistersRound.current());
  // Verify exact saved/reloaded question before reaching expiry.
@@ -19,4 +19,4 @@ for(const game of['maze','sudoku','puzzle','memory','hanoi','sliding','sokoban',
  const debt=state.players.guest.debtMs;await page.waitForTimeout(300);assert.equal((await page.evaluate(()=>SistersFamily.read())).players.guest.debtMs,debt);await page.screenshot({path:out+'/'+game+'-completed-grace.png',fullPage:true});passed.push(game);console.log('PASS actual completion after expiry',game);
 }
 assert.deepEqual(errors,[]);
-}catch(e){await page.screenshot({path:out+'/failure.png',fullPage:true});console.error(e);process.exitCode=1;}finally{fs.writeFileSync('outputs/r3/games-browser.json',JSON.stringify({passed,errors},null,2));await browser.close();}})();
+}catch(e){await page.screenshot({path:out+'/failure.png',fullPage:true});console.error(e);process.exitCode=1;}finally{fs.writeFileSync('outputs/r3/'+(process.env.TEST_GAMES?'games-browser-affected':'games-browser')+'.json',JSON.stringify({passed,errors},null,2));await browser.close();}})();
