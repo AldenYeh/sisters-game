@@ -19,7 +19,7 @@ for (const file of ["assets/js/content.js", "assets/js/shared.js", "assets/js/ho
 assert.match(homeHtml, /assets\/js\/content\.js/);
 assert.match(homeHtml, /assets\/js\/shared\.js/);
 assert.match(mazeHtml, /\.\.\/\.\.\/assets\/js\/content\.js/);
-assert.match(mazeJs, /window\.location\.href = "\.\.\/\.\.\/index\.html#games\/logic"/);
+assert.match(mazeJs, /SistersRound\.leave\("\.\.\/\.\.\/index\.html#games\/logic"/);
 assert.doesNotMatch(homeHtml + mazeHtml, /https?:\/\//, "不可依賴 CDN 或網路資源");
 
 // 首頁由共用資料產生，HTML 不直接寫死產品文字。

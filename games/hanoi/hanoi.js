@@ -1,94 +1,18 @@
-(() => {
-  "use strict";
-  let n = 3, pegs = [], moves = 0, startedAt = Date.now(), restarts = 0;
-  function start() {
-    pegs = [Array.from({ length: n }, (_, i) => n - i), [], []];
-    moves = 0; startedAt = Date.now();
-    document.getElementById("complete").hidden = true;
-    render();
+(async()=>{
+  'use strict';
+  let n=3,pegs=[],moves=0,startedAt=0,restarts=0,selected=null,cancelDrag=null,suppressClick=false;
+  async function start(reason='new',nextN=n){return SistersRound.start(()=>{n=nextN;if(reason==='restart')restarts++;pegs=[Array.from({length:n},(_,i)=>n-i),[],[]];moves=0;selected=null;startedAt=Date.now();document.getElementById('complete').hidden=true;chips();render();},reason);}
+  function legal(from,to){const disc=pegs[from].at(-1),peg=pegs[to];return from!==to&&disc!==undefined&&(!peg.length||peg.at(-1)>disc);}
+  function transfer(from,to){if(!SistersRound.canInteract())return;if(legal(from,to)){pegs[to].push(pegs[from].pop());moves++;selected=null;SistersPlay.playSound('ok');}else SistersPlay.playSound('soft');render();if(pegs[2].length===n){SistersPlay.showComplete(`圓盤都到右邊了，用了 ${moves} 步`);SistersPlay.recordResult({difficulty:String(n),level:n,startedAt,moves,restartCount:restarts});}SistersRound.checkpoint();}
+  function choose(i){if(!SistersRound.canInteract()||suppressClick)return;if(selected===null){if(pegs[i].length)selected=i;render();SistersRound.checkpoint();}else{const from=selected;selected=null;transfer(from,i);}}
+  function render(){const host=document.getElementById('pegs');host.replaceChildren();pegs.forEach((peg,i)=>{const col=document.createElement('div');col.className='peg'+(selected===i?' selected':'');col.dataset.i=i;col.tabIndex=0;col.setAttribute('role','button');col.setAttribute('aria-label',`第 ${i+1} 柱，${peg.length} 個圓盤`);col.onclick=()=>choose(i);col.onkeydown=e=>{if(['Enter',' '].includes(e.key)){e.preventDefault();choose(i);}};const tag=document.createElement('span');tag.className='peg-tag';tag.textContent=peg.length?'':'空柱';col.append(tag);peg.forEach((d,idx)=>{const el=document.createElement('div');el.className='disc';el.style.width=`${25+d/n*70}%`;el.style.background=`hsl(${d*36},70%,72%)`;if(idx===peg.length-1)el.onpointerdown=e=>drag(e,i,el);col.append(el);});host.append(col);});document.getElementById('status').textContent=`拖曳圓盤，或選來源柱再選目的柱 · ${n} 層 · ${moves} 步`;}
+  function drag(ev,from,el){if(!SistersRound.canInteract()||cancelDrag||ev.button!==0)return;ev.preventDefault();const rect=el.getBoundingClientRect(),offset={x:ev.clientX-rect.left,y:ev.clientY-rect.top};const ghost=el.cloneNode();Object.assign(ghost.style,{position:'fixed',zIndex:9,pointerEvents:'none',width:rect.width+'px',height:rect.height+'px',left:rect.left+'px',top:rect.top+'px'});document.body.append(ghost);el.style.opacity='.35';let moved=false;el.setPointerCapture(ev.pointerId);
+    function cleanup(){el.removeEventListener('pointermove',move);el.removeEventListener('pointerup',up);el.removeEventListener('pointercancel',cancel);if(el.hasPointerCapture(ev.pointerId))el.releasePointerCapture(ev.pointerId);ghost.remove();el.style.opacity='';cancelDrag=null;document.querySelectorAll('.peg').forEach(c=>c.classList.remove('legal','illegal'));}
+    function cancel(){cleanup();suppressClick=true;setTimeout(()=>suppressClick=false,300);}
+    function move(e){if(e.pointerId!==ev.pointerId||!SistersRound.canInteract())return;if(Math.hypot(e.clientX-ev.clientX,e.clientY-ev.clientY)>5)moved=true;ghost.style.left=e.clientX-offset.x+'px';ghost.style.top=e.clientY-offset.y+'px';document.querySelectorAll('.peg').forEach(c=>{c.classList.toggle('legal',legal(from,+c.dataset.i));});}
+    function up(e){if(e.pointerId!==ev.pointerId)return;cleanup();if(!moved){choose(from);suppressClick=true;setTimeout(()=>suppressClick=false,0);return;}const hit=[...document.querySelectorAll('.peg')].findIndex(c=>{const r=c.getBoundingClientRect();return e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom;});suppressClick=true;setTimeout(()=>suppressClick=false,0);if(hit>=0)transfer(from,hit);else render();}
+    cancelDrag=cancel;el.addEventListener('pointermove',move);el.addEventListener('pointerup',up);el.addEventListener('pointercancel',cancel);
   }
-  function render() {
-    const host = document.getElementById("pegs");
-    host.replaceChildren();
-    pegs.forEach((peg, i) => {
-      const col = document.createElement("div");
-      col.className = "peg";
-      col.dataset.i = String(i);
-      const tag = document.createElement("span");
-      tag.className = "peg-tag";
-      tag.textContent = peg.length ? "" : "空柱";
-      col.append(tag);
-      peg.forEach((d, idx) => {
-        const el = document.createElement("div");
-        el.className = "disc";
-        el.style.width = (42 + d * 24) + "px";
-        el.style.background = `hsl(${d * 36},70%,72%)`;
-        if (idx === peg.length - 1) el.addEventListener("pointerdown", ev => drag(ev, i, d, el));
-        col.append(el);
-      });
-      host.append(col);
-    });
-    document.getElementById("status").textContent = `抓住最上面的圓盤，拖到右邊 · ${n} 層 · ${moves} 步`;
-  }
-  function legal(from, to, disc) {
-    if (from === to) return true;
-    const peg = pegs[to];
-    return !peg.length || peg[peg.length - 1] > disc;
-  }
-  function drag(ev, from, disc, el) {
-    ev.preventDefault();
-    const ghost = el.cloneNode();
-    ghost.style.position = "fixed";
-    ghost.style.zIndex = "9";
-    ghost.style.pointerEvents = "none";
-    ghost.style.left = ev.clientX - el.offsetWidth / 2 + "px";
-    ghost.style.top = ev.clientY - 16 + "px";
-    document.body.append(ghost);
-    el.style.opacity = ".35";
-    function move(e) {
-      ghost.style.left = e.clientX - el.offsetWidth / 2 + "px";
-      ghost.style.top = e.clientY - 16 + "px";
-      document.querySelectorAll(".peg").forEach(col => {
-        const i = +col.dataset.i;
-        col.classList.toggle("legal", legal(from, i, disc));
-        col.classList.toggle("illegal", !legal(from, i, disc));
-      });
-    }
-    function up(e) {
-      document.removeEventListener("pointermove", move);
-      document.removeEventListener("pointerup", up);
-      ghost.remove();
-      const cols = [...document.querySelectorAll(".peg")];
-      const hit = cols.findIndex(col => {
-        const r = col.getBoundingClientRect();
-        return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
-      });
-      if (hit >= 0 && hit !== from && legal(from, hit, disc)) {
-        pegs[hit].push(pegs[from].pop());
-        moves++;
-        SistersPlay.playSound("ok");
-      } else if (hit >= 0 && hit !== from) SistersPlay.playSound("soft");
-      render();
-      if (pegs[2].length === n) {
-        SistersPlay.showComplete(`圓盤都到右邊了，用了 ${moves} 步`);
-        SistersPlay.recordResult({ game: "hanoi", difficulty: String(n), level: n, startedAt, moves, restartCount: restarts });
-      }
-    }
-    document.addEventListener("pointermove", move);
-    document.addEventListener("pointerup", up);
-  }
-  function chips() {
-    const row = document.getElementById("disc-row");
-    row.replaceChildren();
-    [3, 4, 5, 6, 7].forEach(d => {
-      const b = document.createElement("button");
-      b.type = "button"; b.className = "chip" + (d === n ? " selected" : ""); b.textContent = d + " 層";
-      b.onclick = () => { n = d; chips(); start(); };
-      row.append(b);
-    });
-  }
-  SistersPlay.showCoach("hanoi", [{ demo: "🔴➡️", line: "抓住圓盤，拖到右邊柱子" }]);
-  SistersPlay.mount({ title: "河內塔", onRestart: () => { restarts++; start(); } });
-  document.getElementById("overlay-next").onclick = () => start();
-  chips(); start();
+  function chips(){const row=document.getElementById('disc-row');row.replaceChildren();[3,4,5,6,7].forEach(d=>{const b=document.createElement('button');b.type='button';b.className='chip'+(d===n?' selected':'');b.textContent=d+' 層';b.onclick=()=>start('new',d);row.append(b);});}
+  SistersPlay.showCoach('hanoi',[{demo:'🔴➡️',line:'拖圓盤，或選來源柱再選目的柱'}]);SistersPlay.mount({title:'河內塔',onRestart:()=>start('restart')});document.getElementById('overlay-next').onclick=()=>start();chips();if(!await SistersRound.attach({snapshot:()=>({n,pegs,moves,startedAt,restarts,selected}),cancel:()=>cancelDrag?.(),restore:p=>{({n,pegs,moves,startedAt,restarts,selected}=p);chips();render();}}))await start();
 })();

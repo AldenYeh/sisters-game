@@ -1,5 +1,5 @@
 
-.grid{display:grid;gap:8px;width:min(100%,420px);margin:12px auto}
+.vgrid{display:grid;gap:8px;width:min(100%,420px);margin:12px auto}
 .cell{aspect-ratio:1;border:0;border-radius:14px;background:#f6efe6;font-size:28px;color:#d25b6a}
 .cell.on{background:#ffe08a}
 .cell.ok{background:#d7efd4}

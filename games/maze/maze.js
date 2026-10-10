@@ -1,4 +1,4 @@
-(() => {
+(async () => {
   "use strict";
 
   const content = window.SISTERS_CONTENT;
@@ -27,8 +27,11 @@
     page: "setup", playerId: ui.loadPlayer(), difficultyId: "easy", maze: [], mazeSnapshot: [],
     start: null, goal: null, playerPosition: null, visited: new Set(), showPath: true,
     completed: false, moveLocked: false, timerStartedAt: null, elapsedMs: 0, timerId: null,
-    records: loadRecords(), lastPathLength: 0, swipe: { pointerId: null, startX: 0, startY: 0 }
+    records: loadRecords(), lastPathLength: 0, memoryMode:location.hash==="#memory",memoryHideAt:0,swipe: { pointerId: null, startX: 0, startY: 0 }
   };
+
+  let memoryTimer=null;
+  function syncMemory(){clearTimeout(memoryTimer);document.body.classList.toggle("memory-maze",gameState.memoryMode&&gameState.memoryHideAt>0&&Date.now()>=gameState.memoryHideAt);if(gameState.memoryMode&&gameState.memoryHideAt>Date.now())memoryTimer=setTimeout(()=>{if(SistersRound.canInteract()){document.body.classList.add("memory-maze");SistersRound.checkpoint();}},gameState.memoryHideAt-Date.now());}
 
   function phrase(element, text, options = {}) { ui.setReading(element, text, options); }
   function setStatus(text) { phrase(elements.status, text, { compact: true }); }
@@ -83,20 +86,15 @@
         bestMs: Number.isFinite(bestMs) && bestMs >= 0 ? Math.round(bestMs) : null
       };
     }));
+    safe.lifecycleRoundIds=value.lifecycleRoundIds||[];
     return safe;
   }
 
   function loadRecords() { try { return normalizeRecords(JSON.parse(localStorage.getItem(STORAGE_KEY))); } catch (_) { return createEmptyRecords(); } }
   function saveRecords() { gameState.records = normalizeRecords(gameState.records); try { localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState.records)); return true; } catch (_) { return false; } }
-  function updateRecords(elapsedMs) {
-    const record = gameState.records.players[gameState.playerId][gameState.difficultyId];
-    const isNewBest = record.bestMs === null || elapsedMs < record.bestMs;
-    record.completions += 1; if (isNewBest) record.bestMs = elapsedMs; saveRecords();
-    return { isNewBest, completions: record.completions };
-  }
 
   function setPage(page) { gameState.page = page; Object.entries(elements.screens).forEach(([name, screen]) => { screen.hidden = name !== page; }); }
-  function goHub() { stopTimer(); window.location.href = "../../index.html#games/logic"; }
+  function goHub() { SistersRound.leave("../../index.html#games/logic"); }
   function showSetup() { stopTimer(); elements.winPanel.hidden = true; updateSetup(); setPage("setup"); }
   function updateSetup() {
     const player = content.players[gameState.playerId];
@@ -136,7 +134,8 @@
   function mazeComplexity(grid,start,goal){const path=pathBetween(grid,start,goal),pathKeys=new Set(path.map(p=>cellKey(p.row,p.col)));let deadEnds=0,totalDepth=0,maxDepth=0,nearBranches=0,awaySteps=0;grid.forEach((line,row)=>line.forEach((tile,col)=>{if(tile!==0)return;const degree=Object.values(DIRECTIONS).filter(([dr,dc])=>grid[row+dr]?.[col+dc]===0).length;if(degree===1&&!pathKeys.has(cellKey(row,col))){deadEnds+=1;let depth=0,current={row,col},previous=null;while(current){const next=Object.values(DIRECTIONS).map(([dr,dc])=>({row:current.row+dr,col:current.col+dc})).filter(p=>grid[p.row]?.[p.col]===0&&(!previous||p.row!==previous.row||p.col!==previous.col));const onward=next.find(p=>!pathKeys.has(cellKey(p.row,p.col)));if(next.some(p=>pathKeys.has(cellKey(p.row,p.col)))){depth+=1;break;}if(!onward)break;previous=current;current=onward;depth+=1;}totalDepth+=depth;maxDepth=Math.max(maxDepth,depth);}}));path.forEach((point,index)=>{const branches=Object.values(DIRECTIONS).filter(([dr,dc])=>{const key=cellKey(point.row+dr,point.col+dc);return grid[point.row+dr]?.[point.col+dc]===0&&!pathKeys.has(key);}).length;nearBranches+=branches;if(index&&Math.abs(point.row-goal.row)+Math.abs(point.col-goal.col)>Math.abs(path[index-1].row-goal.row)+Math.abs(path[index-1].col-goal.col))awaySteps+=1;});const score=path.length*1.2+deadEnds*9+(deadEnds?totalDepth/deadEnds:0)*5+maxDepth*4+nearBranches*7+awaySteps*8;return {score,pathLength:path.length-1,deadEnds,maxDepth,nearBranches,awaySteps};}
   function generateAndValidateMaze(id) {const config=DIFFICULTIES[id],start={row:1,col:1},candidates=[];for(let attempt=0;attempt<config.candidates;attempt+=1){const grid=makeGrid(config.size),result=bfs(grid,start),goal={...result.farthest};if(!result.distances.has(cellKey(goal.row,goal.col)))continue;const complexity=mazeComplexity(grid,start,goal);candidates.push({grid,start,goal,pathLength:result.distance,complexity});}candidates.sort((a,b)=>a.complexity.score-b.complexity.score);return candidates[Math.min(candidates.length-1,Math.floor((candidates.length-1)*config.percentile))];}
 
-  function startGame(options={}) {
+  async function startGame(options={}) { return SistersRound.start(()=>{
+    gameState.playerId=SistersRound.player();
     if (!content.players[gameState.playerId]) { goHub(); return false; }
     stopTimer(); const generated=generateAndValidateMaze(gameState.difficultyId);
     gameState.maze=generated.grid; gameState.mazeSnapshot=generated.grid.map(row=>[...row]); gameState.start={...generated.start}; gameState.goal={...generated.goal};
@@ -144,9 +143,9 @@
     gameState.completed=false; gameState.moveLocked=false; setTouchControlsDisabled(false); elements.winPanel.hidden=true;
     setLabeledValue(elements.currentPlayer,m.player,content.players[gameState.playerId].name); setLabeledValue(elements.currentDifficulty,m.difficulty,DIFFICULTIES[gameState.difficultyId].text);
     setStatus(options.replay?m.newMaze:m.ready); setPage("game"); renderMaze(); startTimer(); return true;
-  }
+  }); }
 
-  function restartGame(){if(!gameState.mazeSnapshot.length)return;stopTimer();gameState.maze=gameState.mazeSnapshot.map(row=>[...row]);gameState.playerPosition={...gameState.start};gameState.visited=new Set([cellKey(gameState.start.row,gameState.start.col)]);gameState.completed=false;gameState.moveLocked=false;setTouchControlsDisabled(false);elements.winPanel.hidden=true;setStatus(m.restartMessage);renderMaze();startTimer();}
+  async function restartGame(){if(!gameState.mazeSnapshot.length)return;return SistersRound.start(()=>{stopTimer();gameState.maze=gameState.mazeSnapshot.map(row=>[...row]);gameState.playerPosition={...gameState.start};gameState.visited=new Set([cellKey(gameState.start.row,gameState.start.col)]);gameState.completed=false;gameState.moveLocked=false;setTouchControlsDisabled(false);elements.winPanel.hidden=true;setStatus(m.restartMessage);renderMaze();startTimer();},"restart");}
   function isWalkable(row,col){return Number.isInteger(row)&&Number.isInteger(col)&&gameState.maze[row]?.[col]===0;}
   function makeToken(symbol,className,label){const token=document.createElement("span");token.className=`token ${className}`;token.textContent=symbol;token.setAttribute("role","img");token.setAttribute("aria-label",label.zh);return token;}
 
@@ -156,20 +155,35 @@
     elements.maze.replaceChildren(fragment);elements.togglePath.setAttribute("aria-pressed",String(gameState.showPath));phrase(elements.togglePath,gameState.showPath?m.hidePath:m.showPath,{compact:true});
   }
 
-  function movePlayer(direction){if(gameState.page!=="game"||gameState.completed||gameState.moveLocked||!DIRECTIONS[direction])return false;gameState.moveLocked=true;const[dr,dc]=DIRECTIONS[direction],row=gameState.playerPosition.row+dr,col=gameState.playerPosition.col+dc;if(isWalkable(row,col)){gameState.playerPosition={row,col};gameState.visited.add(cellKey(row,col));setStatus(m.keepGoing);renderMaze();if(row===gameState.goal.row&&col===gameState.goal.col)handleWin();}else setStatus(m.wall);requestAnimationFrame(()=>{gameState.moveLocked=false;});return true;}
-  function togglePathDisplay(){gameState.showPath=!gameState.showPath;renderMaze();}
+  function movePlayer(direction){if(!SistersRound.canInteract())return false;if(gameState.page!=="game"||gameState.completed||gameState.moveLocked||!DIRECTIONS[direction])return false;gameState.moveLocked=true;const[dr,dc]=DIRECTIONS[direction],row=gameState.playerPosition.row+dr,col=gameState.playerPosition.col+dc;if(isWalkable(row,col)){gameState.playerPosition={row,col};gameState.visited.add(cellKey(row,col));setStatus(m.keepGoing);renderMaze();if(row===gameState.goal.row&&col===gameState.goal.col)handleWin();}else setStatus(m.wall);requestAnimationFrame(()=>{gameState.moveLocked=false;});SistersRound.checkpoint();return true;}
+  function togglePathDisplay(){if(!SistersRound.canInteract())return;gameState.showPath=!gameState.showPath;renderMaze();SistersRound.checkpoint();}
   function setTouchControlsDisabled(disabled){document.querySelectorAll(".touch-direction").forEach(button=>{button.disabled=disabled;});}
-  function handleSwipeStart(event){if(gameState.page!=="game"||gameState.completed||event.target.closest("button"))return;gameState.swipe={pointerId:event.pointerId,startX:event.clientX,startY:event.clientY};if(event.currentTarget.setPointerCapture)event.currentTarget.setPointerCapture(event.pointerId);event.preventDefault();}
+  function handleSwipeStart(event){if(!SistersRound.canInteract()||gameState.swipe.pointerId!==null)return;if(gameState.page!=="game"||gameState.completed||event.target.closest("button"))return;gameState.swipe={pointerId:event.pointerId,startX:event.clientX,startY:event.clientY};if(event.currentTarget.setPointerCapture)event.currentTarget.setPointerCapture(event.pointerId);event.preventDefault();}
   function handleSwipeEnd(event){if(gameState.swipe.pointerId!==event.pointerId)return;const dx=event.clientX-gameState.swipe.startX,dy=event.clientY-gameState.swipe.startY;gameState.swipe.pointerId=null;if(Math.hypot(dx,dy)<28||gameState.completed)return;event.preventDefault();movePlayer(Math.abs(dx)>Math.abs(dy)?(dx>0?"right":"left"):(dy>0?"down":"up"));}
   function cancelSwipe(event){if(gameState.swipe.pointerId===event.pointerId)gameState.swipe.pointerId=null;}
 
-  function startTimer(){stopTimer();gameState.elapsedMs=0;gameState.timerStartedAt=Date.now();updateTimer();gameState.timerId=window.setInterval(updateTimer,250);}
+  function startTimer(){stopTimer();gameState.elapsedMs=0;gameState.timerStartedAt=Date.now();updateTimer();gameState.timerId=window.setInterval(updateTimer,250);gameState.memoryHideAt=gameState.memoryMode?Date.now()+4000:0;syncMemory();}
   function updateTimer(){if(gameState.timerStartedAt!==null)gameState.elapsedMs=Date.now()-gameState.timerStartedAt;elements.timer.textContent=formatTime(gameState.elapsedMs);elements.timer.dateTime=`PT${Math.floor(gameState.elapsedMs/1000)}S`;}
   function stopTimer(){if(gameState.timerStartedAt!==null)gameState.elapsedMs=Date.now()-gameState.timerStartedAt;gameState.timerStartedAt=null;if(gameState.timerId!==null)window.clearInterval(gameState.timerId);gameState.timerId=null;if(elements.timer)elements.timer.textContent=formatTime(gameState.elapsedMs);}
   function formatTime(ms){const total=Math.max(0,Math.floor(ms/1000));return `${String(Math.floor(total/60)).padStart(2,"0")}:${String(total%60).padStart(2,"0")}`;}
 
   function addDetail(label,value){const p=document.createElement("p");p.append(ui.makeReading(label,{compact:true}),document.createTextNode("："),value);elements.winDetails.append(p);}
-  function handleWin(){if(gameState.completed)return;gameState.completed=true;setTouchControlsDisabled(true);stopTimer();const result=updateRecords(gameState.elapsedMs);setStatus(m.completed);elements.winDetails.replaceChildren();addDetail(m.player,ui.makeReading(content.players[gameState.playerId].name,{compact:true}));addDetail(m.difficulty,ui.makeReading(DIFFICULTIES[gameState.difficultyId].text,{compact:true}));addDetail(m.completionTime,document.createTextNode(formatTime(gameState.elapsedMs)));const count=document.createDocumentFragment();count.append(document.createTextNode(`${result.completions} `),ui.makeReading(m.times,{compact:true}));addDetail(m.totalCompletions,count);elements.newRecord.hidden=!result.isNewBest;elements.winPanel.hidden=false;byId("play-again").focus();}
+  function renderWin(){
+    const result=gameState.winResult||{completions:gameState.records.players[gameState.playerId][gameState.difficultyId].completions,isNewBest:false};
+    setStatus(m.completed);elements.winDetails.replaceChildren();
+    addDetail(m.player,ui.makeReading(content.players[gameState.playerId].name,{compact:true}));
+    addDetail(m.difficulty,ui.makeReading(DIFFICULTIES[gameState.difficultyId].text,{compact:true}));
+    addDetail(m.completionTime,document.createTextNode(formatTime(gameState.elapsedMs)));
+    const count=document.createDocumentFragment();count.append(document.createTextNode(`${result.completions} `),ui.makeReading(m.times,{compact:true}));
+    addDetail(m.totalCompletions,count);elements.newRecord.hidden=!result.isNewBest;elements.winPanel.hidden=false;
+  }
+  function handleWin(){
+    if(gameState.completed)return;gameState.completed=true;setTouchControlsDisabled(true);stopTimer();
+    const old=gameState.records.players[gameState.playerId][gameState.difficultyId];
+    gameState.winResult={completions:old.completions+1,isNewBest:old.bestMs===null||gameState.elapsedMs<old.bestMs};
+    renderWin();SistersRound.complete({difficulty:gameState.difficultyId,duration:gameState.elapsedMs,moves:gameState.visited.size-1});
+    gameState.records=loadRecords();byId("play-again").focus();
+  }
 
   function renderRecordHead(){const head=byId("records-head");head.replaceChildren();[m.player,m.difficulty,m.completionCount,m.fastest].forEach(text=>{const th=document.createElement("th");th.append(ui.makeReading(text,{compact:true}));head.append(th);});}
   function showScoreboard(){stopTimer();gameState.records=loadRecords();elements.recordsBody.replaceChildren();Object.entries(content.players).forEach(([playerId,player])=>Object.entries(DIFFICULTIES).forEach(([difficultyId,config])=>{const record=gameState.records.players[playerId][difficultyId],row=document.createElement("tr");const values=[ui.makeReading(player.name,{compact:true}),ui.makeReading(config.text,{compact:true}),document.createTextNode(`${record.completions} ${m.times.zh}`),record.bestMs===null?ui.makeReading(m.noRecord,{compact:true}):document.createTextNode(formatTime(record.bestMs))];values.forEach(value=>{const td=document.createElement("td");td.append(value);row.append(td);});elements.recordsBody.append(row);}));byId("clear-confirm").hidden=true;setPage("records");}
@@ -188,11 +202,12 @@
     note.className = "game-message";
     note.textContent = "記憶迷宮：先看路徑，幾秒後牆壁會淡出";
     document.querySelector("main").prepend(note);
-    setTimeout(() => document.body.classList.add("memory-maze"), 4000);
+
   }
   if (window.SistersPlay) SistersPlay.showCoach("maze", [{demo:"🐱🐟", line:"把貓咪走到小魚"}]);
   document.addEventListener("keydown",event=>{const direction=KEY_DIRECTIONS[event.key];if(!direction)return;event.preventDefault();movePlayer(direction);},{passive:false});
 
   window.MazeGame=Object.freeze({startGame,restartGame,move:movePlayer,togglePath:togglePathDisplay,generateMaze:generateAndValidateMaze,mazeComplexity,bfs,showRecords:showScoreboard,loadRecords,getState:()=>({...gameState,maze:gameState.maze.map(row=>[...row]),visited:[...gameState.visited]}),constants:{DIFFICULTIES,STORAGE_KEY}});
   if(!gameState.playerId){goHub();return;} configureText(); showSetup();
+  await SistersRound.attach({snapshot:()=>{const {timerId,records,swipe,visited,...saved}=gameState;return {...saved,moveLocked:false,visited:[...visited]};},cancel:()=>{gameState.swipe.pointerId=null;clearTimeout(memoryTimer);},resume:syncMemory,restore:p=>{if(!p.maze?.length||!DIFFICULTIES[p.difficultyId])throw Error("迷宮存檔格式錯誤");Object.assign(gameState,p,{visited:new Set(p.visited),moveLocked:false});setLabeledValue(elements.currentPlayer,m.player,content.players[gameState.playerId].name);setLabeledValue(elements.currentDifficulty,m.difficulty,DIFFICULTIES[gameState.difficultyId].text);setPage("game");renderMaze();syncMemory();setTouchControlsDisabled(gameState.completed);if(!gameState.completed){updateTimer();gameState.timerId=setInterval(updateTimer,250);}else renderWin();}});
 })();

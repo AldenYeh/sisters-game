@@ -5,3 +5,7 @@
 .ref-row{display:flex;align-items:center;gap:8px;font-weight:800;margin-bottom:8px}
 .ref-thumb{width:140px;height:96px;border-radius:10px;border:1px solid #eadfd6;background-size:cover}
 @media(max-width:760px){.puzzle-layout{grid-template-columns:1fr}}
+
+.piece{touch-action:none}.piece:focus-visible,#board>div:focus-visible{outline:3px solid #8d5b73}
+
+.puzzle-layout>div{min-width:0}@media(max-width:760px){.puzzle-layout{grid-template-columns:minmax(0,1fr)}}

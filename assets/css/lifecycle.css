@@ -1,0 +1,7 @@
+.round-bar{position:sticky;top:0;z-index:30;display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;justify-content:center;padding:.55rem 1rem;background:#fff8e8;border-bottom:1px solid #dccab8;font-size:14px}
+.round-bar button{min-height:42px;border:1px solid #b78e9e;border-radius:12px;padding:.5rem .8rem;background:#fff;color:#543c4e;cursor:pointer}
+.round-bar[data-error=true]{background:#ffe4dd;color:#8b2935}
+.hub-shell,.sudoku-screen,.maze-app .screen{min-height:calc(100svh - var(--round-bar-height,0px))}
+.maze-app .game-screen{height:calc(100svh - var(--round-bar-height,0px))}
+.maze-app .win-panel{position:fixed;inset:auto;top:calc(50% + var(--round-bar-height,0px)/2);left:50%;transform:translate(-50%,-50%);width:min(520px,calc(100vw - 28px));max-height:calc(100svh - var(--round-bar-height,0px) - 28px);overflow:auto;z-index:25;animation:none}
+@media(max-width:850px){.maze-app .game-screen{height:auto}}

@@ -1,4 +1,4 @@
-(() => {
+(async () => {
   "use strict";
   const scenes = [
     { name: "花園", a: "art/garden.jpg", b: "art/garden-b.jpg", spots: [{ id: "moon", x: 6, y: 4, w: 22, h: 22 }, { id: "bowl", x: 60, y: 62, w: 22, h: 24 }, { id: "bug", x: 16, y: 64, w: 16, h: 16 }] },
@@ -8,7 +8,7 @@
     { name: "廚房", a: "art/kitchen.jpg", b: "art/kitchen-b.jpg", spots: [{ id: "apple", x: 12, y: 46, w: 16, h: 22 }, { id: "cup", x: 28, y: 44, w: 16, h: 20 }, { id: "bow", x: 66, y: 40, w: 20, h: 36 }] }
   ];
   let scene = 0, found = new Set(), startedAt = Date.now();
-  function start() {
+  async function start(reason="new",nextScene=scene) {return SistersRound.start(()=>{scene=nextScene;
     found = new Set(); startedAt = Date.now();
     document.getElementById("complete").hidden = true;
     const s = scenes[scene];
@@ -19,17 +19,18 @@
       b.type = "button";
       b.className = "hit" + (found.has(sp.id) ? " found" : "");
       b.style.left = sp.x + "%"; b.style.top = sp.y + "%"; b.style.width = sp.w + "%"; b.style.height = sp.h + "%";
-      b.onclick = () => mark(sp.id);
+      b.setAttribute("aria-label",`找不同區域 ${s.spots.indexOf(sp)+1}`); b.onclick = () => mark(sp.id);
       hits.append(b);
     });
     document.getElementById("status").textContent = `點右邊不一樣的地方 · ${found.size}/3`;
     chips();
-  }
+  },reason);}
   function mark(id) {
+    if(!SistersRound.canInteract())return;
     if (found.has(id)) return;
     found.add(id);
     SistersPlay.playSound("ok");
-    startKeep();
+    startKeep(); SistersRound.checkpoint();
   }
   function startKeep() {
     const keep = found;
@@ -41,7 +42,7 @@
       b.type = "button";
       b.className = "hit" + (keep.has(sp.id) ? " found" : "");
       b.style.left = sp.x + "%"; b.style.top = sp.y + "%"; b.style.width = sp.w + "%"; b.style.height = sp.h + "%";
-      b.onclick = () => mark(sp.id);
+      b.setAttribute("aria-label",`找不同區域 ${s.spots.indexOf(sp)+1}`); b.onclick = () => mark(sp.id);
       document.querySelector(".hits").append(b);
     });
     document.getElementById("status").textContent = `點右邊不一樣的地方 · ${keep.size}/3`;
@@ -57,12 +58,12 @@
     scenes.forEach((s, i) => {
       const b = document.createElement("button");
       b.type = "button"; b.className = "chip" + (i === scene ? " selected" : ""); b.textContent = s.name;
-      b.onclick = () => { scene = i; start(); };
+      b.onclick = () => start("new",i);
       row.append(b);
     });
   }
   SistersPlay.showCoach("spot", [{ demo: "👀", line: "左邊原圖，點右邊不一樣的" }]);
-  SistersPlay.mount({ title: "找不同", onRestart: start });
-  document.getElementById("overlay-next").onclick = () => { scene = (scene + 1) % scenes.length; start(); };
-  start();
+  SistersPlay.mount({ title: "找不同", onRestart: ()=>start("restart") });
+  document.getElementById("overlay-next").onclick = () => start("new",(scene+1)%scenes.length);
+  if(!await SistersRound.attach({snapshot:()=>({scene,found:[...found],startedAt}),restore:p=>{scene=p.scene;found=new Set(p.found);startedAt=p.startedAt;chips();startKeep();}})) await start();
 })();

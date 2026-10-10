@@ -1,4 +1,4 @@
-(() => {
+(async () => {
   "use strict";
   const shapes = ["●", "▲", "■", "★"];
   const colors = ["#d25b6a", "#7aa7c7", "#e0b15a", "#2f6f4e"];
@@ -20,11 +20,11 @@
   function seq(items, choices, correct) {
     return { items, choices, correct };
   }
-  function start() {
+  async function start(reason="new") {return SistersRound.start(()=>{round=0;
     startedAt = Date.now();
     document.getElementById("complete").hidden = true;
     show();
-  }
+  },reason);}
   function show() {
     const q = rounds[round % rounds.length]();
     answer = q.correct;
@@ -40,22 +40,23 @@
       b.onclick = () => pick(i);
       choices.append(b);
     });
-    document.getElementById("status").textContent = `第 ${round + 1} / ${rounds.length} 題 · 看規律，選下一個`;
+    document.getElementById("status").textContent = `第 ${Math.min(round + 1,rounds.length)} / ${rounds.length} 題 · 看規律，選下一個`;
   }
   function pick(i) {
+    if(!SistersRound.canInteract())return;
     if (i !== answer) { SistersPlay.playSound("soft"); document.getElementById("status").textContent = "再看一次規律"; return; }
     SistersPlay.playSound("ok");
     round++;
     if (round >= rounds.length) {
       SistersPlay.showComplete("十二種規律都找到了");
       SistersPlay.recordResult({ game: "pattern", difficulty: "mixed", level: rounds.length, startedAt, moves: rounds.length });
-      round = 0;
+      SistersRound.checkpoint();
       return;
     }
-    show();
+    show();SistersRound.checkpoint();
   }
   SistersPlay.showCoach("pattern", [{ demo: "●▲●?", line: "看規律，選下一個" }]);
-  SistersPlay.mount({ title: "規律接龍", onRestart: () => { round = 0; start(); } });
-  document.getElementById("overlay-next").onclick = start;
-  start();
+  SistersPlay.mount({ title: "規律接龍", onRestart: () => start("restart") });
+  document.getElementById("overlay-next").onclick = ()=>start();
+  if(!await SistersRound.attach({snapshot:()=>({round,answer,startedAt}),restore:p=>{({round,answer,startedAt}=p);show();}})) await start();
 })();

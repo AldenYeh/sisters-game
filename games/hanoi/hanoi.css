@@ -8,3 +8,4 @@
 .peg.selected .peg-tag{color:#d25b6a}
 .disc{height:30px;border-radius:999px;margin-top:6px}
 .disc.picked{outline:4px solid #3d3338;transform:translateY(-6px)}
+.peg,.disc{touch-action:none}.peg:focus-visible,.peg.selected{outline:3px solid #8d5b73;outline-offset:2px}
