@@ -3,11 +3,11 @@
   'use strict';
   const F=SistersFamily,C=SistersFamilyCore,KEY='sistersRoundLifecycleV1',LOCK_KEY='sistersRoundLockedV1',OWNER=F.OWNER;
   const game=location.pathname.match(/\/games\/([^/]+)\//)?.[1]||null;
-  let adapter,round=null,release=null,busy=false,restoring=false,saving=false,completing=false,ending=false,pendingEnd=null,error='',pending=null,operation=0,leaving=false,skipNavigation=false;
+  let adapter,round=null,release=null,busy=false,resuming=false,restoring=false,saving=false,completing=false,ending=false,pendingEnd=null,error='',pending=null,operation=0,leaving=false,skipNavigation=false;
   const player=()=>round?.player||SistersShared.loadPlayer()||'guest';
   const source=()=>F.read().rounds[player()]?.[game];
   function owns(){try{return !!release&&!!round&&C.active(F.read())?.id===round.id;}catch{return false;}}
-  function canInteract(){return !document.querySelector('.coach,.family-dialog[open]')&&!busy&&!restoring&&!saving&&!completing&&!ending&&!error&&!leaving&&owns()&&F.canPlay(round);}
+  function canInteract(){return !document.querySelector('.coach,.family-dialog[open]')&&!busy&&!resuming&&!restoring&&!saving&&!completing&&!ending&&!error&&!leaving&&owns()&&F.canPlay(round);}
   function cancel(){try{adapter?.cancel?.();}catch(e){fail(e);}}
   function snapshot(){const p=JSON.parse(JSON.stringify(adapter.snapshot()));if(!p||typeof p!=='object')throw Error('此遊戲無法保存完整進度');return p;}
   function fail(e){error=e.message||String(e);F.fail(e);refresh();}
@@ -37,7 +37,7 @@
     catch(e){pending={kind:'snapshot',payload:p,id};fail(Error('進度保存失敗，操作已停止：'+e.message));cancel();return false;}finally{saving=false;if(round?.status!=='active'){cancel();relinquish();}F.markActive();refresh();}
   }
   async function start(factory,reason='new'){
-    if(busy||saving||restoring||ending||error||leaving)return false;
+    if(busy||resuming||saving||restoring||ending||error||leaving)return false;
     busy=true;const token=++operation,old=round&&structuredClone(round);refresh();
     try{
       if(!await F.requireTime()||token!==operation||leaving)return false;
@@ -76,10 +76,15 @@
     catch(e){pending={kind:'complete',round:r};fail(Error('完成狀態未保存，請重試：'+e.message));return false;}finally{saving=completing=false;refresh();}
   }
   async function resume(){
+    // A start waiting for parent approval owns the transition to its new round.
+    // Resuming the old round at the same time would race that factory/commit.
+    if(busy||resuming||saving||restoring||ending||error||leaving)return false;
     if(!round||round.status==='completed'||round.status==='abandoned')return false;
     if(!F.canStart()&&!F.canPlay(round)){F.openParent();return false;}
-    if(!await acquire()){message='原局正在另一分頁操作';refresh();return false;}
-    try{await F.transact(s=>{const r=s.rounds[round.player]?.[game];if(r?.id!==round.id)throw Error('保存版本已改變');if(r.status==='saved'){if(!C.canStart(s,r.player,Date.now()))throw Error('需家長重新授權才能續玩');const old=C.active(s);if(old&&old.id!==r.id){old.status='saved';old.savedAt=Date.now();}r.status='active';r.sessionId=s.session.id;s.active={player:r.player,game,id:r.id};}round=structuredClone(r);});adapter.resume?.();refresh();return true;}catch(e){fail(e);return false;}
+    const id=round.id,roundPlayer=round.player;resuming=true;
+    try{if(!await acquire()){message='原局正在另一分頁操作';return false;}
+      await F.transact(s=>{const r=s.rounds[roundPlayer]?.[game];if(r?.id!==id)throw Error('保存版本已改變');if(r.status==='saved'){if(!C.canStart(s,r.player,Date.now()))throw Error('需家長重新授權才能續玩');const old=C.active(s);if(old&&old.id!==r.id){old.status='saved';old.savedAt=Date.now();}r.status='active';r.sessionId=s.session.id;s.active={player:r.player,game,id:r.id};}round=structuredClone(r);});adapter.resume?.();return true;
+    }catch(e){fail(e);return false;}finally{resuming=false;F.markActive();refresh();}
   }
   async function attach(next){
     adapter=next;await F.ready;
@@ -93,7 +98,7 @@
   function end(kind,destination){if(pendingEnd)return pendingEnd;ending=true;pendingEnd=performEnd(kind,destination).finally(()=>{ending=false;pendingEnd=null;refresh();});return pendingEnd;}
   async function performEnd(kind,destination){
     if(error)return false;operation++;cancel();
-    for(let i=0;i<500&&(saving||completing);i++)await new Promise(r=>setTimeout(r,10));if(saving||completing||error){message='保存尚未完成，請保留此頁並重試';refresh();return false;}
+    for(let i=0;i<500&&(saving||completing||resuming);i++)await new Promise(r=>setTimeout(r,10));if(saving||completing||resuming||error){message='保存尚未完成，請保留此頁並重試';refresh();return false;}
     if(!await acquire()){message='請在正在操作的分頁保存或返回';refresh();return false;}
     try{
       const existing=C.active(F.read());let p=null;if(existing&&round&&adapter&&existing.id===round.id&&!busy&&!restoring)p=snapshot();
@@ -129,7 +134,7 @@
     if(type==='keydown'&&['Tab','Escape'].includes(e.key))return;
     const back=e.target.closest?.('#back-home,#back-list,#setup-home,#home-from-game,#home-from-win,#back-setup,#overlay-list');if(back)return;
     const setting=e.target.closest?.('.toolbar,.game-controls,.game-actions,#setup,#setup-screen,#records-screen,[data-setting],[data-round-switch],.difficulty-choice,#win-panel,#complete');
-    if((!canInteract()&&!setting)||((!F.canStart()&&round?.status==='active'||error||F.fault()||saving||busy)&&setting)) {e.preventDefault();e.stopImmediatePropagation();}
+    if((!canInteract()&&!setting)||((!F.canStart()&&round?.status==='active'||error||F.fault()||saving||busy||resuming)&&setting)) {e.preventDefault();e.stopImmediatePropagation();}
   },true);
   // Each adapter checkpoints its accepted moves and timed transitions. A second
   // blanket event save can race the next input or a return and save a stale round.
