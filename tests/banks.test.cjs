@@ -21,4 +21,4 @@ each('scenes',q=>{assert.equal(new Set(q.objects.map(o=>o.cell)).size,q.objects.
 require('./sliding-quality-data.cjs');
 // Hanoi/scenes remain archival compatibility data, not current new-game pools.
 const archived={hanoi:counts.hanoi,scenes:counts.scenes};delete counts.hanoi;delete counts.scenes;
-fs.mkdirSync('outputs/r3',{recursive:true});fs.writeFileSync('outputs/r3/bank-counts.json',JSON.stringify({activeBanks:counts,archivedCompatibility:archived,curated:{hanoi:5,puzzle:3,spot:5}},null,2));console.log('PASS bank solutions and declared difficulty',counts);
+fs.mkdirSync('outputs/r3',{recursive:true});fs.writeFileSync('outputs/r3/bank-counts.json',JSON.stringify({activeBanks:counts,archivedCompatibility:archived,curated:{hanoi:5},illustrations:{completeCompositions:SistersIllustrations.length,puzzle:{12:SistersIllustrations.length,24:SistersIllustrations.length,36:SistersIllustrations.length},spot:{3:SistersIllustrations.length,5:SistersIllustrations.length,7:SistersIllustrations.length}}},null,2));console.log('PASS bank solutions and declared difficulty',counts);

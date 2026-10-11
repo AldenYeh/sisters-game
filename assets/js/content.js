@@ -39,7 +39,7 @@
           { id: "visual", how: "記住亮起來的格子", icon: "👀", name: t("視覺記憶", "ㄕˋ ㄐㄧㄝˋ ㄐㄧˋ ㄧˋ"), href: "games/visual/index.html", available: true },
           { id: "sokoban", how: "把箱子推到小魚", icon: "📦", name: t("推箱子", "ㄊㄨㄟ ㄒㄧㄤ ㄗˇ"), href: "games/sokoban/index.html", available: true },
           { id: "pattern", how: "選出下一個", icon: "🔁", name: t("規律接龍", "ㄍㄨㄟ ㄌㄩˋ ㄐㄧㄝ ㄌㄨㄥˊ"), href: "games/pattern/index.html", available: true },
-          { id: "hanoi", how: "把圓盤排成上方目標", icon: "🗼", name: t("河內塔", "ㄏㄜˊ ㄋㄟˋ ㄊㄚˇ"), href: "games/hanoi/index.html", available: true },
+          { id: "hanoi", how: "把全部圓盤移到右柱", icon: "🗼", name: t("河內塔", "ㄏㄜˊ ㄋㄟˋ ㄊㄚˇ"), href: "games/hanoi/index.html", available: true },
           { id: "stroke", how: "每條線只走一次", icon: "✏️", name: t("一筆畫", "ㄧ ㄅㄧˇ ㄏㄨㄚˋ"), href: "games/stroke/index.html", available: true },
           { id: "spot", how: "點右邊不一樣的地方", icon: "🔎", name: t("找不同", "ㄓㄠˇ ㄅㄨˋ ㄊㄨㄥˊ"), href: "games/spot/index.html", available: true }
         ])

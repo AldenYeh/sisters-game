@@ -1,10 +1,7 @@
 (async () => {
   "use strict";
-  const arts = [
-    { id: "garden", name: "花園", src: "../spot/art/garden.webp" },
-    { id: "room", name: "房間", src: "../spot/art/room.webp" },
-    { id: "sea", name: "海底", src: "../spot/art/sea.webp" }
-  ];
+  const arts = window.SistersIllustrations;
+  if(!Array.isArray(arts)||arts.length<50)throw Error('完整插畫題庫未達 50 張');
   const sizes = [12, 24, 36];
   const state = { pieces: 12, art: arts[0], placed: [], hints: 0, moves: 0, restarts: 0, startedAt: Date.now(), cols: 4, rows: 3, image: null, trayOrder: [], question:null,referenceShown:false };
   const board = document.getElementById("board");
@@ -17,17 +14,18 @@
     imageCache.set(src,promise);while(imageCache.size>8)imageCache.delete(imageCache.keys().next().value);return promise;
   }
   let cancelDrag=null,selected=null,suppressClick=false,initializing=true,switching=false,wanted=null,loadingTarget=null;
-  async function start(reason="new",pieces=wanted?.pieces??loadingTarget?.pieces??state.pieces,art=wanted?.art??loadingTarget?.art??state.art) {
-    wanted={reason,pieces,art};chips();
+  async function start(reason="new",pieces=wanted?.pieces??loadingTarget?.pieces??state.pieces,art=wanted?.art??loadingTarget?.art??state.art,draw=true) {
+    wanted={reason,pieces,art,draw};chips();
     if(initializing||switching)return;
     switching=true;
     try{while(wanted){const next=wanted;wanted=null;loadingTarget=next;
       const ok=await SistersRound.start(async()=>{
         // Load before changing the logical state so failures preserve the old board.
-        // Three approved complete illustrations; saved procedural rounds keep their exact original source.
+        // Each difficulty draws from 50 complete compositions. Cache the choice
+        // on this factory so a failed image load retries the same question.
         const keep=next.reason==='restart'&&state.art.id===next.art.id&&state.pieces===next.pieces;
-        const question=keep?state.question:{id:'illustration-'+next.art.id,kind:'illustration'};
-        const actualArt=keep?state.art:{...arts.find(a=>a.id===next.art.id)};
+        if(!next.choice){const frame=keep?state.art:next.draw?await SistersChallenges.draw('puzzle:illustrated-v1:'+next.pieces,arts):arts.find(a=>a.id===next.art.id);if(!frame)throw Error('插畫不在題庫，原局保留');next.choice={actualArt:structuredClone(frame),question:keep?state.question:{id:'illustrated-v1/'+frame.id,kind:'complete-illustration-v1',frameVersion:frame.version,frame:structuredClone(frame)}};}
+        const {question,actualArt}=next.choice;
         const image=await loadImage(actualArt.src);cancelDrag?.();selected=null;sliceCache.clear();
         state.pieces=next.pieces;state.art=actualArt;state.question=question;state.image=image;
         if(next.reason==="restart")state.restarts++;
@@ -91,7 +89,7 @@
       el.setAttribute("aria-label",`拼圖片 ${(state.trayOrder.length===state.pieces?state.trayOrder.indexOf(i):i)+1}，選取後再選目標格`);el.onclick=()=>{if(SistersRound.canInteract()&&!suppressClick){selected=i;document.getElementById("status").textContent="已選一片，請點目標格";SistersRound.checkpoint();}};el.addEventListener("pointerdown", ev => begin(ev, i, el));
       tray.append(el);
     });
-    document.getElementById("status").textContent = `拖曳或點選碎片後放進空格；可勾選完成圖 · ${state.placed.filter(Boolean).length} / ${state.placed.length}`;
+    document.getElementById("status").textContent = `${state.art.name} · 拖曳或點選碎片後放進空格；可勾選完成圖 · ${state.placed.filter(Boolean).length} / ${state.placed.length}`;
   }
   function finish(){if(state.placed.every(Boolean)){SistersPlay.showComplete("拼好了");SistersPlay.recordResult({difficulty:String(state.pieces),level:state.art.id,startedAt:state.startedAt,moves:state.moves,hintsUsed:state.hints,restartCount:state.restarts});}}
   function drop(index,hit){if(!SistersRound.canInteract()||state.placed[index])return;state.moves++;if(hit===index){state.placed[index]=true;SistersPlay.playSound("ok");}render();finish();SistersRound.checkpoint();}
@@ -105,7 +103,7 @@
     function up(e){if(e.pointerId!==ev.pointerId)return;const x=e.clientX-ox+w/2,y=e.clientY-oy+h/2;cleanup();suppressClick=true;setTimeout(()=>suppressClick=false,0);if(!moved){selected=index;document.getElementById("status").textContent="已選一片，請點目標格";return;}const cells=[...board.children],hit=cells.findIndex(c=>{const r=c.getBoundingClientRect();return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;});drop(index,hit);}
     cancelDrag=cancel;el.addEventListener("pointermove",move);el.addEventListener("pointerup",up);el.addEventListener("pointercancel",cancel);
   }
-  function chips(){SistersChallenges.selector(document.getElementById('size-row'),sizes.map(n=>({value:n,label:n+' 片'})),wanted?.pieces??loadingTarget?.pieces??state.pieces,v=>start('new',+v,wanted?.art??loadingTarget?.art??state.art),'拼圖片數');SistersChallenges.selector(document.getElementById('art-row'),arts.map(a=>({value:a.id,label:a.name})),(wanted?.art??loadingTarget?.art??state.art).id,v=>start('new',wanted?.pieces??loadingTarget?.pieces??state.pieces,arts.find(a=>a.id===v)),'圖片主題');document.querySelectorAll('#size-row select,#art-row select').forEach(s=>s.disabled=initializing);}
+  function chips(){SistersChallenges.selector(document.getElementById('size-row'),sizes.map(n=>({value:n,label:n+' 片'})),wanted?.pieces??loadingTarget?.pieces??state.pieces,v=>start('new',+v,wanted?.art??loadingTarget?.art??state.art,false),'拼圖片數');SistersChallenges.selector(document.getElementById('art-row'),arts.map(a=>({value:a.id,label:a.name})),(wanted?.art??loadingTarget?.art??state.art).id,v=>start('new',wanted?.pieces??loadingTarget?.pieces??state.pieces,arts.find(a=>a.id===v),false),'選擇完整插畫');document.querySelectorAll('#size-row select,#art-row select').forEach(s=>s.disabled=initializing);}
   SistersPlay.showCoach("puzzle", [{ demo: "🧩", line: "看完成圖，把碎片拖進正確空格" }]);
   SistersPlay.mount({ title: "拼圖", onRestart: () => start("restart") });
   document.getElementById("hint").onclick = () => {
