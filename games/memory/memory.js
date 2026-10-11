@@ -24,7 +24,7 @@
   }
   function render() {
     const grid=document.getElementById("grid");
-    grid.style.setProperty("--memory-cols",size[0]);grid.style.gridTemplateColumns=`repeat(${size[0]},minmax(0,1fr))`;
+    grid.style.setProperty("--memory-cols",size[0]);grid.style.setProperty("--memory-rows",size[1]);grid.style.gridTemplateColumns=`repeat(${size[0]},minmax(0,1fr))`;
     grid.replaceChildren();
     deck.forEach((card,i)=>{
       const b=document.createElement("button");

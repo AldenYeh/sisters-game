@@ -7,3 +7,7 @@
 
 /* Leave room for the game controls on short desktop windows. */
 .vgrid{max-width:min(540px,max(288px,calc(100svh - var(--round-bar-height,60px) - 240px)))}
+/* One square grid, sized to leave its controls and result in normal flow. */
+.play-app #grid.vgrid{width:min(100%,max(260px,calc(100svh - var(--round-bar-height,66px) - 250px)));max-width:100%;height:auto;min-height:0;aspect-ratio:1;box-sizing:border-box;margin:8px auto;gap:8px;padding:8px;container-type:inline-size}
+.play-app #grid .cell{min-width:0;min-height:0;padding:0;aspect-ratio:1;font-size:clamp(20px,8cqw,80px)}
+.play-app>.toolbar:has(#restart){justify-content:center}

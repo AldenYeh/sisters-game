@@ -5,3 +5,10 @@ svg line.used{stroke:#2f6f4e;stroke-dasharray:3 3}
 svg circle{fill:#fff;stroke:#845773;stroke-width:1.5;cursor:pointer}
 svg circle.current{fill:#d25b6a;stroke:#803546;stroke-width:2}
 svg circle:focus-visible{outline:none;stroke:#292039;stroke-width:3}
+
+/* Match the graph's own aspect ratio and remove the empty full-width card. */
+.play-app:has(#board[data-stroke-ratio]){max-width:none;--stroke-room:max(250px,calc(100svh - var(--round-bar-height,66px) - 182px))}
+.play-app:has(#board[data-stroke-ratio]) .board-wrap{width:min(100%,calc(var(--stroke-room)*var(--stroke-ratio,1)));max-width:100%;margin:0 auto;padding:0;border:0;background:transparent;box-shadow:none}
+.play-app #board[data-stroke-ratio]{width:min(100%,calc(var(--stroke-room)*var(--stroke-ratio)));height:auto;max-height:none;margin:0 auto}
+.play-app:has(#board[data-stroke-ratio]):has(#complete:not([hidden])){--stroke-room:max(230px,calc(100svh - var(--round-bar-height,66px) - 252px))}
+@media(max-width:680px){.play-app:has(#board[data-stroke-ratio]){--stroke-room:max(230px,calc(100svh - var(--round-bar-height,92px) - 214px))}.play-app:has(#board[data-stroke-ratio]):has(#complete:not([hidden])){--stroke-room:max(230px,calc(100svh - var(--round-bar-height,92px) - 380px))}}

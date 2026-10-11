@@ -157,7 +157,7 @@
   function renderMaze(){
     const rows=gameState.maze.length,cols=gameState.maze[0]?.length||0;document.documentElement.style.setProperty("--maze-rows",rows);document.documentElement.style.setProperty("--maze-cols",cols);const fragment=document.createDocumentFragment();
     gameState.maze.forEach((line,row)=>line.forEach((tile,col)=>{const cell=document.createElement("div"),isGoal=row===gameState.goal.row&&col===gameState.goal.col,isPlayer=row===gameState.playerPosition.row&&col===gameState.playerPosition.col,wasVisited=gameState.showPath&&gameState.visited.has(cellKey(row,col))&&!isGoal&&!isPlayer;cell.className=`cell ${tile===1?"wall":"path"}${isGoal?" goal":""}${wasVisited?" visited":""}`;cell.setAttribute("role","gridcell");if(tile===1)cell.setAttribute("aria-label",m.wallCell.zh);if(isGoal)cell.append(makeToken("🐟","goal-token",m.carrotGoal));if(isPlayer)cell.append(makeToken("🐱","player",m.rabbitPlayer));fragment.append(cell);}));
-    elements.maze.replaceChildren(fragment);elements.togglePath.setAttribute("aria-pressed",String(gameState.showPath));phrase(elements.togglePath,gameState.showPath?m.hidePath:m.showPath,{compact:true});
+    elements.maze.replaceChildren(fragment);elements.togglePath.setAttribute("aria-pressed",String(gameState.showPath));phrase(elements.togglePath,gameState.showPath?m.hidePath:m.showPath,{compact:true});fitBoard();
   }
 
   function movePlayer(direction){if(!SistersRound.canInteract())return false;if(gameState.page!=="game"||gameState.completed||gameState.moveLocked||!DIRECTIONS[direction])return false;gameState.moveLocked=true;const[dr,dc]=DIRECTIONS[direction],row=gameState.playerPosition.row+dr,col=gameState.playerPosition.col+dc;if(isWalkable(row,col)){gameState.playerPosition={row,col};gameState.visited.add(cellKey(row,col));setStatus(m.keepGoing);renderMaze();if(row===gameState.goal.row&&col===gameState.goal.col)handleWin();}else setStatus(m.wall);requestAnimationFrame(()=>{gameState.moveLocked=false;});SistersRound.checkpoint();return true;}
@@ -207,13 +207,14 @@
   window.addEventListener("hashchange",()=>{if(!gameState.maze.length){gameState.memoryMode=location.hash==="#memory";updateModeNote();}});
   updateModeNote();
   function fitBoard(){
-    const visible=el=>!el.hidden&&getComputedStyle(el).display!=="none";
-    const screen=byId("game-screen"),header=document.querySelector(".game-header"),card=document.querySelector(".maze-card"),touch=byId("touch-controls"),status=byId("status");
-    const style=getComputedStyle(screen),cs=getComputedStyle(card);
-    const extras=parseFloat(style.paddingTop)+parseFloat(style.paddingBottom)+parseFloat(style.gap)+parseFloat(cs.paddingTop)+parseFloat(cs.paddingBottom)+6+status.getBoundingClientRect().height+(visible(touch)?touch.getBoundingClientRect().height:0)+parseFloat(cs.gap)*(visible(touch)?2:1);
-    document.documentElement.style.setProperty("--maze-available-height",Math.max(0,innerHeight-document.querySelector(".round-bar").getBoundingClientRect().height-header.getBoundingClientRect().height-extras)+"px");
+    const screen=byId("game-screen");if(screen.hidden||!gameState.maze.length)return;
+    const card=document.querySelector(".maze-card"),wrap=byId("maze-wrap"),touch=byId("touch-controls"),status=byId("status"),ss=getComputedStyle(screen),cs=getComputedStyle(card),visible=el=>!el.hidden&&getComputedStyle(el).display!=="none";
+    const rows=gameState.maze.length,cols=gameState.maze[0].length,width=screen.clientWidth-parseFloat(ss.paddingLeft)-parseFloat(ss.paddingRight)-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)-parseFloat(cs.borderLeftWidth)-parseFloat(cs.borderRightWidth);
+    const tail=parseFloat(ss.paddingBottom)+parseFloat(cs.paddingBottom)+parseFloat(cs.borderBottomWidth)+status.getBoundingClientRect().height+(visible(touch)?touch.getBoundingClientRect().height:0)+parseFloat(cs.gap)*(visible(touch)?2:1);
+    const height=innerHeight-(wrap.getBoundingClientRect().top+scrollY)-tail-3,size=Math.floor(Math.max(14,Math.min(width/cols,height/rows))*100)/100;
+    document.querySelector(".maze-app").style.setProperty("--cell-size",size+"px");
   }
-  const boardObserver=new ResizeObserver(fitBoard);for(const el of [document.querySelector(".game-header"),document.querySelector(".round-bar"),byId("touch-controls"),byId("status")])boardObserver.observe(el);window.addEventListener("resize",fitBoard);
+  const boardObserver=new ResizeObserver(fitBoard);for(const el of [document.querySelector(".game-header"),document.querySelector(".round-bar"),byId("touch-controls"),byId("status"),document.querySelector(".family-bar")])boardObserver.observe(el);window.addEventListener("resize",fitBoard);
   if (window.SistersPlay) SistersPlay.showCoach("maze", [{demo:"🐱🐟", line:"把貓咪走到小魚"}]);
   document.addEventListener("keydown",event=>{const direction=KEY_DIRECTIONS[event.key];if(!direction||!SistersRound.canInteract())return;event.preventDefault();movePlayer(direction);},{passive:false});
 

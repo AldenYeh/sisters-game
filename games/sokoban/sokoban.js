@@ -16,6 +16,7 @@
   function won() { return !rows.some(r => r.includes("$")); }
   function render() {
     const board = document.getElementById("board");
+    board.style.setProperty("--sokoban-cols",rows[0].length);
     board.style.gridTemplateColumns = `repeat(${rows[0].length},minmax(0,1fr))`;
     board.replaceChildren();
     rows.forEach(row => row.forEach(ch => {
@@ -26,6 +27,7 @@
     }));
     const L = level();
     document.getElementById("status").textContent = `把箱子推到小魚上 · ${L.name} · ${moves} 步 · 方向鍵／WASD，或在棋盤滑動`;
+    fitBoard();
   }
   function move(dx, dy) {
     if(!SistersRound.canInteract()||completed) return;
@@ -49,6 +51,16 @@
     }
     SistersRound.checkpoint();
   }
+  // Presentation only: grow within the viewport after reserving the real controls.
+  function fitBoard(){
+    if(!rows.length)return;
+    const board=document.getElementById("board"),wrap=board.parentElement,app=document.querySelector(".play-app"),controls=document.getElementById("undo").parentElement,ws=getComputedStyle(wrap),as=getComputedStyle(app),gap=parseFloat(getComputedStyle(board).gap)||0;
+    const top=board.getBoundingClientRect().top+scrollY,tail=controls.getBoundingClientRect().height+parseFloat(getComputedStyle(controls).marginTop)+parseFloat(getComputedStyle(controls).marginBottom)+parseFloat(ws.paddingBottom)+parseFloat(ws.borderBottomWidth)+parseFloat(as.paddingBottom);
+    const width=app.clientWidth-parseFloat(as.paddingLeft)-parseFloat(as.paddingRight)-parseFloat(ws.paddingLeft)-parseFloat(ws.paddingRight)-parseFloat(ws.borderLeftWidth)-parseFloat(ws.borderRightWidth),ratio=rows.length/rows[0].length,height=Math.max(220,innerHeight-top-tail-3);
+    const side=Math.floor(Math.min(width,(height-gap*(ratio-1))/ratio));
+    app.style.setProperty("--sokoban-board-size",side+"px");
+  }
+  const boardSizer=new ResizeObserver(fitBoard);for(const el of [document.querySelector(".play-top"),document.getElementById("level-row"),document.getElementById("status"),document.getElementById("undo").parentElement,document.querySelector(".family-bar"),document.querySelector(".round-bar")])boardSizer.observe(el);window.addEventListener("resize",fitBoard);
   function chips(){SistersChallenges.selector(document.getElementById('level-row'),[1,2,3].map(v=>({value:v,label:v+' 箱'})),tier,v=>load(index,'new',v),'箱子數');}
   window.addEventListener("keydown", ev=>{if(ev.target.closest?.('input,textarea,select,[contenteditable]')||!SistersRound.canInteract())return;const map={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],W:[0,-1],a:[-1,0],A:[-1,0],s:[0,1],S:[0,1],d:[1,0],D:[1,0]}; if(map[ev.key]){ev.preventDefault(); move(...map[ev.key]);} if(ev.key==='z'||ev.key==='Z') document.getElementById('undo').click(); if(ev.key==='r'||ev.key==='R') document.getElementById('restart').click(); });
   let sx,sy,pointerId;const swipeBoard=document.getElementById("board");

@@ -40,7 +40,10 @@
   function cellSize() {
     const parent=board.parentElement,style=getComputedStyle(parent);
     const available=parent.clientWidth-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight);
-    const w=Math.floor(Math.min(available,620)/state.cols);
+    const ratio=state.image.width/state.image.height;
+    const heightBudget=Math.max(180,window.innerHeight-parent.getBoundingClientRect().top-76);
+    const preferred=window.innerWidth>760?Math.min(available,heightBudget*ratio):available;
+    const w=Math.floor(preferred/state.cols);
     return {w:Math.max(20,w),h:Math.max(20,Math.round(w*state.image.height*state.cols/(state.image.width*state.rows)))};
   }
   function slice(i, w, h) {
@@ -73,15 +76,30 @@
       board.append(cell);
     }
     tray.replaceChildren();
-    document.querySelector('.puzzle-side').style.height=(size.h*state.rows+16)+'px';
+    const side=document.querySelector('.puzzle-side');
+    side.style.height='auto';side.style.maxHeight=(size.h*state.rows+16)+'px';
+    const trayStyle=getComputedStyle(tray),gap=parseFloat(trayStyle.gap)||8,trayPadding=parseFloat(trayStyle.getPropertyValue('--tray-padding'))||10;
+    const gutter=Math.max(0,tray.offsetWidth-tray.clientWidth-parseFloat(trayStyle.borderLeftWidth)-parseFloat(trayStyle.borderRightWidth));
+    const trayWidth=side.clientWidth-2-2*trayPadding-gutter;
+    const tileRatio=(size.w+2*pad)/(size.h+2*pad);
+    const trayHeight=size.h*state.rows+16-document.querySelector('.ref-row').getBoundingClientRect().height-6-2*trayPadding;
+    let columns=1,pieceWidth=44;
+    const maxColumns=Math.min(state.pieces,8,Math.max(1,Math.floor((trayWidth+gap)/(44+gap))));
+    for(let count=1;count<=maxColumns;count++){
+      const rows=Math.ceil(state.pieces/count);
+      const width=Math.min((size.w+2*pad)*.68,(trayWidth-gap*(count-1))/count,Math.max(44,((trayHeight-gap*(rows-1))/rows)*tileRatio));
+      if(width>pieceWidth){columns=count;pieceWidth=width;}
+    }
+    if(pieceWidth===44)columns=maxColumns;
+    tray.style.display='grid';tray.style.gridTemplateColumns=`repeat(${columns}, ${Math.floor(pieceWidth)}px)`;
     (state.trayOrder.length===state.pieces?state.trayOrder:Array.from({length:state.pieces},(_,i)=>i)).forEach(i => {
       const on=state.placed[i];
       if (on) return;
       const el = document.createElement("button");
       el.type = "button";
       el.className = "piece";el.dataset.piece=String(i);
-      el.style.width = Math.round((size.w+2*pad)*.68) + "px";
-      el.style.height = Math.round((size.h+2*pad)*.68) + "px";
+      el.style.width = Math.floor(pieceWidth) + "px";
+      el.style.height = Math.round(pieceWidth/tileRatio) + "px";
       const art=pieceCanvas(i,size.w,size.h);Object.assign(art.style,{display:'block',width:'100%',height:'100%',pointerEvents:'none'});el.append(art);el.style.background='transparent';el.style.padding='0';
       el.style.border = "0";
       el.style.borderRadius = "0";
@@ -112,7 +130,7 @@
     if (i < 0 || state.hints >= 3) return;
     state.hints++; state.placed[i] = true; SistersPlay.playSound("ok"); render();finish();SistersRound.checkpoint();
   };
-  document.getElementById('reference-toggle').onchange=e=>{state.referenceShown=e.target.checked;document.getElementById('reference').hidden=!state.referenceShown;SistersRound.checkpoint();};
+  document.getElementById('reference-toggle').onchange=e=>{state.referenceShown=e.target.checked;render();SistersRound.checkpoint();};
   document.getElementById("overlay-next").onclick = ()=>start();
   chips();const restored=await SistersRound.attach({snapshot:()=>{const {image,...saved}=state;return {...saved,selected};},cancel:()=>cancelDrag?.(),restore:async p=>{if(!sizes.includes(p.pieces)||!arts.some(a=>a.id===p.art.id))throw Error("拼圖存檔格式錯誤");Object.assign(state,p);selected=p.selected;state.image=await loadImage(state.art.src);chips();render();}});initializing=false;if(!restored)await start();else chips();
   let resizeFrame=0,lastSize='';window.addEventListener('resize',()=>{cancelDrag?.();cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(()=>{if(!state.image)return;const size=cellSize(),key=size.w+':'+size.h;if(key!==lastSize){lastSize=key;sliceCache.clear();render();}});});

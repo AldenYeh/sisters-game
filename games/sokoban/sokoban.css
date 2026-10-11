@@ -4,3 +4,9 @@
 .cell.wall{background:#6d5360}
 .cell.goal{background:#f6e7b2;box-shadow:inset 0 0 0 3px #e0b15a}
 .cell.done{background:#d7efd4;box-shadow:inset 0 0 0 3px #2f6f4e}
+
+/* Scale the full board and its pieces from measured available space. */
+.play-app #board.sokoban{width:min(100%,var(--sokoban-board-size,620px));container-type:inline-size}
+.play-app #board.sokoban .cell{font-size:clamp(20px,calc(65cqw / var(--sokoban-cols,7)),70px)}
+.play-app .board-wrap:has(>#board.sokoban){width:min(100%,calc(var(--sokoban-board-size,620px) + 18px));margin-inline:auto}
+.play-app .toolbar:has(>#undo){justify-content:center}

@@ -13,3 +13,9 @@
 .slide-board{grid-template-columns:repeat(var(--cols),minmax(0,1fr));grid-template-rows:repeat(var(--rows),minmax(0,1fr));width:min(100%,max(300px,calc(100svh - 400px)),520px)}
 /* Keep adjacent vehicles visibly separate without changing their hit boxes. */
 .block{border:2px solid #f4efe8;box-sizing:border-box}
+/* The frame follows the square board instead of spanning the whole page. */
+.play-app{--sliding-size:max(260px,calc(100svh - var(--round-bar-height,66px) - 280px))}
+.play-app>.board-wrap{width:min(100%,calc(var(--sliding-size) + 18px));margin:8px auto;padding:8px}
+.play-app #board.slide-board{width:100%;margin:0;aspect-ratio:var(--cols)/var(--rows)}
+.play-app>.toolbar:has(#restart){justify-content:center}
+@media(max-width:600px){.play-app #complete:not([hidden]){flex-direction:row;gap:8px;padding:8px}.play-app #complete p{font-size:14px}}

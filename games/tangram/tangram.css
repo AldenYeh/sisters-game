@@ -2,3 +2,11 @@
 
 /* Retain usable piece sizes while fitting the board on ordinary PC viewports. */
 .tan-board{height:min(640px,max(448px,calc(100svh - 330px)));width:auto;max-width:100%}
+
+/* Fill the available viewport while preserving both current and legacy world ratios. */
+.play-app:has(.tan-board){max-width:none;--tangram-room:max(240px,calc(100svh - var(--round-bar-height,66px) - 182px))}
+.play-app:has(.tan-board) .board-wrap{width:min(100%,calc(var(--tangram-room)*var(--tangram-ratio,1.652174)));max-width:100%;margin:0 auto;padding:0;border:0;background:transparent;box-shadow:none;overflow:visible}
+.play-app .tan-board{width:min(100%,calc(var(--tangram-room)*var(--tangram-ratio,1.652174)));height:auto;max-width:100%;border-radius:8px}
+.play-app:has(.tan-board):has(#complete:not([hidden])){--tangram-room:max(220px,calc(100svh - var(--round-bar-height,66px) - 252px))}
+
+@media(max-width:680px){.play-app:has(.tan-board):has(#complete:not([hidden])){--tangram-room:max(220px,calc(100svh - var(--round-bar-height,92px) - 380px))}}

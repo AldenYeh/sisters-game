@@ -13,3 +13,9 @@ body{overflow:auto}.sudoku-screen.game-screen{overflow:visible;align-items:cente
 .answer-pad{width:min(100%,520px)}.answer-button{min-height:44px;font-size:clamp(20px,5vw,36px)}
 .game-controls{flex-wrap:wrap}.game-controls button{min-height:44px;flex-shrink:0}.sudoku-card{padding-top:20px}
 @media(max-width:600px){.sudoku-screen.game-screen{padding:10px}.sudoku-cell{font-size:clamp(18px,calc(68cqw / var(--size)),39px)}}
+
+/* Preserve a square board while growing the answers and cell content with it. */
+.sudoku-app #game.game-screen>.board-wrap{width:min(100%,calc(var(--sudoku-board-side,520px) + 18px))}
+.sudoku-app #board .sudoku-cell{font-size:clamp(22px,calc(58cqw / var(--size)),76px)}
+.sudoku-app #answers{width:min(100%,calc(var(--sudoku-board-side,520px) + 18px))}
+.sudoku-app #answers .answer-button{font-size:clamp(26px,calc(var(--sudoku-board-side,520px) / var(--size) * .38),48px)}

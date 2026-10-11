@@ -15,7 +15,8 @@
     // Touching circles concealed real edges and made unconnected nodes look connected.
     radius=Math.min(12,spacing*.24);
     const xs=L.nodes.map(n=>n[0]),ys=L.nodes.map(n=>n[1]),pad=radius+12;
-    svg.setAttribute('viewBox',[Math.min(...xs)-pad,Math.min(...ys)-pad,Math.max(...xs)-Math.min(...xs)+2*pad,Math.max(...ys)-Math.min(...ys)+2*pad].join(' '));
+    const boardBox=[Math.min(...xs)-pad,Math.min(...ys)-pad,Math.max(...xs)-Math.min(...xs)+2*pad,Math.max(...ys)-Math.min(...ys)+2*pad];
+    svg.setAttribute('viewBox',boardBox.join(' '));svg.dataset.strokeRatio=String(boardBox[2]/boardBox[3]);svg.style.setProperty('--stroke-ratio',boardBox[2]/boardBox[3]);svg.parentElement.style.setProperty('--stroke-ratio',boardBox[2]/boardBox[3]);
     const edges=L.edges.map((e,i)=>{const a=L.nodes[e[0]],b=L.nodes[e[1]],done=used.has(i);return `<line data-i="${i}" class="${done?'used':'unused'}" x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}"/>`;}).join('');
     const nodes=L.nodes.map((n,i)=>`<circle tabindex="0" role="button" aria-label="節點 ${i+1}${last===i?'，目前位置':''}" data-n="${i}" cx="${n[0]}" cy="${n[1]}" r="${radius+(last===i?1.5:0)}" class="${last===i?'current':''}"/>`).join('');
     svg.innerHTML=edges+nodes;

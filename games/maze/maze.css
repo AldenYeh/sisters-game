@@ -32,3 +32,12 @@ body{overflow:auto}.maze-app .game-screen{height:auto;min-height:calc(100svh - v
 @media(min-width:1100px){.game-heading{flex:0 1 180px}.game-info{flex:2 1 500px}}
 
 .maze-mode-note{flex-basis:100%;margin:0;text-align:center;font-size:14px;font-weight:800;color:var(--green-dark)}
+
+/* Measured cell size uses the whole available board area without a fixed cap. */
+.maze-app #maze{width:calc(var(--cell-size)*var(--maze-cols));height:calc(var(--cell-size)*var(--maze-rows))}
+.maze-app #maze .cell{width:var(--cell-size);height:var(--cell-size)}
+.maze-app #maze .token{min-width:0;min-height:0;width:88%;height:88%;font-size:calc(var(--cell-size)*.7)}
+.maze-app #maze .goal-token{width:76%;height:76%}
+/* Only the outer player badge needs padding; nested reading spans do not. */
+.maze-app .game-info .reading,.maze-app .game-info .reading span{padding:0;background:none;border-radius:0;font-size:inherit}
+.maze-app .game-info #current-player{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}

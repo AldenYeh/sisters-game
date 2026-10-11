@@ -5,3 +5,7 @@
 .card.gone{background:#eef6ef;color:#2f6f4e;box-shadow:none}
 
 .grid{container-type:inline-size}.card{min-width:0;min-height:0;padding:0;line-height:1;font-size:clamp(20px,calc(65cqw / var(--memory-cols,4)),60px)}
+/* Size the card grid by its actual rows/columns; the frame has no spare rows. */
+.play-app #grid.grid{width:min(100%,calc(max(260px,calc(100svh - var(--round-bar-height,66px) - 250px)) * var(--memory-cols,4) / var(--memory-rows,3)));max-width:100%;height:auto;min-height:0;margin:8px auto;padding:8px;gap:8px;align-items:start;grid-auto-rows:auto}
+.play-app #grid .card{aspect-ratio:1;min-height:0;min-width:0;font-size:max(22px,calc(65cqw / var(--memory-cols,4)))}
+.play-app>.toolbar:has(#restart){justify-content:center}

@@ -16,3 +16,11 @@
 #legacy-goal-notice h2{font-size:20px;margin:0 0 8px}
 #legacy-goal-notice .coach-card p{font-size:16px}
 #legacy-goal-notice button{margin:4px}
+
+/* The active towers use the viewport; all disc positions stay in game coordinates. */
+.play-app:has(#pegs){max-width:none;--hanoi-room:max(300px,calc(100svh - var(--round-bar-height,66px) - 182px))}
+.play-app:has(#pegs) #pegs{height:var(--hanoi-room);min-height:0;gap:clamp(8px,1.2vw,20px)}
+.play-app:has(#pegs) #pegs .peg{height:100%;min-height:0}
+.play-app:has(#pegs) #pegs .disc{height:clamp(28px,calc((var(--hanoi-room) - 100px)/8),80px);flex-shrink:0}
+.play-app:has(#pegs):has(#complete:not([hidden])){--hanoi-room:max(280px,calc(100svh - var(--round-bar-height,66px) - 252px))}
+@media(max-width:680px){.play-app:has(#pegs){--hanoi-room:max(330px,calc(100svh - var(--round-bar-height,92px) - 214px))}.play-app:has(#pegs):has(#complete:not([hidden])){--hanoi-room:max(300px,calc(100svh - var(--round-bar-height,92px) - 380px))}.play-app:has(#pegs) #pegs .peg{padding:36px 6px 16px}}
