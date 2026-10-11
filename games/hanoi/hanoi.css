@@ -9,3 +9,10 @@
 .disc{height:30px;border-radius:999px;margin-top:6px}
 .disc.picked{outline:4px solid #3d3338;transform:translateY(-6px)}
 .peg,.disc{touch-action:none}.peg:focus-visible,.peg.selected{outline:3px solid #8d5b73;outline-offset:2px}
+
+/* Keep family settings, save retry and Back reachable while the old goal awaits a choice. */
+#legacy-goal-notice.coach{position:relative;inset:auto;padding:12px;margin-bottom:12px;display:block;z-index:auto;background:#fff1d9;border-radius:14px}
+#legacy-goal-notice .coach-card{width:100%;box-shadow:none;background:transparent;padding:8px}
+#legacy-goal-notice h2{font-size:20px;margin:0 0 8px}
+#legacy-goal-notice .coach-card p{font-size:16px}
+#legacy-goal-notice button{margin:4px}

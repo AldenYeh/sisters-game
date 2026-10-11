@@ -25,7 +25,7 @@
       board.append(d);
     }));
     const L = level();
-    document.getElementById("status").textContent = `把箱子推到小魚上 · ${L.name} · ${moves} 步`;
+    document.getElementById("status").textContent = `把箱子推到小魚上 · ${L.name} · ${moves} 步 · 方向鍵／WASD，或在棋盤滑動`;
   }
   function move(dx, dy) {
     if(!SistersRound.canInteract()||completed) return;
@@ -50,14 +50,15 @@
     SistersRound.checkpoint();
   }
   function chips(){SistersChallenges.selector(document.getElementById('level-row'),[1,2,3].map(v=>({value:v,label:v+' 箱'})),tier,v=>load(index,'new',v),'箱子數');}
-  document.querySelectorAll(".pad button").forEach(b=>b.onclick=()=>{ const [dx,dy]=b.dataset.d.split(",").map(Number); move(dx,dy); });
-  window.addEventListener("keydown", ev=>{if(!SistersRound.canInteract())return;const map={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],W:[0,-1],a:[-1,0],A:[-1,0],s:[0,1],S:[0,1],d:[1,0],D:[1,0]}; if(map[ev.key]){ev.preventDefault(); move(...map[ev.key]);} if(ev.key==='z'||ev.key==='Z') document.getElementById('undo').click(); if(ev.key==='r'||ev.key==='R') document.getElementById('restart').click(); });
-  let sx,sy,pointerId; document.getElementById("board").addEventListener("pointerdown", e=>{if(pointerId!==undefined)return;pointerId=e.pointerId;sx=e.clientX; sy=e.clientY;});
-  document.getElementById("board").addEventListener("pointerup", e=>{ if(sx===undefined||e.pointerId!==pointerId)return;pointerId=undefined; const dx=e.clientX-sx, dy=e.clientY-sy;sx=sy=undefined; if(Math.hypot(dx,dy)<24) return; if(Math.abs(dx)>Math.abs(dy)) move(dx>0?1:-1,0); else move(0,dy>0?1:-1); });
-  document.getElementById("board").addEventListener("pointercancel",()=>{sx=sy=pointerId=undefined;});
+  window.addEventListener("keydown", ev=>{if(ev.target.closest?.('input,textarea,select,[contenteditable]')||!SistersRound.canInteract())return;const map={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],W:[0,-1],a:[-1,0],A:[-1,0],s:[0,1],S:[0,1],d:[1,0],D:[1,0]}; if(map[ev.key]){ev.preventDefault(); move(...map[ev.key]);} if(ev.key==='z'||ev.key==='Z') document.getElementById('undo').click(); if(ev.key==='r'||ev.key==='R') document.getElementById('restart').click(); });
+  let sx,sy,pointerId;const swipeBoard=document.getElementById("board");
+  function cancelSwipe(){if(pointerId!==undefined&&swipeBoard.hasPointerCapture(pointerId))swipeBoard.releasePointerCapture(pointerId);sx=sy=pointerId=undefined;}
+  swipeBoard.addEventListener("pointerdown",e=>{if(!SistersRound.canInteract()||pointerId!==undefined)return;pointerId=e.pointerId;sx=e.clientX;sy=e.clientY;swipeBoard.setPointerCapture(e.pointerId);e.preventDefault();});
+  swipeBoard.addEventListener("pointerup",e=>{if(sx===undefined||e.pointerId!==pointerId)return;const dx=e.clientX-sx,dy=e.clientY-sy;cancelSwipe();if(Math.hypot(dx,dy)<28)return;if(Math.abs(dx)>Math.abs(dy))move(dx>0?1:-1,0);else move(0,dy>0?1:-1);});
+  swipeBoard.addEventListener("pointercancel",e=>{if(e.pointerId===pointerId)cancelSwipe();});
   document.getElementById("undo").onclick=()=>{ if(!SistersRound.canInteract()||completed||!history.length) return; rows=history.pop().map(r=>r.split("")); moves=Math.max(0,moves-1); render(); SistersRound.checkpoint(); };
   document.getElementById("overlay-next").onclick=()=>{ load((index+1)%levels.length); chips(); };
   SistersPlay.showCoach("sokoban", [{demo:"🐱📦🐟", line:"把箱子推到小魚上"}]);
   SistersPlay.mount({title:"推箱子", onRestart:()=>load(index,"restart")});
-  chips(); if(!await SistersRound.attach({snapshot:()=>({question,tier,index,rows,moves,history,restarts,startedAt,completed}),cancel:()=>{sx=sy=pointerId=undefined;},restore:p=>{if(!(p.question||levels[p.index])||!Array.isArray(p.rows))throw Error("推箱子存檔格式錯誤");question=p.question||null;tier=p.tier||"1";({index,rows,moves,history,restarts,startedAt,completed}=p);chips();render();}})) await load(0);
+  chips(); if(!await SistersRound.attach({snapshot:()=>({question,tier,index,rows,moves,history,restarts,startedAt,completed}),cancel:cancelSwipe,restore:p=>{if(!(p.question||levels[p.index])||!Array.isArray(p.rows))throw Error("推箱子存檔格式錯誤");question=p.question||null;tier=p.tier||"1";({index,rows,moves,history,restarts,startedAt,completed}=p);chips();render();}})) await load(0);
 })();

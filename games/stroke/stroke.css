@@ -1,1 +1,7 @@
-svg{width:min(100%,520px);height:auto;touch-action:manipulation}
+svg{display:block;width:min(100%,620px);height:auto;max-height:60svh;margin:auto;touch-action:none;user-select:none}
+svg line{stroke-width:4;stroke-linecap:round;pointer-events:none}
+svg line.unused{stroke:#845773}
+svg line.used{stroke:#2f6f4e;stroke-dasharray:3 3}
+svg circle{fill:#fff;stroke:#845773;stroke-width:1.5;cursor:pointer}
+svg circle.current{fill:#d25b6a;stroke:#803546;stroke-width:2}
+svg circle:focus-visible{outline:none;stroke:#292039;stroke-width:3}

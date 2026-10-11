@@ -51,43 +51,10 @@ def stroke():
   bank[tier].append(dict(id=tier+'-'+str(len(bank[tier])),name='隨機線圖',tier=tier,nodes=coords,edges=edges,odds=len(odds),solution=list(reversed(route))))
  emit('stroke',bank)
 def sliding():
- bank={str(i):[] for i in range(1,5)};seen=set();attempt=0
- def solve(ps,exitrow,limit=4):
-  start=tuple((p['r'] if p['h']>p['w'] else p['c']) for p in ps);queue=collections.deque([start]);prev={start:None};steps={start:0}
-  while queue:
-   v=queue.popleft()
-   if v[0]+ps[0]['w']==6:
-    route=[]
-    while prev[v] is not None:v0,move=prev[v];route.append(move);v=v0
-    return list(reversed(route))
-   if steps[v]>=limit:continue
-   occ=set()
-   for p,at in zip(ps,v):
-    r=at if p['h']>p['w'] else p['r'];c=at if p['w']>p['h'] else p['c'];occ.update((r+y,c+x) for x in range(p['w']) for y in range(p['h']))
-   for i,p in enumerate(ps):
-    vertical=p['h']>p['w'];r=v[i] if vertical else p['r'];c=p['c'] if vertical else v[i];own={(r+y,c+x) for x in range(p['w']) for y in range(p['h'])};used=occ-own
-    for sign in [-1,1]:
-     for distance in range(1,6):
-      nr=r+sign*distance if vertical else r;nc=c if vertical else c+sign*distance
-      if nr<0 or nc<0 or nr+p['h']>6 or nc+p['w']>6 or any((nr+y,nc+x) in used for x in range(p['w']) for y in range(p['h'])):break
-      q=list(v);q[i]+=sign*distance;q=tuple(q)
-      if q not in prev:prev[q]=(v,[i,nr-r,nc-c]);steps[q]=steps[v]+1;queue.append(q)
-   if len(prev)>30000:return None
-  return None
- while any(len(v)<50 for v in bank.values()):
-  attempt+=1;er=R.choice([2,3]);ps=[dict(w=2,h=1,r=er,c=R.choice([0,1]),target=True)];used={(er,c) for c in range(ps[0]['c'],ps[0]['c']+2)}
-  for _ in range(R.randint(5,10)):
-   for _ in range(20):
-    w,h=R.choice([(2,1),(3,1),(1,2),(1,3)]);r=R.randrange(7-h);c=R.randrange(7-w);cells={(r+y,c+x) for x in range(w) for y in range(h)}
-    if not cells&used:ps.append(dict(w=w,h=h,r=r,c=c,target=False));used|=cells;break
-  key=min(str(sorted((p['w'],p['h'],5-p['r']-p['h']+1 if flip else p['r'],p['c'],p['target']) for p in ps)) for flip in [False,True])
-  if key in seen:continue
-  solution=solve(ps,er)
-  if not solution:continue
-  tier=str(len(solution))
-  if len(bank[tier])>=50:continue
-  seen.add(key);bank[tier].append(dict(id=tier+'-'+str(len(bank[tier])),name='隨機紅車',tier=tier,rows=6,cols=6,exitRow=er,pieces=ps,minimumMoves=len(solution),solution=solution))
- emit('sliding',bank)
+ # Current curated pool has independently verified blockers/dependencies.
+ # Never regenerate the removed 1-step pool through this umbrella command.
+ import subprocess
+ subprocess.run(['node','tools/generate-sliding-curated.cjs'],check=True)
 def sokoban():
  bank={str(i):[] for i in range(1,4)};seen=set();directions=[(1,0),(-1,0),(0,1),(0,-1)]
  def solve(floor,goals,p,bs):

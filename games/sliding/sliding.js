@@ -1,14 +1,12 @@
 (async () => {
   "use strict";
   const levels = window.SlidingLevels;
-  const tierName = {tutorial:"1 步",easy:"2 步",medium:"3 步",hard:"4 步",challenge:"5 步以上"};
-  // Difficulty here is the verified shortest move count, not an invented tier.
-  const difficulty=L=>L.minimumMoves===1?"tutorial":L.minimumMoves===2?"easy":L.minimumMoves===3?"medium":L.minimumMoves===4?"hard":"challenge";
-  let question=null,tier="1",filter="all", index=0, pieces=[], moves=0, hints=0, restarts=0, startedAt=Date.now(), history=[],cancelDrag=null,dragSnapshot=null;
+  const tiers=[{value:"basic",label:"讓車先行 · 3–5 步"},{value:"planning",label:"安排順序 · 6–9 步"},{value:"challenge",label:"連環解鎖 · 10 步以上"}];
+  let question=null,tier="basic",filter="all", index=0, pieces=[], moves=0, hints=0, restarts=0, startedAt=Date.now(), history=[],cancelDrag=null,dragSnapshot=null;
   const board=document.getElementById("board");
   const level=()=>question||levels[index];
   const clone=ps=>ps.map(p=>({...p}));
-  async function load(i=index,reason="new",nextTier=tier){return SistersRound.start(async()=>{if(reason==="restart")restarts++;const old=level();tier=nextTier;question=reason==="restart"?structuredClone(old):await SistersChallenges.draw('sliding:'+tier,SistersBanks.sliding[tier]);index=i;pieces=clone(level().pieces);moves=0;hints=0;startedAt=Date.now();history=[];document.getElementById("complete").hidden=true;chips();render();},reason);}
+  async function load(i=index,reason="new",nextTier=tier){return SistersRound.start(async()=>{if(reason==="restart")restarts++;const old=level();tier=reason==="restart"?nextTier:(SistersBanks.sliding[nextTier]?nextTier:"basic");question=reason==="restart"?structuredClone(old):await SistersChallenges.draw('sliding:curated-v1:'+tier,SistersBanks.sliding[tier]);index=i;pieces=clone(level().pieces);moves=0;hints=0;startedAt=Date.now();history=[];document.getElementById("complete").hidden=true;chips();render();},reason);}
   function occ(skip){ const m=new Set(); pieces.forEach((p,i)=>{ if(i===skip)return; for(let y=0;y<p.h;y++) for(let x=0;x<p.w;x++) m.add((p.r+y)+","+(p.c+x)); }); return m; }
   function can(i,dr,dc){ const L=level(), p=pieces[i], nr=p.r+dr, nc=p.c+dc; if(nr<0||nc<0||nr+p.h>L.rows||nc+p.w>L.cols) return false; const used=occ(i); for(let y=0;y<p.h;y++) for(let x=0;x<p.w;x++) if(used.has((nr+y)+","+(nc+x))) return false; return true; }
   function slide(i,dr,dc,steps){ let n=0; while(n<steps && can(i,dr,dc)){ pieces[i].r+=dr; pieces[i].c+=dc; n++; } return n; }
@@ -74,11 +72,11 @@
     hints++;
     document.getElementById("status").textContent="提示：先把擋住紅車的車移開";SistersRound.checkpoint();
   }
-  function chips(){SistersChallenges.selector(document.getElementById('tier-row'),[1,2,3,4].map(v=>({value:v,label:'最短 '+v+' 步'})),tier,v=>load(index,'new',v),'最短解步數');document.getElementById('level-row').replaceChildren();}
+  function chips(){const options=[...tiers];if(!SistersBanks.sliding[tier])options.unshift({value:tier,label:"保留舊關卡 · 最短 "+level().minimumMoves+" 步"});SistersChallenges.selector(document.getElementById('tier-row'),options,tier,v=>load(index,'new',v),'解題難度');if(!SistersBanks.sliding[tier])document.querySelector('#tier-row option').disabled=true;document.getElementById('level-row').replaceChildren();}
   document.getElementById("hint").onclick=hint;
   document.getElementById("undo").onclick=()=>{ if(!SistersRound.canInteract()||!history.length) return; pieces=history.pop(); moves=Math.max(0,moves-1); render();SistersRound.checkpoint(); };
   document.getElementById("overlay-next").onclick=()=>{ load((index+1)%levels.length); chips(); };
   SistersPlay.showCoach("sliding", [{demo:"🚗➡️🚪", line:"抓住紅車，拖到右邊出口"},{demo:"🚙", line:"其他車要先讓路"}]);
   SistersPlay.mount({ title:"滑塊闖關", onRestart: () => load(index,"restart") });
-  chips();if(!await SistersRound.attach({snapshot:()=>dragSnapshot||({question,tier,filter,index,pieces,moves,hints,restarts,startedAt,history}),cancel:()=>cancelDrag?.(),restore:p=>{if(!(p.question||levels[p.index])||p.pieces.length!==(p.question||levels[p.index]).pieces.length)throw Error("滑塊存檔格式錯誤");question=p.question||null;tier=p.tier||"1";({filter,index,pieces,moves,hints,restarts,startedAt,history}=p);chips();render();}}))await load(0);
+  chips();if(!await SistersRound.attach({snapshot:()=>dragSnapshot||({question,tier,filter,index,pieces,moves,hints,restarts,startedAt,history}),cancel:()=>cancelDrag?.(),restore:p=>{if(!(p.question||levels[p.index])||p.pieces.length!==(p.question||levels[p.index]).pieces.length)throw Error("滑塊存檔格式錯誤");question=p.question||null;tier=p.tier||"legacy";({filter,index,pieces,moves,hints,restarts,startedAt,history}=p);chips();render();}}))await load(0);
 })();

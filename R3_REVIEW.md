@@ -2,11 +2,28 @@
 
 此版以 R2 `ea6ca62c2767ae139762ee71808e9ff01304c45e` 為基線，在獨立雲端分支完成；原始 33 個未提交草稿檔案逐檔比對備份，沒有改動。
 
+## 2026-10-11 早晨回饋整合
+
+本次在已發布 `33f27fc41dea5443ecc28db3a11d57bc3ca077e6` 上整合 Owner 指定的遊玩與插畫修正；共用家長密碼、計時、十分鐘寬限、毫秒扣抵與保存格式未變。原始草稿、R1、R2 保留；網站更新採普通提交，可由正常 revert 回退。
+
+- 推箱子移除底部四方向按鈕，支援方向鍵／WASD、棋盤滑動、反悔與重開；密碼輸入不控制角色。
+- 河內塔 3–7 層回到經典左柱開始、全部合法移到右柱完成，移除微型目標圖。Owner 明確豁免其每層 50 題要求。舊任意目標局不自動更換或補記完成；保留位置、步數、ID，待使用者確認改以右柱繼續或放棄重開。目標選擇先保存再解鎖。
+- 一筆畫重現「拖曳沒有走線」及圓點遮線；所附圖的節點布局唯一吻合 easy-20，但附件沒有題號，這只是布局比對。圖中前四段是實線，後段相鄰兩點沒有連線。縮小圓點、顯示紫色未走線／綠色已走虛線，支援真實滑鼠／觸控連續拖曳、快速移動穿過中間節點、逐點與鍵盤操作；分開顯示無線與重複走線。保存期間只緩衝已授權手勢，截止／家長／保存失敗取消剩餘輸入。
+- 滑塊移除普通一步題庫，三難度各 50 個真正受阻且結構不同的局面：3–5／6–9／10–18 次滑動；後兩級分別至少一／二個間接擋車。每輛非紅車都參與解題，未用車不湊數；舊存檔保持原棋盤、ID，明確換關才進新庫。
+- 拼圖回到 **3 張**完整原插畫，各有 12／24／36 片；找不同回到 **5 組**原完整插畫，海底螃蟹變海星合併為一個答案。保留接榫、無答案底圖、可選參考、棋盤下方完成區與全部舊局。這是插畫品質復原，尚未達到每主題 50 張不同插畫；沒有將改名／換色當成新內容。
+- 拼圖與找不同新局按需載入壓縮 WebP，移除 eager 332 KB 構圖庫與生成器；舊找不同 procedural 存檔才延遲載入原 renderer。拼圖碎片直接使用 Canvas，取消每片同步 PNG dataURL 編碼；拖曳影像實際複製像素，縮放清理切片快取。
+
+目前 **79 個選項組合**：迷宮 8、數獨 12、翻牌 20、拼圖 9、河內塔 5、滑塊 3、推箱子 3、一筆畫 3、七巧板 3、視覺記憶 5、規律接龍 3、找不同 5。不再把舊河內塔／procedural 圖庫列為目前新局的 50 題池。其餘題庫每級 50 的驗證保持，滑塊另以獨立 BFS 重新驗證全部 150 題最短解與結構去重。
+
+冷／暖載入測量在獨立 localhost Chromium context，非家庭網路或 Pages CDN。含 HTML 原始 bytes：拼圖約 428 KB → 172 KB，找不同約 426 KB → 250 KB；拼圖新局 PNG 編碼 12 次 → 0。檔案／CPU 工作明確減少；本地毫秒測量不保證家用載入速度。原圖 bytes 未改，舊 JPG／WebP 與舊保存的 dataURI 均保留。
+
+新專項入口：`node tests/sokoban-controls-browser.cjs`、`node tests/hanoi-classic-browser.cjs`、`node tests/stroke-input-browser.cjs`、`node tests/sliding-quality-data.cjs`、`node tests/sliding-quality-browser.cjs`、`node tests/art-quality-browser.cjs`、`node tests/art-quality-legacy.cjs`、`node tests/art-quality-parent-touch.cjs`。載入與失敗測試另用 `node tests/art-quality-loading.cjs`、`node tests/art-quality-load-failure.cjs`。本次實測：79 模式逐一完成、553 版面檢查、24 次真實瀏覽器縮放；十二款各通過到期完成、截止保存／續時、模擬觸控與 R2 遷移；9 家長、13 邊界、11 續時轉換（含3基線錯誤重現）、3 瀏覽器重啟；78 個專項案例（含1一筆畫基線重現）通過，另150滑塊獨立最短解、150一筆畫線距／圖同構、150推箱子最短解與50七巧板輪廓驗證。最新驗證摘要／全部執行結果與 source SHA256 在整合驗收包 `review/verification.json`；下方 52f240e／624975e／33f27fc 的紀錄為歷史基線，不冒充本次重測。
+
 ## 雲端環境與盤點
 
 雲端啟動成功，`/workspace/sisters-game-r3` 可讀寫、Chromium 可用，本機預覽於 8005 回應 HTTP 200。未操作家中／公司電腦。工作區可用檔案中未找到 AGENTS.md、.agents/skills/SKILL.md 或額外啟動指示；沒有把環境設定報告中的成功聲稱當成本次測試。
 
-本次開始處原倉庫仍為 `ebc02b12fb6b45536aab22e638d6bd344b8a0424`，有 28 個修改、5 個未追蹤草稿；保留後另建 R1／R2／R3 隔離工作區。R3 實際分支 `r3/gameplay-parental`，基線 R2 如上；最後發布前遠端 `master` 為 R2、`grok/game-factory-expansion` 仍為 ebc02b12，沒有覆蓋其他後續提交。
+本次開始處原倉庫仍為 `ebc02b12fb6b45536aab22e638d6bd344b8a0424`，有 28 個修改、5 個未追蹤草稿；保留後另建 R1／R2／R3 隔離工作區。R3 實際分支 `r3/gameplay-parental`，基線 R2 如上；原 R3 第一次發布前遠端 `master` 為 R2、`grok/game-factory-expansion` 仍為 ebc02b12，沒有覆蓋其他後續提交。
 
 專案為原生 HTML／CSS／JavaScript 靜態網站，13 個 HTML 頁面（首頁加 12 款遊戲），沒有打包或伺服器。舊玩家／迷宮通關／共用紀錄／單局進度鍵依序為 `sistersPuzzleCurrentPlayerV1`、`mazeAdventureRecordsV1`、`sistersGameResultsV1`、`sistersRoundLifecycleV1`。R3 用一個原子家庭狀態保存每位玩家每款局面、授權、扣抵、去重結算與抽題循環；兼容舊鍵且不縮減舊紀錄。三個既有 Node 測試於修改前做基線、最終再執行通過；不是沿用環境設定報告。十二遊戲列表與各自驗證如下。
 
@@ -22,9 +39,9 @@
 
 這是靜態網站的本機保護。清除或修改瀏覽器資料、改程式／本機時鐘、換瀏覽器或裝置均可繞過或失去資料；沒有伺服器端強制或跨裝置同步。需安全來源、Web Crypto、Web Locks；不支援時會停止遊玩。
 
-## 每個新難度的題庫
+## 52f240e 原始題庫（歷史版本，非目前上線內容）
 
-每個下列組合有 **50 題**，抽題採玩家／組合獨立的不重複循環，循環交界也避免立即重複。相同邏輯庫在不同外觀／提示模式重用，沒有將換圖示或改名字當成新題數。舊存檔仍保留原關卡，不以新題替換。
+當時每個下列組合有 **50 題**，抽題採玩家／組合獨立的不重複循環，循環交界也避免立即重複。相同邏輯庫在不同外觀／提示模式重用，沒有將換圖示或改名字當成新題數。舊存檔仍保留原關卡，不以新題替換。
 
 | 遊戲 | 新組合 | 有效題數與驗證 |
 |---|---|---|
@@ -53,7 +70,7 @@
 
 R3 測試入口：`node tests/family-core.test.cjs`、`node tests/banks.test.cjs`、`node tests/parent-browser.cjs`、`node tests/parent-edge-browser.cjs`、`node tests/games-browser.cjs`、`node tests/cutoff-browser.cjs`、`SOLVE_EVERY_MODE=1 node tests/modes-browser.cjs`、`node tests/zoom-browser.cjs`、`node tests/touch-browser.cjs`、`node tests/relaunch-browser.cjs`。`node tests/run-r3.cjs` 依序執行核心、題庫、家長、十二遊戲、截止、重啟與遷移測試；模式、縮放與觸控另執行。遷移測試 `node tests/migration-browser.cjs` 另需原 R2 唯讀服務於 8003。舊的根目錄瀏覽器腳本是 R1／R2 參考測試，舊 UI／返回語義已改，不是 R3 驗收入口。
 
-資料生成：`node tools/generate-basic.cjs`、`node tools/generate-scenes.cjs`，幾何庫用 `python tools/generate-geometry.py`，依 `tools/requirements-generation.txt` 安裝生成／驗證專用相依套件。網站執行不需 Python 或這些套件。`python tests/geometry.test.py` 再獨立驗證七巧板、一筆畫同構及推箱子最短解。固定種子寫在生成腳本／資料檔中。
+資料生成：`node tools/generate-basic.cjs` 生成數獨、翻牌、視覺、迷宮及規律庫，附帶的任意目標河內塔庫為歷史相容資料；`node tools/generate-scenes.cjs` 的 procedural 圖庫亦只作歷史相容。目前滑塊使用 `node tools/generate-sliding-curated.cjs`，幾何庫總入口 `python tools/generate-geometry.py` 也轉用此新滑塊生成器，依 `tools/requirements-generation.txt` 安裝生成／驗證專用相依套件。網站執行不需 Python 或這些套件。`python tests/geometry.test.py` 再獨立驗證七巧板、一筆畫同構及推箱子最短解。固定種子寫在生成腳本／資料檔中。
 
 測試輸出位於未追蹤的 `outputs/r3/`，交付 ZIP 收錄最終報告、題庫數、畫面與 source SHA256 清單。無頭 Chromium 把各分頁皆報為可見且有焦點，所以背景測試明確模擬 visibilitychange；實際手機、Safari／其他瀏覽器、真實背景分頁仍需裝置驗收。150%／200% 測試則實際改 Chromium zoom，非只改 CSS 視窗。觸控測試以 coarse pointer、390×844 手機模擬、touch tap 及 CDP touch drag 實際完成十二款；這不是實體手機結果。瀏覽器重新啟動測試真的關閉／啟動 Chromium 並沿用隔離 profile；Chromium 啟動自動恢復的重複測試分頁先關閉，沿用一個測試分頁。跨過截止的部分明確使用虛構時鐘。
 

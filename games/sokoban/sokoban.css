@@ -4,9 +4,3 @@
 .cell.wall{background:#6d5360}
 .cell.goal{background:#f6e7b2;box-shadow:inset 0 0 0 3px #e0b15a}
 .cell.done{background:#d7efd4;box-shadow:inset 0 0 0 3px #2f6f4e}
-.pad{display:grid;grid-template-columns:64px 64px 64px;grid-template-rows:52px 52px 52px;gap:8px;width:max-content;margin:16px auto 0}
-.pad button{border:1px solid #eadfd6;border-radius:14px;background:#fff;font-weight:800}
-.pad button[data-d="0,-1"]{grid-column:2;grid-row:1}
-.pad button[data-d="-1,0"]{grid-column:1;grid-row:2}
-.pad button[data-d="1,0"]{grid-column:3;grid-row:2}
-.pad button[data-d="0,1"]{grid-column:2;grid-row:3}

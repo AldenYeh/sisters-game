@@ -11,3 +11,5 @@
 .block.selected[data-axis=y]::after{content:"↕";position:absolute;inset:0;display:grid;place-items:center}
 
 .slide-board{grid-template-columns:repeat(var(--cols),minmax(0,1fr));grid-template-rows:repeat(var(--rows),minmax(0,1fr));width:min(100%,max(300px,calc(100svh - 400px)),520px)}
+/* Keep adjacent vehicles visibly separate without changing their hit boxes. */
+.block{border:2px solid #f4efe8;box-sizing:border-box}

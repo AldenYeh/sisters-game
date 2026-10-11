@@ -5,10 +5,11 @@
 
 <div class="toolbar" id="disc-row"></div>
 <p id="status" class="msg"></p>
-<p class="msg">目標排列</p><div id="hanoi-goal" class="hanoi-goal pegs"></div><div id="pegs" class="pegs"></div>
+<section id="legacy-goal-notice" hidden role="dialog" aria-labelledby="legacy-goal-title"><div class="coach-card"><h2 id="legacy-goal-title">舊局的目標更新了</h2><p>原本的圓盤位置和步數已保留。現在統一把全部圓盤排到右柱；確認後才會改用新目標，不會自動算通關。</p><button id="legacy-goal-continue" class="primary-button" type="button">保留進度，改以右柱繼續</button><button id="legacy-goal-restart" class="secondary-button" type="button">放棄舊局，從左柱重新開始</button></div></section>
+<div id="pegs" class="pegs"></div>
 <div class="toolbar"><button id="restart" class="secondary-button" type="button">重新開始</button></div>
 
 <div id="complete" class="complete-overlay" hidden><div>🎉 ⭐ 🐱 ⭐ 🎉</div><h2>完成啦！</h2><p></p><button id="overlay-next" class="primary-button" type="button">下一題</button></div>
 </main>
-<script src="../../assets/js/content.js"></script><script src="../../assets/js/shared.js"></script><script src="../../assets/js/family-core.js"></script><script src="../../assets/js/family.js"></script><script src="../../assets/js/lifecycle.js"></script><script src="../../assets/js/challenges.js"></script><script src="../../assets/data/hanoi-bank.js"></script><script src="../../assets/js/play.js"></script>
+<script src="../../assets/js/content.js"></script><script src="../../assets/js/shared.js"></script><script src="../../assets/js/family-core.js"></script><script src="../../assets/js/family.js"></script><script src="../../assets/js/lifecycle.js"></script><script src="../../assets/js/challenges.js"></script><script src="../../assets/js/play.js"></script>
 <script src="hanoi.js"></script></body></html>

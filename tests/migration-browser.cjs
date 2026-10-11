@@ -1,6 +1,6 @@
 'use strict';
 const {chromium}=require('playwright'),fs=require('fs'),assert=require('assert/strict');
-const oldURL='http://127.0.0.1:8003',newURL=process.env.TEST_URL||'http://127.0.0.1:8005',games=['maze','sudoku','memory','sokoban','pattern','visual','spot','stroke','hanoi','puzzle','sliding','tangram'],pw='Migration-synthetic+long!2026';
+const oldURL=process.env.OLD_URL||'http://127.0.0.1:8003',newURL=process.env.TEST_URL||'http://127.0.0.1:8005',games=['maze','sudoku','memory','sokoban','pattern','visual','spot','stroke','hanoi','puzzle','sliding','tangram'],pw='Migration-synthetic+long!2026';
 (async()=>{const b=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']}),rows=[];fs.mkdirSync('outputs/r3/migration',{recursive:true});
 for(const game of games){const old=await b.newContext(),fresh=await b.newContext();for(const c of[old,fresh])await c.addInitScript(games=>{if(location.origin==='null')return;localStorage.setItem('sistersPuzzleCurrentPlayerV1','guest');localStorage.setItem('sistersMuted','1');for(const g of games)localStorage.setItem('sistersCoachSeenV1:'+g,'1');},games);const p=await old.newPage(),q=await fresh.newPage(),row={game,pass:false};q.setDefaultTimeout(7000);try{
 await p.goto(oldURL+'/games/'+game+'/');if(game==='maze')await p.click('#start-game');if(game==='sudoku')await p.click('#start');await p.waitForFunction(()=>SistersRound.canInteract());

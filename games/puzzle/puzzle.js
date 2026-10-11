@@ -1,9 +1,9 @@
 (async () => {
   "use strict";
   const arts = [
-    { id: "garden", name: "花園", src: "art/garden.jpg" },
-    { id: "room", name: "房間", src: "art/room.jpg" },
-    { id: "sea", name: "海底", src: "art/sea.jpg" }
+    { id: "garden", name: "花園", src: "../spot/art/garden.webp" },
+    { id: "room", name: "房間", src: "../spot/art/room.webp" },
+    { id: "sea", name: "海底", src: "../spot/art/sea.webp" }
   ];
   const sizes = [12, 24, 36];
   const state = { pieces: 12, art: arts[0], placed: [], hints: 0, moves: 0, restarts: 0, startedAt: Date.now(), cols: 4, rows: 3, image: null, trayOrder: [], question:null,referenceShown:false };
@@ -24,8 +24,10 @@
     try{while(wanted){const next=wanted;wanted=null;loadingTarget=next;
       const ok=await SistersRound.start(async()=>{
         // Load before changing the logical state so failures preserve the old board.
-        const question=next.reason==='restart'&&state.question&&state.art.id===next.art.id&&state.pieces===next.pieces?state.question:await SistersChallenges.draw('puzzle:'+next.art.id+':'+next.pieces,SistersBanks.scenes[next.art.id]);
-        const actualArt={...next.art,src:SistersSceneArt.make(next.art.id,question,false,true)};
+        // Three approved complete illustrations; saved procedural rounds keep their exact original source.
+        const keep=next.reason==='restart'&&state.art.id===next.art.id&&state.pieces===next.pieces;
+        const question=keep?state.question:{id:'illustration-'+next.art.id,kind:'illustration'};
+        const actualArt=keep?state.art:{...arts.find(a=>a.id===next.art.id)};
         const image=await loadImage(actualArt.src);cancelDrag?.();selected=null;sliceCache.clear();
         state.pieces=next.pieces;state.art=actualArt;state.question=question;state.image=image;
         if(next.reason==="restart")state.restarts++;
@@ -52,8 +54,9 @@
     const g=out.getContext('2d');g.translate(pad,pad);g.beginPath();
     for(const [op,...p]of SistersJigsaw.commands(state.cols,state.rows,i,w,h)){if(op==='M')g.moveTo(...p);else if(op==='L')g.lineTo(...p);else if(op==='C')g.bezierCurveTo(...p);else g.closePath();}
     g.save();g.clip();g.drawImage(img,-c*w,-r*h,w*state.cols,h*state.rows);g.restore();g.strokeStyle='rgba(91,63,67,.4)';g.lineWidth=.75;g.stroke();
-    const url=out.toDataURL();sliceCache.set(key,url);return url;
+    sliceCache.set(key,out);return out;
   }
+  function pieceCanvas(i,w,h){const original=slice(i,w,h),copy=document.createElement('canvas');copy.width=original.width;copy.height=original.height;copy.getContext('2d').drawImage(original,0,0);copy.setAttribute('aria-hidden','true');return copy;}
   function render() {
     const size = cellSize(),pad=Math.ceil(Math.min(size.w,size.h)*.20);
     board.style.display = "grid";
@@ -67,7 +70,7 @@
       const cell = document.createElement("div");
       cell.style.width = size.w + "px";
       cell.style.height = size.h + "px";
-      cell.className="puzzle-slot";if(state.placed[i]){const piece=document.createElement('img');piece.src=slice(i,size.w,size.h);piece.alt='';Object.assign(piece.style,{position:'absolute',left:-pad+'px',top:-pad+'px',width:size.w+2*pad+'px',height:size.h+2*pad+'px',maxWidth:'none',pointerEvents:'none',zIndex:2});cell.append(piece);}
+      cell.className="puzzle-slot";if(state.placed[i]){const piece=pieceCanvas(i,size.w,size.h);Object.assign(piece.style,{position:'absolute',left:-pad+'px',top:-pad+'px',width:size.w+2*pad+'px',height:size.h+2*pad+'px',maxWidth:'none',pointerEvents:'none',zIndex:2});cell.append(piece);}
       cell.style.transition = "transform .18s ease";cell.tabIndex=0;cell.setAttribute("role","button");cell.setAttribute("aria-label",`第 ${i+1} 格`);const place=()=>{if(selected!==null){drop(selected,i);selected=null;}};cell.onclick=place;cell.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();place();}};
       board.append(cell);
     }
@@ -81,7 +84,7 @@
       el.className = "piece";el.dataset.piece=String(i);
       el.style.width = Math.round((size.w+2*pad)*.68) + "px";
       el.style.height = Math.round((size.h+2*pad)*.68) + "px";
-      el.style.background = `url(${slice(i,size.w,size.h)}) center/contain no-repeat`;
+      const art=pieceCanvas(i,size.w,size.h);Object.assign(art.style,{display:'block',width:'100%',height:'100%',pointerEvents:'none'});el.append(art);el.style.background='transparent';el.style.padding='0';
       el.style.border = "0";
       el.style.borderRadius = "0";
       el.style.cursor = "grab";
@@ -95,7 +98,7 @@
   function begin(ev,index,el){
     if(!SistersRound.canInteract()||cancelDrag||ev.button!==0)return;ev.preventDefault();
     const rect=el.getBoundingClientRect(),w=rect.width,h=rect.height,ox=ev.clientX-rect.left,oy=ev.clientY-rect.top;
-    const ghost=el.cloneNode();Object.assign(ghost.style,{position:"fixed",zIndex:9,pointerEvents:"none",width:w+"px",height:h+"px",left:rect.left+"px",top:rect.top+"px"});document.body.append(ghost);el.setPointerCapture(ev.pointerId);let moved=false;
+    const ghost=el.cloneNode();const original=el.querySelector('canvas'),copy=document.createElement('canvas');copy.width=original.width;copy.height=original.height;copy.getContext('2d').drawImage(original,0,0);Object.assign(copy.style,{display:'block',width:'100%',height:'100%'});ghost.append(copy);Object.assign(ghost.style,{position:"fixed",zIndex:9,pointerEvents:"none",width:w+"px",height:h+"px",left:rect.left+"px",top:rect.top+"px"});document.body.append(ghost);el.setPointerCapture(ev.pointerId);let moved=false;
     function cleanup(){el.removeEventListener("pointermove",move);el.removeEventListener("pointerup",up);el.removeEventListener("pointercancel",cancel);if(el.hasPointerCapture(ev.pointerId))el.releasePointerCapture(ev.pointerId);ghost.remove();cancelDrag=null;}
     function cancel(){cleanup();suppressClick=true;setTimeout(()=>suppressClick=false,300);}
     function move(e){if(e.pointerId!==ev.pointerId||!SistersRound.canInteract())return;moved=moved||Math.hypot(e.clientX-ev.clientX,e.clientY-ev.clientY)>5;ghost.style.left=e.clientX-ox+"px";ghost.style.top=e.clientY-oy+"px";}
@@ -114,5 +117,5 @@
   document.getElementById('reference-toggle').onchange=e=>{state.referenceShown=e.target.checked;document.getElementById('reference').hidden=!state.referenceShown;SistersRound.checkpoint();};
   document.getElementById("overlay-next").onclick = ()=>start();
   chips();const restored=await SistersRound.attach({snapshot:()=>{const {image,...saved}=state;return {...saved,selected};},cancel:()=>cancelDrag?.(),restore:async p=>{if(!sizes.includes(p.pieces)||!arts.some(a=>a.id===p.art.id))throw Error("拼圖存檔格式錯誤");Object.assign(state,p);selected=p.selected;state.image=await loadImage(state.art.src);chips();render();}});initializing=false;if(!restored)await start();else chips();
-  window.addEventListener("resize",()=>{cancelDrag?.();if(state.image)render();});
+  let resizeFrame=0,lastSize='';window.addEventListener('resize',()=>{cancelDrag?.();cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(()=>{if(!state.image)return;const size=cellSize(),key=size.w+':'+size.h;if(key!==lastSize){lastSize=key;sliceCache.clear();render();}});});
 })();
