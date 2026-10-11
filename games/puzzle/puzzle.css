@@ -26,3 +26,10 @@
 .puzzle-layout .tray{--tray-padding:10px;flex:0 1 auto;gap:8px;padding:var(--tray-padding);align-items:flex-start;align-content:flex-start;min-height:0}
 .puzzle-layout .tray:empty{height:0;min-height:0;padding:0;border:0;background:transparent}
 @media(max-width:760px){.play-app .puzzle-layout{grid-template-columns:minmax(0,1fr);gap:8px}}
+
+.tray .piece[aria-pressed="true"]{outline:3px solid #8d5b73;outline-offset:2px}
+.puzzle-side .ref-row{touch-action:manipulation}
+@media(max-width:760px),(pointer:coarse){
+  .play-app .puzzle-layout .puzzle-side{max-height:none}
+  .play-app .puzzle-layout .puzzle-side .tray{flex:none;overflow:visible;scrollbar-gutter:auto;max-height:none}
+}

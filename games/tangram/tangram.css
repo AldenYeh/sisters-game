@@ -10,3 +10,7 @@
 .play-app:has(.tan-board):has(#complete:not([hidden])){--tangram-room:max(220px,calc(100svh - var(--round-bar-height,66px) - 252px))}
 
 @media(max-width:680px){.play-app:has(.tan-board):has(#complete:not([hidden])){--tangram-room:max(220px,calc(100svh - var(--round-bar-height,92px) - 380px))}}
+
+/* Active-piece controls stay usable while finishing the authorized round. */
+.tangram-piece-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:4px 0 6px}
+.tangram-piece-actions button{touch-action:manipulation}

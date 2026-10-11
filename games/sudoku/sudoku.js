@@ -28,7 +28,17 @@ document.addEventListener('DOMContentLoaded',()=>{ if(window.SistersPlay) Sister
  document.querySelectorAll("[data-setting]").forEach(button=>button.addEventListener("click",()=>selectOption(button)));id("start").addEventListener("click",showGame);id("back-list").addEventListener("click",goList);id("back-setup").addEventListener("click",showSetup);id("restart").addEventListener("click",restart);id("next").addEventListener("click",newPuzzle);id("hint").addEventListener("click",hint);id("overlay-next").addEventListener("click",newPuzzle);id("overlay-list").addEventListener("click",goList);
  window.SudokuGame=Object.freeze({newPuzzle,restart,hint,enterValue,findConflicts,candidates,getState:()=>({...state,puzzle:copy(state.puzzle||[]),solution:copy(state.solution||[]),entries:copy(state.entries||[])}),packs});if(configurePlayer())document.querySelectorAll("[data-setting]").forEach(button=>button.setAttribute("aria-pressed",String(button.classList.contains("selected"))));
  // Presentation only: measure the real answer pad and controls before sizing the square.
- function fitBoard(){const game=id("game");if(game.hidden)return;const board=id("board"),wrap=board.parentElement,gs=getComputedStyle(game),ws=getComputedStyle(wrap),top=board.getBoundingClientRect().top+scrollY,tail=document.querySelector(".game-controls").getBoundingClientRect().bottom-board.getBoundingClientRect().bottom+parseFloat(gs.paddingBottom),width=game.clientWidth-parseFloat(gs.paddingLeft)-parseFloat(gs.paddingRight)-parseFloat(ws.paddingLeft)-parseFloat(ws.paddingRight)-parseFloat(ws.borderLeftWidth)-parseFloat(ws.borderRightWidth),side=Math.floor(Math.min(width,Math.max(180,innerHeight-top-tail-3)));game.style.setProperty("--sudoku-board-side",side+"px");}
- const boardSizer=new ResizeObserver(fitBoard);for(const el of [id("game").querySelector("header"),id("message"),id("answers"),document.querySelector(".game-controls"),document.querySelector(".family-bar"),document.querySelector(".round-bar")])boardSizer.observe(el);window.addEventListener("resize",fitBoard);
+ function fitBoard(){
+  const game=id("game");if(game.hidden)return;
+  const board=id("board"),wrap=board.parentElement,gs=getComputedStyle(game),ws=getComputedStyle(wrap),box=board.getBoundingClientRect(),top=box.top+scrollY;
+  const controls=game.querySelector(".round-action-row")||game.querySelector(".game-controls");
+  // Completed controls are hidden: their zero rectangle must never become a
+  // negative tail that grows the board past the viewport and completion dock.
+  const tail=(state.completed?id("complete").getBoundingClientRect().height+8:Math.max(0,controls.getBoundingClientRect().bottom-box.bottom))+parseFloat(gs.paddingBottom);
+  const width=game.clientWidth-parseFloat(gs.paddingLeft)-parseFloat(gs.paddingRight)-parseFloat(ws.paddingLeft)-parseFloat(ws.paddingRight)-parseFloat(ws.borderLeftWidth)-parseFloat(ws.borderRightWidth);
+  const room=state.completed?id("complete").getBoundingClientRect().top-box.top-12:innerHeight-top-tail-3;
+  const side=Math.floor(Math.min(width,620,Math.max(state.completed?96:180,room)));game.style.setProperty("--sudoku-board-side",side+"px");
+ }
+ const boardSizer=new ResizeObserver(fitBoard);for(const el of [id("game").querySelector("header"),id("message"),id("answers"),id("complete"),document.querySelector(".game-controls"),document.querySelector(".family-bar"),document.querySelector(".round-bar")])boardSizer.observe(el);window.addEventListener("resize",fitBoard);
  await SistersRound.attach({snapshot:()=>({...state}),restore:p=>{if(!p.entries||!p.puzzle||!p.solution||![4,6].includes(p.size))throw Error("數獨存檔格式錯誤");Object.assign(state,p);Object.assign(config,{size:p.size,mode:p.mode,difficulty:p.difficulty});configurePlayer();id("setup").hidden=true;id("game").hidden=false;renderAll();}});
 })();

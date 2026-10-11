@@ -1,4 +1,5 @@
 'use strict';
+const {selectGameOption}=require('./browser-helpers.cjs');
 const {chromium}=require('playwright'),assert=require('assert/strict'),fs=require('fs');
 const url=process.env.TEST_URL||'http://127.0.0.1:8005',password='R3-synthetic-only!long-2026',out='outputs/r3';
 (async()=>{fs.mkdirSync(out,{recursive:true});const browser=await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox']});const context=await browser.newContext({viewport:{width:1366,height:768}});await context.addInitScript(()=>{const real=Date.now;window.__shift=0;Date.now=()=>real()+window.__shift;});const page=await context.newPage(),errors=[],passed=[];page.on('pageerror',e=>errors.push(e.message));
@@ -6,7 +7,7 @@ const check=async(name,fn)=>{await fn();passed.push(name);console.log('PASS',nam
 const state=()=>page.evaluate(()=>SistersFamily.read());const idle=()=>page.waitForFunction(()=>SistersRound.canInteract(),null,{timeout:10000});
 async function coach(){for(let i=0;i<6&&await page.locator('.coach button').count();i++)await page.locator('.coach button').last().click();}
 async function auth(first=false){await page.click('#family-open');await page.fill('#parent-password',password);if(first)await page.fill('#parent-confirm',password);await page.locator('#parent-auth button[type=submit]').click();await page.waitForFunction(()=>!document.getElementById('parent-authorized').hidden);}
-async function grant(minutes='20'){await page.selectOption('#parent-minutes',minutes);await page.locator('#parent-duration button[type=submit]').click();await page.waitForFunction(()=>!document.querySelector('.family-dialog').open);}
+async function grant(minutes='20'){await selectGameOption(page,'#parent-minutes',minutes);await page.locator('#parent-duration button[type=submit]').click();await page.waitForFunction(()=>!document.querySelector('.family-dialog').open);}
 try{
 await page.goto(url+'/');await page.evaluate(()=>SistersFamily.ready);await page.click('[data-player="guest"]');
 await check('first setting uses long salted KDF, hides input',async()=>{await auth(true);await page.screenshot({path:out+'/parent-settings.png',fullPage:true});const s=await state();assert(s.credential.salt.length===32&&s.credential.hash.length===64);assert(!(await page.evaluate(()=>JSON.stringify(localStorage))).includes(password));assert.equal(await page.locator('#parent-password').getAttribute('type'),'password');await grant();});

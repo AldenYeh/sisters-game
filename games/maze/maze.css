@@ -41,3 +41,8 @@ body{overflow:auto}.maze-app .game-screen{height:auto;min-height:calc(100svh - v
 /* Only the outer player badge needs padding; nested reading spans do not. */
 .maze-app .game-info .reading,.maze-app .game-info .reading span{padding:0;background:none;border-radius:0;font-size:inherit}
 .maze-app .game-info #current-player{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.maze-keypad{flex-shrink:0;text-align:center;color:var(--green-dark)}
+.maze-keypad summary{cursor:pointer;font-size:14px;min-height:32px;padding:6px}
+.maze-keypad:not([open])>.touch-controls{display:none}
+.maze-keypad[open]>.touch-controls{display:grid;margin-top:8px}
+.maze-app .cell.path{cursor:pointer}

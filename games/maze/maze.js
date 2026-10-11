@@ -34,6 +34,9 @@
     records: loadRecords(), lastPathLength: 0, memoryMode:location.hash==="#memory",memoryHideAt:0,swipe: { pointerId: null, startX: 0, startY: 0 }
   };
 
+  let routeVersion=0;
+  function cancelRoute(){routeVersion++;}
+  const tapText=text=>({zh:text,bopomofo:""});
   let memoryTimer=null;
   function syncMemory(){clearTimeout(memoryTimer);document.body.classList.toggle("memory-maze",gameState.memoryMode&&gameState.memoryHideAt>0&&Date.now()>=gameState.memoryHideAt);if(gameState.memoryMode&&gameState.memoryHideAt>Date.now())memoryTimer=setTimeout(()=>{if(SistersRound.canInteract()){document.body.classList.add("memory-maze");SistersRound.checkpoint();}},gameState.memoryHideAt-Date.now());}
 
@@ -160,11 +163,45 @@
     elements.maze.replaceChildren(fragment);elements.togglePath.setAttribute("aria-pressed",String(gameState.showPath));phrase(elements.togglePath,gameState.showPath?m.hidePath:m.showPath,{compact:true});fitBoard();
   }
 
-  function movePlayer(direction){if(!SistersRound.canInteract())return false;if(gameState.page!=="game"||gameState.completed||gameState.moveLocked||!DIRECTIONS[direction])return false;gameState.moveLocked=true;const[dr,dc]=DIRECTIONS[direction],row=gameState.playerPosition.row+dr,col=gameState.playerPosition.col+dc;if(isWalkable(row,col)){gameState.playerPosition={row,col};gameState.visited.add(cellKey(row,col));setStatus(m.keepGoing);renderMaze();if(row===gameState.goal.row&&col===gameState.goal.col)handleWin();}else setStatus(m.wall);requestAnimationFrame(()=>{gameState.moveLocked=false;});SistersRound.checkpoint();return true;}
+  async function movePlayer(direction){
+    if(!SistersRound.canInteract()||gameState.page!=="game"||gameState.completed||gameState.moveLocked||!DIRECTIONS[direction])return false;
+    gameState.moveLocked=true;
+    const[dr,dc]=DIRECTIONS[direction],row=gameState.playerPosition.row+dr,col=gameState.playerPosition.col+dc;
+    try{
+      if(!isWalkable(row,col)){setStatus(m.wall);return false;}
+      gameState.playerPosition={row,col};gameState.visited.add(cellKey(row,col));setStatus(m.keepGoing);renderMaze();
+      if(row===gameState.goal.row&&col===gameState.goal.col)handleWin();
+      else await SistersRound.checkpoint();
+      return true;
+    }finally{gameState.moveLocked=false;}
+  }
+  async function tapCell(event){
+    cancelRoute();
+    if(!SistersRound.canInteract()||gameState.completed||gameState.page!=="game")return;
+    const cells=[...elements.maze.children],index=cells.findIndex(cell=>{const r=cell.getBoundingClientRect();return event.clientX>=r.left&&event.clientX<r.right&&event.clientY>=r.top&&event.clientY<r.bottom;});
+    if(index<0)return;
+    const cols=gameState.maze[0].length,target={row:Math.floor(index/cols),col:index%cols};
+    if(!isWalkable(target.row,target.col)){setStatus(m.wall);return;}
+    const start=gameState.playerPosition,dr=Math.sign(target.row-start.row),dc=Math.sign(target.col-start.col);
+    if(dr&&dc){setStatus(tapText("請點身旁格或同一直線的走道；轉彎要再點一次。"));return;}
+    const path=[{...start}];
+    for(let row=start.row,col=start.col;row!==target.row||col!==target.col;){
+      row+=dr;col+=dc;if(!isWalkable(row,col)){setStatus(tapText("中間有牆，不能直走到這格；請在轉彎處再點。"));return;}
+      path.push({row,col});
+    }
+    const version=routeVersion;
+    for(const point of path.slice(1)){
+      if(version!==routeVersion||!SistersRound.canInteract()||gameState.completed)return;
+      const dr=point.row-gameState.playerPosition.row,dc=point.col-gameState.playerPosition.col;
+      const direction=Object.keys(DIRECTIONS).find(key=>DIRECTIONS[key][0]===dr&&DIRECTIONS[key][1]===dc);
+      if(!await movePlayer(direction))return;
+      await new Promise(resolve=>setTimeout(resolve,70));
+    }
+  }
   function togglePathDisplay(){if(!SistersRound.canInteract())return;gameState.showPath=!gameState.showPath;renderMaze();SistersRound.checkpoint();}
   function setTouchControlsDisabled(disabled){document.querySelectorAll(".touch-direction").forEach(button=>{button.disabled=disabled;});}
   function handleSwipeStart(event){if(!SistersRound.canInteract()||gameState.swipe.pointerId!==null)return;if(gameState.page!=="game"||gameState.completed||event.target.closest("button"))return;gameState.swipe={pointerId:event.pointerId,startX:event.clientX,startY:event.clientY};if(event.currentTarget.setPointerCapture)event.currentTarget.setPointerCapture(event.pointerId);event.preventDefault();}
-  function handleSwipeEnd(event){if(gameState.swipe.pointerId!==event.pointerId)return;const dx=event.clientX-gameState.swipe.startX,dy=event.clientY-gameState.swipe.startY;gameState.swipe.pointerId=null;if(Math.hypot(dx,dy)<28||gameState.completed)return;event.preventDefault();movePlayer(Math.abs(dx)>Math.abs(dy)?(dx>0?"right":"left"):(dy>0?"down":"up"));}
+  function handleSwipeEnd(event){if(gameState.swipe.pointerId!==event.pointerId)return;const dx=event.clientX-gameState.swipe.startX,dy=event.clientY-gameState.swipe.startY;gameState.swipe.pointerId=null;if(gameState.completed)return;if(Math.hypot(dx,dy)<10){tapCell(event);return;}if(Math.hypot(dx,dy)<28)return;event.preventDefault();cancelRoute();movePlayer(Math.abs(dx)>Math.abs(dy)?(dx>0?"right":"left"):(dy>0?"down":"up"));}
   function cancelSwipe(event){if(gameState.swipe.pointerId===event.pointerId)gameState.swipe.pointerId=null;}
 
   function startTimer(){stopTimer();gameState.elapsedMs=0;gameState.timerStartedAt=Date.now();updateTimer();gameState.timerId=window.setInterval(updateTimer,250);gameState.memoryHideAt=gameState.memoryMode?Date.now()+4000:0;syncMemory();}
@@ -198,27 +235,30 @@
 
   document.querySelectorAll(".difficulty-choice").forEach(button=>button.addEventListener("click",()=>selectDifficulty(button.dataset.difficulty)));
   byId("start-game").addEventListener("click",()=>startGame());byId("show-records").addEventListener("click",showScoreboard);byId("setup-home").addEventListener("click",goHub);byId("home-from-game").addEventListener("click",goHub);byId("home-from-win").addEventListener("click",goHub);byId("records-back").addEventListener("click",showSetup);byId("restart").addEventListener("click",restartGame);byId("play-again").addEventListener("click",()=>startGame({replay:true}));elements.togglePath.addEventListener("click",togglePathDisplay);byId("clear-records").addEventListener("click",requestClearRecords);byId("cancel-clear").addEventListener("click",cancelClearRecords);byId("confirm-clear").addEventListener("click",clearRecords);
-  document.querySelectorAll(".touch-direction").forEach(button=>button.addEventListener("click",event=>{event.preventDefault();movePlayer(button.dataset.move);}));
+  document.querySelectorAll(".touch-direction").forEach(button=>button.addEventListener("click",event=>{event.preventDefault();cancelRoute();movePlayer(button.dataset.move);}));
   byId("maze-wrap").addEventListener("pointerdown",handleSwipeStart,{passive:false});byId("maze-wrap").addEventListener("pointerup",handleSwipeEnd,{passive:false});byId("maze-wrap").addEventListener("pointercancel",cancelSwipe);
   
+  const keypad=document.createElement("details");keypad.className="maze-keypad";
+  const keypadLabel=document.createElement("summary");keypadLabel.textContent="方向按鈕（選用）";keypad.append(keypadLabel,byId("touch-controls"));
+  document.querySelector(".maze-card").append(keypad);keypad.addEventListener("toggle",()=>{cancelRoute();fitBoard();});
   const modeNote=document.createElement("p");modeNote.className="maze-mode-note";
   document.querySelector(".game-header").append(modeNote);
-  function updateModeNote(){modeNote.hidden=!gameState.memoryMode;modeNote.textContent="記憶迷宮：先看路徑 4 秒，再憑記憶走到小魚。";}
+  function updateModeNote(){modeNote.hidden=false;modeNote.textContent=(gameState.memoryMode?"記憶迷宮：先看路徑 4 秒。":"")+"點身旁格或直線走道；轉彎再點一次。也可滑動或用方向鍵。";}
   window.addEventListener("hashchange",()=>{if(!gameState.maze.length){gameState.memoryMode=location.hash==="#memory";updateModeNote();}});
   updateModeNote();
   function fitBoard(){
     const screen=byId("game-screen");if(screen.hidden||!gameState.maze.length)return;
-    const card=document.querySelector(".maze-card"),wrap=byId("maze-wrap"),touch=byId("touch-controls"),status=byId("status"),ss=getComputedStyle(screen),cs=getComputedStyle(card),visible=el=>!el.hidden&&getComputedStyle(el).display!=="none";
+    const card=document.querySelector(".maze-card"),wrap=byId("maze-wrap"),touch=keypad,status=byId("status"),ss=getComputedStyle(screen),cs=getComputedStyle(card),visible=el=>!el.hidden&&getComputedStyle(el).display!=="none";
     const rows=gameState.maze.length,cols=gameState.maze[0].length,width=screen.clientWidth-parseFloat(ss.paddingLeft)-parseFloat(ss.paddingRight)-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)-parseFloat(cs.borderLeftWidth)-parseFloat(cs.borderRightWidth);
     const tail=parseFloat(ss.paddingBottom)+parseFloat(cs.paddingBottom)+parseFloat(cs.borderBottomWidth)+status.getBoundingClientRect().height+(visible(touch)?touch.getBoundingClientRect().height:0)+parseFloat(cs.gap)*(visible(touch)?2:1);
     const height=innerHeight-(wrap.getBoundingClientRect().top+scrollY)-tail-3,size=Math.floor(Math.max(14,Math.min(width/cols,height/rows))*100)/100;
     document.querySelector(".maze-app").style.setProperty("--cell-size",size+"px");
   }
   const boardObserver=new ResizeObserver(fitBoard);for(const el of [document.querySelector(".game-header"),document.querySelector(".round-bar"),byId("touch-controls"),byId("status"),document.querySelector(".family-bar")])boardObserver.observe(el);window.addEventListener("resize",fitBoard);
-  if (window.SistersPlay) SistersPlay.showCoach("maze", [{demo:"🐱🐟", line:"把貓咪走到小魚"}]);
-  document.addEventListener("keydown",event=>{const direction=KEY_DIRECTIONS[event.key];if(!direction||!SistersRound.canInteract())return;event.preventDefault();movePlayer(direction);},{passive:false});
+  if (window.SistersPlay) SistersPlay.showCoach("maze", [{demo:"🐱🐟", line:"點身旁格或直線走道；轉彎再點，把貓咪走到小魚"}]);
+  document.addEventListener("keydown",event=>{const direction=KEY_DIRECTIONS[event.key];if(!direction||event.target.closest?.("input,textarea,select,[contenteditable]")||!SistersRound.canInteract())return;event.preventDefault();cancelRoute();movePlayer(direction);},{passive:false});
 
   window.MazeGame=Object.freeze({startGame,restartGame,move:movePlayer,togglePath:togglePathDisplay,generateMaze:generateAndValidateMaze,mazeComplexity,bfs,showRecords:showScoreboard,loadRecords,getState:()=>({...gameState,maze:gameState.maze.map(row=>[...row]),visited:[...gameState.visited]}),constants:{DIFFICULTIES,STORAGE_KEY}});
   if(!gameState.playerId){goHub();return;} configureText(); showSetup();
-  await SistersRound.attach({snapshot:()=>{const {timerId,records,swipe,visited,...saved}=gameState;return {...saved,moveLocked:false,visited:[...visited]};},cancel:()=>{gameState.swipe.pointerId=null;clearTimeout(memoryTimer);stopTimer();},resume:()=>{if(!gameState.completed&&gameState.timerId===null){gameState.timerStartedAt=Date.now()-gameState.elapsedMs;gameState.timerId=setInterval(updateTimer,250);}syncMemory();},restore:p=>{if(!p.maze?.length||!DIFFICULTIES[p.difficultyId])throw Error("迷宮存檔格式錯誤");Object.assign(gameState,p,{visited:new Set(p.visited),moveLocked:false});difficultySelect.value=gameState.difficultyId;updateModeNote();setLabeledValue(elements.currentPlayer,m.player,content.players[gameState.playerId].name);setLabeledValue(elements.currentDifficulty,m.difficulty,DIFFICULTIES[gameState.difficultyId].text);setPage("game");renderMaze();syncMemory();setTouchControlsDisabled(gameState.completed);gameState.timerStartedAt=null;gameState.timerId=null;updateTimer();if(gameState.completed)renderWin();}});
+  await SistersRound.attach({snapshot:()=>{const {timerId,records,swipe,visited,...saved}=gameState;return {...saved,moveLocked:false,visited:[...visited]};},cancel:()=>{cancelRoute();gameState.swipe.pointerId=null;clearTimeout(memoryTimer);stopTimer();},resume:()=>{if(!gameState.completed&&gameState.timerId===null){gameState.timerStartedAt=Date.now()-gameState.elapsedMs;gameState.timerId=setInterval(updateTimer,250);}syncMemory();},restore:p=>{if(!p.maze?.length||!DIFFICULTIES[p.difficultyId])throw Error("迷宮存檔格式錯誤");Object.assign(gameState,p,{visited:new Set(p.visited),moveLocked:false});difficultySelect.value=gameState.difficultyId;updateModeNote();setLabeledValue(elements.currentPlayer,m.player,content.players[gameState.playerId].name);setLabeledValue(elements.currentDifficulty,m.difficulty,DIFFICULTIES[gameState.difficultyId].text);setPage("game");renderMaze();syncMemory();setTouchControlsDisabled(gameState.completed);gameState.timerStartedAt=null;gameState.timerId=null;updateTimer();if(gameState.completed)renderWin();}});
 })();

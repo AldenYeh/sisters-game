@@ -1,10 +1,11 @@
 'use strict';
+const {selectGameOption}=require('./browser-helpers.cjs');
 const {chromium}=require('playwright'),fs=require('fs'),assert=require('assert/strict'),crypto=require('crypto');
 const url=process.env.TEST_URL||'http://127.0.0.1:8005',out='outputs/r3/games',password='R3-synthetic-only!long-2026';
 const salt='34'.repeat(16),hash=crypto.pbkdf2Sync(password,Buffer.from(salt,'hex'),600000,32,'sha256').toString('hex');
 (async()=>{fs.mkdirSync(out,{recursive:true});const browser=await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox']});const ctx=await browser.newContext({viewport:{width:1366,height:768}});await ctx.addInitScript(()=>{const now=Date.now;window.__shift=0;Date.now=()=>now()+window.__shift;});const page=await ctx.newPage(),passed=[],errors=[];page.on('pageerror',e=>errors.push(e.message));
 const idle=()=>page.waitForFunction(()=>SistersRound.canInteract(),null,{timeout:10000});const payload=()=>page.evaluate(()=>SistersRound.current().payload);
-async function grant(){await page.evaluate(()=>window.__shift=0);await page.click('#family-open');await page.fill('#parent-password',password);await page.locator('#parent-auth button[type=submit]').click();await page.waitForFunction(()=>!document.getElementById('parent-authorized').hidden);await page.selectOption('#parent-minutes','20');await page.locator('#parent-duration button[type=submit]').click();await page.waitForFunction(()=>!document.querySelector('.family-dialog').open);}
+async function grant(){await page.evaluate(()=>window.__shift=0);await page.click('#family-open');await page.fill('#parent-password',password);await page.locator('#parent-auth button[type=submit]').click();await page.waitForFunction(()=>!document.getElementById('parent-authorized').hidden);await selectGameOption(page,'#parent-minutes','20');await page.locator('#parent-duration button[type=submit]').click();await page.waitForFunction(()=>!document.querySelector('.family-dialog').open);}
 async function coach(){for(let i=0;i<6&&await page.locator('.coach button').count();i++)await page.locator('.coach button').last().click();}
 async function click(selector){await page.locator(selector).click();await idle();}
 const solve=require('./browser-helpers.cjs').makeSolver(page,idle,payload);

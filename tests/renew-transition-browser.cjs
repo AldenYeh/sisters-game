@@ -1,4 +1,5 @@
 'use strict';
+const {selectGameOption}=require('./browser-helpers.cjs');
 const{chromium}=require('playwright'),assert=require('assert/strict'),fs=require('fs'),crypto=require('crypto'),{execFileSync}=require('child_process');
 const base=process.env.TEST_URL||'http://127.0.0.1:8005',pw='Renew-synthetic+long!2026',salt='cd'.repeat(16),credential={algorithm:'PBKDF2-SHA256',iterations:600000,salt,hash:crypto.pbkdf2Sync(pw,Buffer.from(salt,'hex'),600000,32,'sha256').toString('hex')};
 const old=execFileSync('git',['show','624975ef739ef773989fbe868a0c0b553c01ca3b:assets/js/lifecycle.js'],{encoding:'utf8'}),out='outputs/r3/renew-transition';fs.mkdirSync(out,{recursive:true});
@@ -14,7 +15,7 @@ async function run(name,game,selector,value,kind='fixed'){
   await p.goto(base+'/games/'+game+'/');await idle();await p.evaluate(()=>{window.__faults=[];document.addEventListener('sisters:family-fault',()=>window.__faults.push(SistersFamily.fault()));});
   if(game==='puzzle'){await p.click('#hint');await idle();}if(game==='memory'){await p.locator('#grid button').first().click();await idle();}
   const before=await p.evaluate(()=>SistersRound.current());await p.evaluate(()=>window.__shift=SistersFamily.read().session.deadline-Date.now()+100);await p.waitForFunction(()=>SistersFamily.read().session.phase==='grace');await p.waitForTimeout(350);
-  if(kind==='renewOnly')await p.click('#family-open');else{await p.selectOption(selector,value);if(kind==='rapid')await p.selectOption(selector,'24');}
+  if(kind==='renewOnly')await p.click('#family-open');else{await selectGameOption(p,selector,value);if(kind==='rapid')await p.evaluate(selector=>{const select=document.querySelector(selector);select.value='24';select.dispatchEvent(new Event('change',{bubbles:true}));},selector); /* Deliberate duplicate request injection while the real modal owns input. */}
   await p.waitForFunction(()=>document.querySelector('.family-dialog').open);
   if(kind==='cancel'){
    await p.locator('#parent-auth [data-cancel]').click();await idle();const current=await p.evaluate(()=>SistersRound.current());assert.equal(current.id,before.id);assert.deepEqual(current.payload,before.payload);assert.equal((await state()).session.id,'synthetic-renew');

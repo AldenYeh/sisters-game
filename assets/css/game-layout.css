@@ -13,3 +13,38 @@ body{overflow-y:auto}.play-app{max-width:none;width:100%;padding:8px 12px 12px}.
 @media(min-width:851px){.maze-app{--cell-size:max(18px,min(calc((100vw - 72px)/var(--maze-cols)),calc((100svh - var(--round-bar-height,0px) - 135px)/var(--maze-rows)),70px))}}
 @media(pointer:coarse){.primary-button,.secondary-button,.chip,.back-button,.challenge-select,.round-bar button{min-height:42px;font-size:14px}}
 @media(max-width:680px){.play-app{padding:8px}.play-top h1{font-size:18px}.round-bar{justify-content:center}.board-wrap{padding:5px}.pegs,.peg{min-height:260px}.hanoi-goal .peg{width:90px}.hanoi-goal{gap:8px}.complete-overlay:not([hidden]){flex-direction:column}}
+
+/* Current work stays central; settings are secondary and completion actions stay reachable. */
+.family-bar{position:sticky;top:0;z-index:30;padding-top:max(3px,env(safe-area-inset-top,0px))}
+.game-settings{margin:4px 0 8px;border:1px solid #d4c5cb;border-radius:8px;background:#fffaf5;color:#493f47}
+.game-settings>summary{padding:8px 10px;min-height:42px;font-size:13px;cursor:pointer;overflow-wrap:anywhere}
+.game-settings-content{padding:4px 8px 8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.game-settings .toolbar{margin:0}.game-settings #mute{min-height:42px}
+.game-completed{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
+.game-completed .toolbar,.game-completed .game-settings,.game-completed .game-controls,.game-completed .touch-controls,.game-completed .answer-pad,.game-completed .game-actions,.game-completed .puzzle-side{display:none!important}
+.game-completed .puzzle-layout{grid-template-columns:minmax(0,1fr)}
+.game-completed #rotate,.game-completed #flip,.game-completed #hint,.game-completed #undo,.game-completed #restart{display:none!important}
+.game-completed .complete-overlay:not([hidden]),.game-completed .maze-app .win-panel:not([hidden]){position:fixed;z-index:35;inset:auto 8px 0;transform:none;width:calc(100% - 16px);max-width:640px;margin:0 auto;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:row;justify-content:center;align-items:center;gap:6px 10px;border:1px solid #ddbd81;border-radius:10px 10px 0 0;background:#fff6d9;box-shadow:0 -2px 8px #543c4e12;max-height:none;overflow:visible}
+.game-completed .complete-overlay>div:first-child,.game-completed .win-mascot,.game-completed .celebration{display:none}
+.game-completed .complete-overlay h2,.game-completed .win-panel h2{margin:0;font-size:16px}
+.game-completed .complete-overlay>p,.game-completed .win-details{margin:0;font-size:12px;max-height:2.4em;overflow:hidden}
+.game-completed .complete-overlay button,.game-completed .win-panel button{min-height:44px;min-width:112px;font-size:14px;padding:6px 12px;margin:0;touch-action:manipulation}
+.game-completed .win-actions{margin:0;gap:8px;flex-direction:row;flex-wrap:wrap}.game-completed .win-panel .new-record{display:none}
+@media(max-width:680px){.game-completed .complete-overlay h2,.game-completed .win-panel h2{flex-basis:100%;text-align:center}.game-completed .complete-overlay>p,.game-completed .win-details{display:none}}
+@media(max-height:480px){.game-completed .complete-overlay h2,.game-completed .win-panel h2,.game-completed .win-details,.game-completed .complete-overlay>p{display:none}.game-completed{padding-bottom:calc(68px + env(safe-area-inset-bottom,0px))}}
+
+.in-round-actions{display:flex;justify-content:center;align-items:center;gap:8px;margin:4px 0 8px}.in-round-actions button{min-height:44px;touch-action:manipulation}.game-completed .in-round-actions{display:none!important}
+
+.round-action-row{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px}.round-action-row .toolbar,.round-action-row .game-controls,.round-action-row .in-round-actions{margin:4px 0 8px}.game-completed .round-action-row{display:none!important}
+
+.game-work-view{width:100%;display:flow-root}.game-work-content{display:flow-root}
+/* Preserve Sliding's exit allowance when its frame sits in a completed-work view. */
+.play-app:has(.slide-board)>.game-work-view>.board-wrap{width:min(100%,calc(var(--sliding-size) + 42px));margin:8px auto;padding:8px 32px 8px 8px}
+
+.game-work-content>.q-board,.game-work-content>.a-board{width:fit-content;max-width:100%;height:auto;min-height:0;margin:10px auto;padding:12px 16px}.game-work-content>.a-board{min-width:min(100%,280px)}
+.game-completed .a-board>.msg,.game-completed .q-board>details,.game-completed .play-app>#status,.game-completed .game-message,.game-completed .maze-card>.status{display:none}
+.game-completed .correct-result{background:#d8edda;color:#285a35;border-color:#70a57b;opacity:1}
+@media(max-width:600px){.game-work-content>.q-board,.game-work-content>.a-board{padding:10px}}
+
+/* Compact completion actions keep their primary labels readable. */
+.game-completed .win-panel .reading-bopomofo{display:none}

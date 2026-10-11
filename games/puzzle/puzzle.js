@@ -14,6 +14,11 @@
     imageCache.set(src,promise);while(imageCache.size>8)imageCache.delete(imageCache.keys().next().value);return promise;
   }
   let cancelDrag=null,selected=null,suppressClick=false,initializing=true,switching=false,wanted=null,loadingTarget=null;
+  // Pointer taps are accepted on pointerup. Ignore only their compatibility click;
+  // the next physical press and keyboard activation remain independent actions.
+  function suppressPointerClick(){suppressClick=true;setTimeout(()=>suppressClick=false,500);}
+  function markSelection(){tray.querySelectorAll('.piece').forEach(el=>el.setAttribute('aria-pressed',String(Number(el.dataset.piece)===selected)));}
+  function selectPiece(index){selected=index;markSelection();document.getElementById('status').textContent='已選一片，請點目標格';}
   async function start(reason="new",pieces=wanted?.pieces??loadingTarget?.pieces??state.pieces,art=wanted?.art??loadingTarget?.art??state.art,draw=true) {
     wanted={reason,pieces,art,draw};chips();
     if(initializing||switching)return;
@@ -59,6 +64,8 @@
   }
   function pieceCanvas(i,w,h){const original=slice(i,w,h),copy=document.createElement('canvas');copy.width=original.width;copy.height=original.height;copy.getContext('2d').drawImage(original,0,0);copy.setAttribute('aria-hidden','true');return copy;}
   function render() {
+    cancelDrag?.();
+    if(selected!==null&&state.placed[selected])selected=null;
     const size = cellSize(),pad=Math.ceil(Math.min(size.w,size.h)*.20);
     board.style.display = "grid";
     board.style.gridTemplateColumns = `repeat(${state.cols}, ${size.w}px)`;
@@ -77,7 +84,8 @@
     }
     tray.replaceChildren();
     const side=document.querySelector('.puzzle-side');
-    side.style.height='auto';side.style.maxHeight=(size.h*state.rows+16)+'px';
+    const mobile=window.innerWidth<=760||matchMedia('(pointer:coarse)').matches;
+    side.style.height='auto';side.style.maxHeight=mobile?'none':(size.h*state.rows+16)+'px';
     const trayStyle=getComputedStyle(tray),gap=parseFloat(trayStyle.gap)||8,trayPadding=parseFloat(trayStyle.getPropertyValue('--tray-padding'))||10;
     const gutter=Math.max(0,tray.offsetWidth-tray.clientWidth-parseFloat(trayStyle.borderLeftWidth)-parseFloat(trayStyle.borderRightWidth));
     const trayWidth=side.clientWidth-2-2*trayPadding-gutter;
@@ -91,6 +99,13 @@
       if(width>pieceWidth){columns=count;pieceWidth=width;}
     }
     if(pieceWidth===44)columns=maxColumns;
+    if(mobile){
+      // Reference height must not shrink a touch tray into an inaccessible scroll
+      // box. Keep both target dimensions usable and let the page hold all rows.
+      const minimumWidth=Math.max(44,44*tileRatio);
+      columns=Math.max(1,Math.floor((trayWidth+gap)/(Math.max(minimumWidth,(size.w+2*pad)*.68)+gap)));
+      pieceWidth=Math.min((trayWidth-gap*(columns-1))/columns,Math.max(minimumWidth,(size.w+2*pad)*.68));
+    }
     tray.style.display='grid';tray.style.gridTemplateColumns=`repeat(${columns}, ${Math.floor(pieceWidth)}px)`;
     (state.trayOrder.length===state.pieces?state.trayOrder:Array.from({length:state.pieces},(_,i)=>i)).forEach(i => {
       const on=state.placed[i];
@@ -104,22 +119,27 @@
       el.style.border = "0";
       el.style.borderRadius = "0";
       el.style.cursor = "grab";
-      el.setAttribute("aria-label",`拼圖片 ${(state.trayOrder.length===state.pieces?state.trayOrder.indexOf(i):i)+1}，選取後再選目標格`);el.onclick=()=>{if(SistersRound.canInteract()&&!suppressClick){selected=i;document.getElementById("status").textContent="已選一片，請點目標格";SistersRound.checkpoint();}};el.addEventListener("pointerdown", ev => begin(ev, i, el));
+      el.setAttribute('aria-pressed',String(i===selected));
+      el.setAttribute("aria-label",`拼圖片 ${(state.trayOrder.length===state.pieces?state.trayOrder.indexOf(i):i)+1}，選取後再選目標格`);el.onclick=e=>{if(SistersRound.canInteract()&&(!suppressClick||e.detail===0)){selectPiece(i);SistersRound.checkpoint();}};el.addEventListener("pointerdown", ev => begin(ev, i, el));
       tray.append(el);
     });
     document.getElementById("status").textContent = `${state.art.name} · 拖曳或點選碎片後放進空格；可勾選完成圖 · ${state.placed.filter(Boolean).length} / ${state.placed.length}`;
   }
   function finish(){if(state.placed.every(Boolean)){SistersPlay.showComplete("拼好了");SistersPlay.recordResult({difficulty:String(state.pieces),level:state.art.id,startedAt:state.startedAt,moves:state.moves,hintsUsed:state.hints,restartCount:state.restarts});}}
-  function drop(index,hit){if(!SistersRound.canInteract()||state.placed[index])return;state.moves++;if(hit===index){state.placed[index]=true;SistersPlay.playSound("ok");}render();finish();SistersRound.checkpoint();}
+  function drop(index,hit){if(!SistersRound.canInteract()||state.placed[index])return;selected=null;state.moves++;if(hit===index){state.placed[index]=true;SistersPlay.playSound("ok");}render();finish();SistersRound.checkpoint();}
   function begin(ev,index,el){
     if(!SistersRound.canInteract()||cancelDrag||ev.button!==0)return;ev.preventDefault();
+    selected=null;markSelection();
     const rect=el.getBoundingClientRect(),w=rect.width,h=rect.height,ox=ev.clientX-rect.left,oy=ev.clientY-rect.top;
     const ghost=el.cloneNode();const original=el.querySelector('canvas'),copy=document.createElement('canvas');copy.width=original.width;copy.height=original.height;copy.getContext('2d').drawImage(original,0,0);Object.assign(copy.style,{display:'block',width:'100%',height:'100%'});ghost.append(copy);Object.assign(ghost.style,{position:"fixed",zIndex:9,pointerEvents:"none",width:w+"px",height:h+"px",left:rect.left+"px",top:rect.top+"px"});document.body.append(ghost);el.setPointerCapture(ev.pointerId);let moved=false;
-    function cleanup(){el.removeEventListener("pointermove",move);el.removeEventListener("pointerup",up);el.removeEventListener("pointercancel",cancel);if(el.hasPointerCapture(ev.pointerId))el.releasePointerCapture(ev.pointerId);ghost.remove();cancelDrag=null;}
-    function cancel(){cleanup();suppressClick=true;setTimeout(()=>suppressClick=false,300);}
-    function move(e){if(e.pointerId!==ev.pointerId||!SistersRound.canInteract())return;moved=moved||Math.hypot(e.clientX-ev.clientX,e.clientY-ev.clientY)>5;ghost.style.left=e.clientX-ox+"px";ghost.style.top=e.clientY-oy+"px";}
-    function up(e){if(e.pointerId!==ev.pointerId)return;const x=e.clientX-ox+w/2,y=e.clientY-oy+h/2;cleanup();suppressClick=true;setTimeout(()=>suppressClick=false,0);if(!moved){selected=index;document.getElementById("status").textContent="已選一片，請點目標格";return;}const cells=[...board.children],hit=cells.findIndex(c=>{const r=c.getBoundingClientRect();return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;});drop(index,hit);}
-    cancelDrag=cancel;el.addEventListener("pointermove",move);el.addEventListener("pointerup",up);el.addEventListener("pointercancel",cancel);
+    ghost.classList.add('puzzle-drag');ghost.setAttribute('aria-hidden','true');ghost.tabIndex=-1;
+    let done=false,scrollFrame=0,pointerY=ev.clientY;
+    function cleanup(){if(done)return;done=true;cancelAnimationFrame(scrollFrame);el.removeEventListener("pointermove",move);el.removeEventListener("pointerup",up);el.removeEventListener("pointercancel",cancel);el.removeEventListener('lostpointercapture',cancel);if(el.hasPointerCapture(ev.pointerId))el.releasePointerCapture(ev.pointerId);ghost.remove();cancelDrag=null;}
+    function cancel(){if(done)return;cleanup();selected=null;markSelection();suppressPointerClick();}
+    function scroll(){if(done||!moved)return;if(!SistersRound.canInteract()){cancel();return;}const edge=48,speed=pointerY<edge?-Math.ceil((edge-pointerY)/4):pointerY>innerHeight-edge?Math.ceil((pointerY-innerHeight+edge)/4):0;if(speed)window.scrollBy(0,Math.max(-16,Math.min(16,speed)));scrollFrame=requestAnimationFrame(scroll);}
+    function move(e){if(e.pointerId!==ev.pointerId||done)return;if(!SistersRound.canInteract()){cancel();return;}moved=moved||Math.hypot(e.clientX-ev.clientX,e.clientY-ev.clientY)>5;pointerY=e.clientY;ghost.style.left=e.clientX-ox+"px";ghost.style.top=e.clientY-oy+"px";if(moved&&!scrollFrame)scrollFrame=requestAnimationFrame(scroll);}
+    function up(e){if(e.pointerId!==ev.pointerId||done)return;const x=e.clientX-ox+w/2,y=e.clientY-oy+h/2;cleanup();suppressPointerClick();if(!SistersRound.canInteract())return;if(!moved){selectPiece(index);SistersRound.checkpoint();return;}const cells=[...board.children],hit=cells.findIndex(c=>{const r=c.getBoundingClientRect();return x>=r.left&&x<r.right&&y>=r.top&&y<r.bottom;});drop(index,hit);}
+    cancelDrag=cancel;el.addEventListener("pointermove",move);el.addEventListener("pointerup",up);el.addEventListener("pointercancel",cancel);el.addEventListener('lostpointercapture',cancel);
   }
   function chips(){SistersChallenges.selector(document.getElementById('size-row'),sizes.map(n=>({value:n,label:n+' 片'})),wanted?.pieces??loadingTarget?.pieces??state.pieces,v=>start('new',+v,wanted?.art??loadingTarget?.art??state.art,false),'拼圖片數');SistersChallenges.selector(document.getElementById('art-row'),arts.map(a=>({value:a.id,label:a.name})),(wanted?.art??loadingTarget?.art??state.art).id,v=>start('new',wanted?.pieces??loadingTarget?.pieces??state.pieces,arts.find(a=>a.id===v),false),'選擇完整插畫');document.querySelectorAll('#size-row select,#art-row select').forEach(s=>s.disabled=initializing);}
   SistersPlay.showCoach("puzzle", [{ demo: "🧩", line: "看完成圖，把碎片拖進正確空格" }]);
@@ -131,6 +151,15 @@
     state.hints++; state.placed[i] = true; SistersPlay.playSound("ok"); render();finish();SistersRound.checkpoint();
   };
   document.getElementById('reference-toggle').onchange=e=>{state.referenceShown=e.target.checked;render();SistersRound.checkpoint();};
+  const referenceToggle=document.getElementById('reference-toggle'),referenceLabel=referenceToggle.closest('label');
+  let referencePress=null,referenceClick=false;
+  // Accept the actual touch release: mobile browsers may suppress the following
+  // native click immediately after the drag scrolls the page. Keyboard and mouse
+  // activation continue through the checkbox's native change event.
+  referenceLabel.addEventListener('pointerdown',e=>{referenceClick=false;referencePress=e.pointerType==='touch'||e.pointerType==='pen'?{id:e.pointerId,x:e.clientX,y:e.clientY}:null;});
+  referenceLabel.addEventListener('pointercancel',()=>{referencePress=null;});
+  referenceLabel.addEventListener('pointerup',e=>{const press=referencePress;referencePress=null;if(!press||press.id!==e.pointerId||Math.hypot(e.clientX-press.x,e.clientY-press.y)>6)return;e.preventDefault();referenceClick=true;referenceToggle.checked=!referenceToggle.checked;referenceToggle.dispatchEvent(new Event('change',{bubbles:true}));});
+  referenceLabel.addEventListener('click',e=>{if(referenceClick&&e.detail!==0){referenceClick=false;e.preventDefault();e.stopImmediatePropagation();}},true);
   document.getElementById("overlay-next").onclick = ()=>start();
   chips();const restored=await SistersRound.attach({snapshot:()=>{const {image,...saved}=state;return {...saved,selected};},cancel:()=>cancelDrag?.(),restore:async p=>{if(!sizes.includes(p.pieces)||!arts.some(a=>a.id===p.art.id))throw Error("拼圖存檔格式錯誤");Object.assign(state,p);selected=p.selected;state.image=await loadImage(state.art.src);chips();render();}});initializing=false;if(!restored)await start();else chips();
   let resizeFrame=0,lastSize='';window.addEventListener('resize',()=>{cancelDrag?.();cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(()=>{if(!state.image)return;const size=cellSize(),key=size.w+':'+size.h;if(key!==lastSize){lastSize=key;sliceCache.clear();render();}});});

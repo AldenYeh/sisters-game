@@ -10,3 +10,4 @@
 .play-app #board.sokoban .cell{font-size:clamp(20px,calc(65cqw / var(--sokoban-cols,7)),70px)}
 .play-app .board-wrap:has(>#board.sokoban){width:min(100%,calc(var(--sokoban-board-size,620px) + 18px));margin-inline:auto}
 .play-app .toolbar:has(>#undo){justify-content:center}
+.sokoban .cell:not(.wall){cursor:pointer}
