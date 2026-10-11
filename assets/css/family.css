@@ -4,3 +4,7 @@
 .family-dialog{border:1px solid #ccb7c2;border-radius:16px;padding:20px;width:min(510px,calc(100vw - 24px));max-height:calc(100svh - 24px);overflow:auto;color:#3d3338;background:#fffcf7;user-select:text}
 .family-dialog::backdrop{background:#3d333865}.family-dialog h2{margin:0 0 14px;font-size:22px}.family-dialog form{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.family-dialog label{display:flex;flex-direction:column;gap:4px;flex-basis:100%}.family-dialog input,.family-dialog select{font:inherit;padding:8px;min-width:0;width:100%;border:1px solid #b6a4af;border-radius:6px}.family-dialog button{font:inherit;min-height:40px;border:1px solid #a78d9d;border-radius:8px;padding:6px 12px;background:#fff;cursor:pointer}.family-dialog p{margin:10px 0;font-size:14px}.family-dialog details{margin:12px 0}.family-dialog summary{cursor:pointer;font-weight:700}#parent-message{color:#a33742;font-weight:700}.family-dialog [hidden]{display:none!important}
 @media(pointer:coarse){.family-bar button{min-height:40px}.family-bar{font-size:14px}}
+/* iOS submit buttons default to white text; our controls have white backgrounds. */
+.family-bar button,.family-dialog button{color:#3d3338;-webkit-text-fill-color:currentColor;-webkit-appearance:none;appearance:none;line-height:1.3}
+.family-dialog input,.family-dialog select{color:#3d3338;-webkit-text-fill-color:currentColor;background:#fff;color-scheme:light}
+.family-dialog button:disabled{color:#6d5c63;background:#f0e9e7;opacity:1;cursor:not-allowed}
