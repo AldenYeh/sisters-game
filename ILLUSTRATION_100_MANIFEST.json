@@ -1,0 +1,1311 @@
+{
+  "schema": "sisters-game-source-release-v1",
+  "createdAt": "2026-10-11T06:57:02.938983+00:00",
+  "versionSelection": "Use the Git commit containing this manifest. The parent handoff specifies that exact commit; do not substitute the earlier50-art release.",
+  "artifact": "Complete100-composition website source; Windows launcher/runtime packaging is a separate task.",
+  "baselineArtCommit": "f13b6711ecec4231545a3125706986b0d77979fd",
+  "previousPublishedMobileCommit": "6190894c8ce623946162069f0e49a8433dc239a1",
+  "counts": {
+    "completeOriginalCompositions": 100,
+    "existingUnchangedCompositions": 50,
+    "newCompositions": 50,
+    "materialAnswers": 700,
+    "gamePages": 12
+  },
+  "catalogs": [
+    {
+      "path": "assets/data/illustration-bank.js",
+      "sha256": "78c082d1ef41dd81efe0d08b835010f63526fbfa3711df6deef9a3323ec604aa"
+    },
+    {
+      "path": "assets/data/natural-illustrations-v2.js",
+      "sha256": "11e1c3f04b920368cfd2ac7dec87b1eb7408c62edbb5f0e466c08e0821f9e605"
+    }
+  ],
+  "productionSHA256": {
+    "assets/js/game-layout.js": "b31e383834266cc7baa840305454aaa63736c906ff5b43f05ca408e1654c145a",
+    "assets/css/game-layout.css": "7ecf80ecf8e517d868af44c4d28ae689b9256e5e29900a6fdffc27607e125ae6",
+    "assets/js/family-core.js": "a6f9f4d24355ecc8c0e66ecca9106aacc46bb65227304594930ce12d616c59ca",
+    "assets/js/family.js": "b0c5c68a22077960143520a3bb65d75be55ec6c6d793e9932c66f6df41cb91cf",
+    "assets/js/lifecycle.js": "dba75b19bffbeecfb1502eae0ac14ba0104b983f8ed67cf7ae9af34fc5ac7167",
+    "assets/data/illustration-bank.js": "78c082d1ef41dd81efe0d08b835010f63526fbfa3711df6deef9a3323ec604aa",
+    "assets/data/natural-illustrations-v2.js": "11e1c3f04b920368cfd2ac7dec87b1eb7408c62edbb5f0e466c08e0821f9e605",
+    "games/hanoi/hanoi.css": "bff899aef6a3d69d8046325296c0320f1f07e585f773bd04ac91786192cb5346",
+    "games/hanoi/hanoi.js": "a669a60b42870630ff82c6dca3c0756530554c47b010c2e6fb53080690a3401e",
+    "games/hanoi/index.html": "027be568ce5606fd98ae955ab36e770f4c4ebb1a6fb917ac979e453cd5e9f3c1",
+    "games/maze/index.html": "72df6eff831e60c7f1d30bd6bddf16e9cf6043495dce892a5a16f266a1fff41c",
+    "games/maze/maze.css": "ac184d0c344cf9b76c568b08fda511b56b6878a90c87c2895d7a0d1ee6de599a",
+    "games/maze/maze.js": "f1e6320b434039e1f3d854cba0d5efb44baaeb336b3da7a8089642ba316b34bf",
+    "games/memory/index.html": "3cd805c44fda859208bcf30de19fda57669cd37d8700cad5ae423d0370f3599d",
+    "games/memory/memory.css": "5358a30a9a00c4a3d4ea22595fd623f459355d89062c88ff2dc3d169b7b10358",
+    "games/memory/memory.js": "7cf95f56ef881062d22b2e048f5084f22e16730b04d46fa90e0f408ac833e921",
+    "games/pattern/index.html": "d810c982cb1727e32b752c8f7becec7e1ed0fc395442fc67491b7aa34734d832",
+    "games/pattern/pattern.css": "59e1631f1c2643bb0e89dae2bb721dddbc8ee9c7e4875c64782b8d5e7bd9b43b",
+    "games/pattern/pattern.js": "04a9bc5648465852f70be85eceac61dae9cf7d007dd243597adc6667027ccb9f",
+    "games/puzzle/index.html": "496e9bb6977f8ac54e6b9d9d35001a0c635d45278274c2105c454a5e40f29d41",
+    "games/puzzle/puzzle.css": "6e2a81c8783ec0787f485653095dd4dfd245dd4fd78803db5925bbfa736876b4",
+    "games/puzzle/puzzle.js": "c6c771d99e37ecbdf45b67df65cac9475eb4b594b99233d8674118213a486d1b",
+    "games/sliding/index.html": "b3c0b6161869d0c96f6b928403437cd801185d128e1fd752f97140ec0702029c",
+    "games/sliding/levels.js": "ec86849f5dd1fb571fe8922e5acf2dd0604c6f0367b787a4827c774ae8c8db0d",
+    "games/sliding/sliding.css": "d885a8182ddc02a553117a56e088bf8c49795e3dce67478abda006599129420b",
+    "games/sliding/sliding.js": "31137ccaf2ccef9b02ae2dae6cf6a113da16721addcd453c718db5ab91b1923b",
+    "games/sokoban/index.html": "a32a35a87188788a5dd91c9a89f9fe7cc7f0a1ade947fc1226f882ccd8a719de",
+    "games/sokoban/levels.js": "19462cc775fdba2ab7f0db4def59427b1dab261d5c7b1a982299be17e5f18d96",
+    "games/sokoban/sokoban.css": "0e5153097500de41dffc3cbb8edd6960421d56640c85f88d774cd13f01fc7be6",
+    "games/sokoban/sokoban.js": "2bc58d42ed822023c486322b31e5625dd6e6420d48804e5ccf42a18f3f0bd88a",
+    "games/spot/index.html": "e11e81bd140c390aec8281c982a5e18a8fc938e5780714af45bb4c14611c5cff",
+    "games/spot/scenes.js": "c6d8b837f06fdb666f6dfc2607aaf34b58e12e42f5352ab494d13ffe0e7f34d0",
+    "games/spot/spot.css": "7793ae1fb923d7b0f26f01aa77941c7a0b065f5d48ea0b5529e0504090174efa",
+    "games/spot/spot.js": "175cbd3c04654b3be65b7c345b5db02a962d083c0c482dc9d6600c2343dec72f",
+    "games/stroke/index.html": "488456cc0b19c7bd1c16b6782f53c25b6d15b21f89b908f5c3a9bece8d34569c",
+    "games/stroke/levels.js": "c536b1fd9e1995385d1c84fde39b8081118f767f62c7467ee3281935f3dceed7",
+    "games/stroke/stroke.css": "8dc398c2e15875561f992b424e43b7045606fd7e741086f7335b1ac738f57927",
+    "games/stroke/stroke.js": "f87a8ebd9623b45f767f35ed65689f1f46cca39302ec571f4854003cb2178428",
+    "games/sudoku/engine.js": "daa51c27fd188ed4a1264199448355cfae62295f8ed012ee8975b232a544d0fe",
+    "games/sudoku/index.html": "6434e8beee91aed75e1217f5e829343ef7a6cf5d97822f1052faa186f37a3722",
+    "games/sudoku/sudoku.css": "dc89460250b7144723f4ed49681074d4c3868986e31cec2db843733111b5bde7",
+    "games/sudoku/sudoku.js": "de588b066d6ea083d66374ce5a12251429ef891c0950ac401777262608187775",
+    "games/tangram/index.html": "1b726ba557352bd1f61eabef7be70cef057c116bc66aebfa733403199837c081",
+    "games/tangram/tangram.css": "d307a154189efd7aed41764993151afc88a50e5bbae06006e3dfd603ec80b4df",
+    "games/tangram/tangram.js": "2f152096491cf04b1e9adfbbea6a58f54cb3040be63ea1363f5b725e1c6b1251",
+    "games/visual/index.html": "3266e0584461b0d9646748a1b3f461e74707fdf55a6f83b3b7437c70ff12439d",
+    "games/visual/visual.css": "549975dc8f166c51dbc070e03fafc8f764011a6a9e38fa01fd2d64eaccd8d406",
+    "games/visual/visual.js": "01e0d06ca92ab70931c84766d376556a83fb1e3b6dc7554e6bab98b915ecb437"
+  },
+  "originalSources": [
+    {
+      "id": "garden",
+      "path": "games/spot/art/garden.webp",
+      "width": 960,
+      "height": 644,
+      "sourceSHA256": "b441f7247bb3c8d3dbecca15c8e594865c9d72b39cee68cf3856165a5416744f",
+      "frameSHA256": "80cc5f28d77b21c8d3e9c0996c2ad694041dfc3ff4b02b5e6613e74a76a6bd7b",
+      "bytes": 84624,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "room",
+      "path": "games/spot/art/room.webp",
+      "width": 960,
+      "height": 644,
+      "sourceSHA256": "82826648a408ce301274f3b87a7a8b9d72ca7e9e95cd36ded9550491267daaa5",
+      "frameSHA256": "01956795eed97cc820efca3b4bbceb084b74e8ee4c620d454145634ac8b41740",
+      "bytes": 51192,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "sea",
+      "path": "games/spot/art/sea.webp",
+      "width": 960,
+      "height": 644,
+      "sourceSHA256": "bbffa608a8d567edadde4abe1bf5050adabbe0f476d4623a4731697ed982a5b2",
+      "frameSHA256": "9329a541a61cd4ecfda53faebad6c8fc6c27b7a6569957d9299bdca59f4745b7",
+      "bytes": 71692,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "picnic",
+      "path": "games/spot/art/picnic.webp",
+      "width": 960,
+      "height": 644,
+      "sourceSHA256": "e3a5e83b92af14e299ea0370c27354a73bfec4caa8e58a3d241f0c197504b001",
+      "frameSHA256": "391eb5f40f4a9f27046312676b85f8e43022d949f21ac0ad118d242069b5bb2a",
+      "bytes": 61510,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "kitchen",
+      "path": "games/spot/art/kitchen.webp",
+      "width": 960,
+      "height": 644,
+      "sourceSHA256": "c057efe14e1ca02b8d2354d0e1815d001486d5d5158fb1032d36b1823f2bdd8e",
+      "frameSHA256": "790b80a7f0485c9e9c73889fd7183d63d671c0f414e1801ec6b39ed94a71fb80",
+      "bytes": 27702,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-01",
+      "path": "assets/art/illustrated-v1/scene-01.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "29c046455db23dbc9049d135418588e73dd892a6ae18c20cd881f7aee2aa2c3d",
+      "frameSHA256": "fa151d9f33d410c9c859daa880111bd4251d60f32e7065d5493a313e8d8a1cf5",
+      "bytes": 55774,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-02",
+      "path": "assets/art/illustrated-v1/scene-02.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "a7892640848b1998d42807725f3a47f5157762f646ab819d9a401e1c9bf46119",
+      "frameSHA256": "bb7a31a78fe29c865d82cb64f1b633a6d7ba5d64f3ad47534ff3a717f7c73af9",
+      "bytes": 54736,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-03",
+      "path": "assets/art/illustrated-v1/scene-03.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "28dec078fd781583b3c3df85de765a63f4cbfccdd75dc8302ea748908542863c",
+      "frameSHA256": "ed22de6de79509fb5117fc6d3e602d36623fb88de4135b403adbd33a7ee9dcd5",
+      "bytes": 57506,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-04",
+      "path": "assets/art/illustrated-v1/scene-04.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "18a1a1bc2deb746b16684c69839861b81f081bce80faa2452817f339c3e47b9a",
+      "frameSHA256": "7d85a567be9865c65127be8d7b2e5f8e668ac9b1f028268dc5d5ad87303d3ed2",
+      "bytes": 69836,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-05",
+      "path": "assets/art/illustrated-v1/scene-05.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "582f411c345e1984d6c74c8c65e8dce1e0dc2cc6fb61f86f305f2e9b60219dfd",
+      "frameSHA256": "73e91072029ab2b9544fcc014ce914825f1653154bb5a68244f4df20194c449a",
+      "bytes": 41268,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-06",
+      "path": "assets/art/illustrated-v1/scene-06.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "a65ca08b92423f4b69377ddc5ec76d631549c0121f61ccd305f3acdc34f8226b",
+      "frameSHA256": "c4ad81bbe81b4f0ca9a73ff4e94d7e8d7df749efc1b4ace02c526cb118586229",
+      "bytes": 63432,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-07",
+      "path": "assets/art/illustrated-v1/scene-07.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "46079e0116841d923175ae8af55f6a75512cc274885d3912fbeba58d80b214f4",
+      "frameSHA256": "feec56db9b5b673fa40411557505a7139054da5853f797c88f9332c924ca6d5f",
+      "bytes": 56976,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-08",
+      "path": "assets/art/illustrated-v1/scene-08.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "09ab5aac3f3d23f6118f8e5c374f8abdb22851408d93dfc1938b2a481390f9fb",
+      "frameSHA256": "97388f4e53b180a93873526a6c980355801b6aab6e07a23d35ae4edba2adb10d",
+      "bytes": 47508,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-09",
+      "path": "assets/art/illustrated-v1/scene-09.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "3b76a6e3c01cedefab5c7d07d3d64cceafef038dacff6f5bd4e45b108ca23da9",
+      "frameSHA256": "a330a52f01611d53f0e8eff6c242bed937918f90f9fdeace8ca805a788b17f04",
+      "bytes": 63376,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-10",
+      "path": "assets/art/illustrated-v1/scene-10.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "58c81360b3c7ff90fe53d8159312abb58cc221317528417daf653c6ca1901448",
+      "frameSHA256": "8501d59fcc069a5bb86ab4cc73651999570aee8e5b74bfbf082474b6557d3e3c",
+      "bytes": 66986,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-11",
+      "path": "assets/art/illustrated-v1/scene-11.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "366ab56d9092cabe3bd79c67c4a181a05cc2f838f1da661c32a0eeaed6551a8b",
+      "frameSHA256": "3d4688b885e8927578c69d73d85e97b58d1f785cf7aa876bfd7e22416e20ae8a",
+      "bytes": 66182,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-12",
+      "path": "assets/art/illustrated-v1/scene-12.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "13b096ac46c323dc7515dfa745d90888f5a21f47f010f53fc21880648a0dce40",
+      "frameSHA256": "18e7b9d6ca20dce845dff0e2dc9f982007a2d7c42aa3fafe77ecc50e9b7122cf",
+      "bytes": 76156,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-13",
+      "path": "assets/art/illustrated-v1/scene-13.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "d64fca40f461c080953ade9f028cfe2e0675076223269f6405dbbcf6e56240d5",
+      "frameSHA256": "b38eb6d2b9efd58f0a80ca042490ef9d4d083a6d8837f3ec852ae939254bcbc2",
+      "bytes": 52250,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-14",
+      "path": "assets/art/illustrated-v1/scene-14.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "67380c1a36e926a7c3bc14542ce567a6c0d7cf8a91fa7c895ebb75b65f4d45fa",
+      "frameSHA256": "191d7534f8bb480d47a68a2b50b0bf80875d736f35e649adac84d6762a2bcbc8",
+      "bytes": 62560,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-15",
+      "path": "assets/art/illustrated-v1/scene-15.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "20091da6ef7706d5e9f497f6d8c4dc45f31eef55f450a825eb7d944283e43e7f",
+      "frameSHA256": "1c5ef1f5f566c17bdbb812382071bf990eb9a71a884fb0b341f6a8ff33dffea0",
+      "bytes": 68810,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-16",
+      "path": "assets/art/illustrated-v1/scene-16.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "d7a2b784c9f80149a91a3ee4bacd64dd4dea456ad5c5a5a7877aae4d6c331496",
+      "frameSHA256": "00b2f91ee59077667a579c2a134442817330dc310626ff8972c92488eb8a2937",
+      "bytes": 75442,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-17",
+      "path": "assets/art/illustrated-v1/scene-17.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "e30dc2a04f012a905c59390ad099d561eda9ac5d3d3c998f4491bce7e30af4f0",
+      "frameSHA256": "057fed60c981a665452c8a0cea5b2cd3e6df2f9031d2e8d5b05dfd786f67ddf2",
+      "bytes": 47998,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-18",
+      "path": "assets/art/illustrated-v1/scene-18.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "57d852c335902eb06708db7890d25193725795e7aa9d406b5f772a7a6ec334d2",
+      "frameSHA256": "544269ab76c85b78782b6b1aac36c16fadc6a5f94191416cbd2c9622164ec6bc",
+      "bytes": 64702,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-19",
+      "path": "assets/art/illustrated-v1/scene-19.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "9f0406913f0c6b52978b0efeafc2b3a71ae56f1e409dbe5504d5b074d05bc43e",
+      "frameSHA256": "333b190527507b640603af743b9b25d4d699955dd0156948431bbaef0d248c0a",
+      "bytes": 59462,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-20",
+      "path": "assets/art/illustrated-v1/scene-20.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "62f6490839715626dff40f41d8a687ad0220e105919eb8b31436a99fcf5a4cee",
+      "frameSHA256": "778c013c1c3e26cb51e3c80e0726edf8de05dd12d5b230baf74746eb82a9f2e0",
+      "bytes": 71758,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-21",
+      "path": "assets/art/illustrated-v1/scene-21.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "ef17f11c477acb54ff8f6d5cd7a38aab217977ed8d113ff9aef327a07db2a24f",
+      "frameSHA256": "95cb3a18a940cf511754ec3518c86c74f90a990441ef93fa1ae0afc17e080e95",
+      "bytes": 69428,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-22",
+      "path": "assets/art/illustrated-v1/scene-22.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "a8b0fe13c3e1a46ed1a8311b430276bb0e19ed1f09523915a9d67de3a11d1380",
+      "frameSHA256": "1dc1e18d90ef8e05bd93ef192862e9105625bc56fa4943199f2421f4a193600e",
+      "bytes": 53564,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-23",
+      "path": "assets/art/illustrated-v1/scene-23.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "9edbbc1f350a60fbb9c7b39d51fd6b70735281b4e4fe7a17ec094436b92bd644",
+      "frameSHA256": "8ed16ce2b1c5f47a16487f2f38a9d80adc7b6bfa5577d716bfe6c794b7afaad3",
+      "bytes": 75660,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-24",
+      "path": "assets/art/illustrated-v1/scene-24.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "c0a19abd63fb4488801ff439c219ab9f0d1ecad9c00bb244fdd29cdd3431bbe1",
+      "frameSHA256": "173d373927c64bf7f7ea8f25a818e8cb9348562f18a1eaf0424dcd2f7feca213",
+      "bytes": 54568,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-25",
+      "path": "assets/art/illustrated-v1/scene-25.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "6ba727b2a0be2586ffc95285b59345e7bd0905bf4e5b2b780e15b7fa22f0a699",
+      "frameSHA256": "3d9945bc55474859a4c1f64961edc45a95792266eed83f5ecee8fc1523e1d4b3",
+      "bytes": 73200,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-26",
+      "path": "assets/art/illustrated-v1/scene-26.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "7a08c52fcba24954acbfd0f9a062afd6fa34eaf94c67947d99180bfd097f36c7",
+      "frameSHA256": "3c265475bd4315f0783a5c3250398d298786099f9d513dc6a62fc2c86fce6d12",
+      "bytes": 71602,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-27",
+      "path": "assets/art/illustrated-v1/scene-27.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "12732c00975ecad446d7c000545b6829e093c6c23c7772ca20f0ad762d0463a3",
+      "frameSHA256": "59d9ba30c1848981540f34dee274cf994ce5de9a05e79c019cc0c7ef58d99af4",
+      "bytes": 69494,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-28",
+      "path": "assets/art/illustrated-v1/scene-28.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "aef0931f08b6960f293faabe6964064da7869a1cfc4b1d1eec3642d45e04e4b4",
+      "frameSHA256": "cf50e00c104c04cee8dc65dca2d4cef513948a370eb3de1983eef929bb679a58",
+      "bytes": 65674,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-29",
+      "path": "assets/art/illustrated-v1/scene-29.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "3771d9793b8e2621bbef199a01a959c4ab9d04e7c06ce5f2a0116a750ff83dd4",
+      "frameSHA256": "f42676b14c1c4840517578a883861a8245804376e41eae41af23de9deea5dea8",
+      "bytes": 65462,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-30",
+      "path": "assets/art/illustrated-v1/scene-30.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "519fc0ec9ddc4de9c0743e50e620ec227d6b3e4d94e6af63c9d578d5db884646",
+      "frameSHA256": "12b32d166d2515731feb296a4a721fe4630d6f3b6849462bae2401a6dd70986a",
+      "bytes": 64400,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-31",
+      "path": "assets/art/illustrated-v1/scene-31.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "d998046a254133e31f65684471e0af1d0bb406390f32d3d63f8f591ee62c8e59",
+      "frameSHA256": "2d3279d90356a4e92545f122af426ebfaa8ae905f7e27c441470742b56d8326a",
+      "bytes": 63058,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-32",
+      "path": "assets/art/illustrated-v1/scene-32.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "f262b5bd85e9661d4b8514ac1f672927c954f3a3351229e98656746a693c9230",
+      "frameSHA256": "728f0b86e6ebc81f38ecf20cdeb028173c514f8e36c602a829a329ad18cd4a69",
+      "bytes": 63372,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-33",
+      "path": "assets/art/illustrated-v1/scene-33.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "39086aca58fc942699f1c17c9fe58c64d0afe86ea4da9ee46e3ce5a17c4a23ca",
+      "frameSHA256": "6bd8141eebf48471f60e15a49e8c4e7860f56ffd2c95f955f3a5c163da1c69b4",
+      "bytes": 63164,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-34",
+      "path": "assets/art/illustrated-v1/scene-34.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "b7a9e6a2e7563eaa70090800be10980260affa450f86d2fe03b35da1a4b5f244",
+      "frameSHA256": "1314e99083310e78e7195f7f8768ac1132df08cc8064a02888faaad4e0c3a728",
+      "bytes": 59692,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-35",
+      "path": "assets/art/illustrated-v1/scene-35.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "66701ce71b12b2aa4f80fadf06c166f607b298b8f9321ba21fa167df24121921",
+      "frameSHA256": "33be7be9b896da7ec3550a3c3438ef8428a7bf3a5fae3286ee831b2d33498218",
+      "bytes": 54032,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-36",
+      "path": "assets/art/illustrated-v1/scene-36.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "afeaf4684233f5df8a6b5dab9bc181d76e4830719303a4d644de3e5792d91f33",
+      "frameSHA256": "9b404d2431a532c3915399b92bde39db41aed429975d0ef94de8e720a447634f",
+      "bytes": 46066,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-37",
+      "path": "assets/art/illustrated-v1/scene-37.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "f92cb4ea8f71959dbfc2ff40b35ed25732a702cfc45e5a72fc951775c5e7ac16",
+      "frameSHA256": "be0a00db23a0ecd01e4dccf7dd851b156eadb796094452cb2efd0105ba3f4545",
+      "bytes": 72164,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-38",
+      "path": "assets/art/illustrated-v1/scene-38.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "c212e8a1e7979613df05f3eeba045a3d5a34f216782a128f456db9df2b10bf40",
+      "frameSHA256": "34f3600981d53a3c8756e04311eca9ae1779c5d0d10cd98889c0bf6bdb9826e2",
+      "bytes": 69188,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-39",
+      "path": "assets/art/illustrated-v1/scene-39.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "9d7e53196333e0a213d8016f6c2ad6652ccda2192142e51ee1ae180ffb99d6a1",
+      "frameSHA256": "0f5ac14bcd33db12c181547749315f833ba5d4f6cccc4103c1755d65da2ef179",
+      "bytes": 75752,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-40",
+      "path": "assets/art/illustrated-v1/scene-40.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "7719c0bac2515e055e534a8a304e0f74987d448559c8133e2cfcf5d0a9d53f17",
+      "frameSHA256": "a77c90b9d8cdde97308cb473c8abdf4bb0d39fc9f263bf35227b5fbccedb87c0",
+      "bytes": 59060,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-41",
+      "path": "assets/art/illustrated-v1/scene-41.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "9a87b799288927497e5a08aa4ed2f31ca1303626d28bb77c77aa9964d44a0b3b",
+      "frameSHA256": "e0d99a7ac99084a47e43b214913bf4feb9d5b26209af54b9dd727e3f43c9c2e2",
+      "bytes": 71342,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-42",
+      "path": "assets/art/illustrated-v1/scene-42.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "2cd95dcf9bc0e73fbe8a62b546ec60a5fcbd811dc2f19e1ceb0ab84160e65628",
+      "frameSHA256": "d4f997cad2b102bf4cdaef6fe2e22f1fea6423b98155f1fa24376da49cc89522",
+      "bytes": 59484,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-43",
+      "path": "assets/art/illustrated-v1/scene-43.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "b3db9c72579a1c16b3f2bf0f39764bcc479f1d61e50ae55774df2208555b2ccf",
+      "frameSHA256": "dc703733321afa33fd9a136abd99a3304aa6b549d9c28b8a9dbaca5bc771633c",
+      "bytes": 57986,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-44",
+      "path": "assets/art/illustrated-v1/scene-44.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "9b0792486d7abf7e70f600d56e713e255839e2c1f96baca68c94a8d8c90056c1",
+      "frameSHA256": "3ba44ae5b36e24df8f8836dface4022a87d35a9b260c354fb59a465e3d274537",
+      "bytes": 60784,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-45",
+      "path": "assets/art/illustrated-v1/scene-45.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "a791a1beb18e7d36db8d49cb4499ab93dd1f57d44e0364972efc6e0757e227f9",
+      "frameSHA256": "cbb9dacb1612d62c70686b5f4d795e31ec24519e8be22a3cbf886c939f626994",
+      "bytes": 54398,
+      "existingSourceByteIdenticalToBaseline": true
+    },
+    {
+      "id": "scene-46",
+      "path": "assets/art/illustrated-v2/scene-46.webp",
+      "width": 768,
+      "height": 512,
+      "sourceSHA256": "d41f84e38d7bb99e50e9ccad9e2b048880b230c31657107ed3ae3f3165fa96f0",
+      "frameSHA256": "3947ea25f9b378747da4ef6de0352cb9bc3a80ea5bcc9b6fa134326a1a5aea81",
+      "bytes": 131438,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-47",
+      "path": "assets/art/illustrated-v2/scene-47.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "b35a0a64d9bfcc6c99561bae836c70ab326cfe761aceb694e38451b13085f6c6",
+      "frameSHA256": "24e737af552cb3b12131e0df5f2d2b5f11e8ba4ccf399ed5ce4a1e44d4df7c62",
+      "bytes": 48218,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-48",
+      "path": "assets/art/illustrated-v2/scene-48.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "900ae34bfff985f82b0a1fc48d72f56cab2ee53a4f6dfc97f570ac2b0550a409",
+      "frameSHA256": "e101bb3053128aaf54889aaa9109714e8fb3a6b9ce3bc1c88d3dfe9d7016f030",
+      "bytes": 64242,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-49",
+      "path": "assets/art/illustrated-v2/scene-49.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "52a2488d8bcf9b58cca80129f2e4959b498cd83419f1e069a3a44907262f0bcb",
+      "frameSHA256": "2d470486ec87743e6e77e78bc74eba88f0f32caa992749175b6581c6f403339f",
+      "bytes": 53830,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-50",
+      "path": "assets/art/illustrated-v2/scene-50.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "0cec81334912800b7f4672c8a8559afae8ddc40bbdaebb5ac0187794a13cbdfb",
+      "frameSHA256": "c9ea5f9023fc00c0da4a4ee1c9b2161d8c9a4df9139620a21a0c933b22c43e29",
+      "bytes": 50560,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-51",
+      "path": "assets/art/illustrated-v2/scene-51.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "1f6c3def6d6d206634a9f6724c983451ac2846739501c767d9aa2aaf8e81b522",
+      "frameSHA256": "dbbb2e97ac41c0a785c707f84390784c7834abbe842f7eb374a6f1c4eeac5b98",
+      "bytes": 38758,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-52",
+      "path": "assets/art/illustrated-v2/scene-52.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "7c2fd498ceea6a4e1d405c0cc2a39151dcf2c8aac49d4eebf875947216674a05",
+      "frameSHA256": "6409134f5f49ae3c4d3bd3d653e9f5ef9a4492b30e5678c4bfbfba822ae0f87a",
+      "bytes": 53776,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-53",
+      "path": "assets/art/illustrated-v2/scene-53.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "340feb27ef1f14925523293ddf8cb154b413ec30dd8501860bc93e1addf77e6d",
+      "frameSHA256": "13f15160342ced068b8784e60ce915511e33d358d98291f7a332c25061e9ed06",
+      "bytes": 59224,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-54",
+      "path": "assets/art/illustrated-v2/scene-54.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "a9752638aa10c02c09a9b659117fb52ab48b9d2073ab86ebc299f24712b26d6f",
+      "frameSHA256": "9854936a20b02c48f387c2f882cd9bc896ed4ef5eee75271558c18a452d9046f",
+      "bytes": 61228,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-55",
+      "path": "assets/art/illustrated-v2/scene-55.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "60910b0ae8ace26bf87ae92276ca21eeafe2f48e60baa5db96f6f75f6ef50888",
+      "frameSHA256": "d390f19324c231a1c4697b4366192729d5f439e6eb579f381df5d5f9495d2879",
+      "bytes": 50014,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-56",
+      "path": "assets/art/illustrated-v2/scene-56.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "366ec51e423121337f23afec74e4970ea142c9dc11329f6053b9c53fd667b986",
+      "frameSHA256": "3fbab2f126f36a2ad6f0dcf6c7d4fd0af154b4237600d996da545eacd44f4656",
+      "bytes": 56954,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-57",
+      "path": "assets/art/illustrated-v2/scene-57.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "4fdaac09197ff6ab9933975f1347b21a4a07c3fe39845232ef615c877306424c",
+      "frameSHA256": "5d875eab807951a039b695b776766006174becff7e5157f32822bdbeba680bed",
+      "bytes": 59536,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-58",
+      "path": "assets/art/illustrated-v2/scene-58.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "253380537fc568210839dd42951c3934a92f9c9c46d5822975694e47ba442738",
+      "frameSHA256": "f651ba128f65bb2d3f342a36243bbe24a8228c689c0170c24b342babcd2a715f",
+      "bytes": 63898,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-59",
+      "path": "assets/art/illustrated-v2/scene-59.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "ba07c1e054e887687f86c9f8033fdd901677ab026b8faec16a7e87e2ea2efc17",
+      "frameSHA256": "1f91249ff7b55e8d1944eebe56f1a43813042ffb88b41f800de6632db33e0237",
+      "bytes": 59280,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-60",
+      "path": "assets/art/illustrated-v2/scene-60.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "b85cdaf39473f1bc609e3c7f3f6bf5d3dfbfb311587c760671a87493d233b1bc",
+      "frameSHA256": "7318123fd29b572bab5420223a4a350a3c5001d71d365d458caef5789f3c3e68",
+      "bytes": 56292,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-61",
+      "path": "assets/art/illustrated-v2/scene-61.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "9503dbe701f3bdce3750e1ed490ae8dc486fbb8ae4b8457b0962cd67365c2d6c",
+      "frameSHA256": "e23b180507ed856d9c37ddd1507bb6e5e41ed329af9b8ec776a0ea074998a4db",
+      "bytes": 69502,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-62",
+      "path": "assets/art/illustrated-v2/scene-62.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "69dd53bc9e4128b6fe57f58d304213e9a9ce5f77e677a166bf74c636e1c6d71a",
+      "frameSHA256": "3931a207f6fa0642eea909ef7caede63b3c9b179ae018ece8f0538b811056ad0",
+      "bytes": 46464,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-63",
+      "path": "assets/art/illustrated-v2/scene-63.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "8c59cd551832370b1ba593d6d048af7aef972dd83999c7c612a5f3855510c5d7",
+      "frameSHA256": "40d01b48d5f0a861627fe63a2a47f636b69036a3330d3e87f029655edb043652",
+      "bytes": 54972,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-64",
+      "path": "assets/art/illustrated-v2/scene-64.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "67a2e5221d33ca60f414ca0abf3f39c16ed60cfd360ed4f67058eb50b101b8d2",
+      "frameSHA256": "e44324042bb81ffad4528558a1d07dd7c81649b6688303938c01eedf39998883",
+      "bytes": 67624,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-65",
+      "path": "assets/art/illustrated-v2/scene-65.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "18596ff058172261714221181c3a646714ef1d23493f50b02888df8ce4851d14",
+      "frameSHA256": "9c6edd79c8ae76f1e780035db3ffcfece8c67dfba252a590613912c1c2cc7648",
+      "bytes": 61968,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-66",
+      "path": "assets/art/illustrated-v2/scene-66.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "575ed2b7d9382b480f6a821d927a842b40958f7ca9b41b886469dc4cea429089",
+      "frameSHA256": "8a85d960ad14b5588a6ddb2ceadb4c3d47850ff3ba3fe5f6d20e787cae62fa28",
+      "bytes": 51050,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-67",
+      "path": "assets/art/illustrated-v2/scene-67.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "456a9a584c5580442d450f4312724948a03fb07026fcc54ca650834e4edbf2a5",
+      "frameSHA256": "63efd24ed5f1bc4250cb95425b07729b09f79fb8a9036ec75e6389a5da7c6909",
+      "bytes": 68402,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-68",
+      "path": "assets/art/illustrated-v2/scene-68.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "0c751b39c47a984e330abf4b560b9cbfc614a7e8cb6feb1c19364de7bcdb3fe5",
+      "frameSHA256": "985b98ebce103b96c32a398862996bf5daca91d8b88bf5aba73e431079d25aea",
+      "bytes": 65900,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-69",
+      "path": "assets/art/illustrated-v2/scene-69.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "f3ca74066b9e7e9439e0dec162091be2c7c4fb83d1c009f05b2cce5d3822df61",
+      "frameSHA256": "782aef572edadae7b4dec84b51020a57967f6ee0df299ead95f26a7310e099d6",
+      "bytes": 58764,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-70",
+      "path": "assets/art/illustrated-v2/scene-70.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "2f4686c2c58b6c3cf4e533ad113ae4c5a9628ba48fb5f22c4bd02a99648a3cb3",
+      "frameSHA256": "eba40e49b89001790aa2e9b74204905b0122c402cef6edbf30be0776cb906e69",
+      "bytes": 60620,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-71",
+      "path": "assets/art/illustrated-v2/scene-71.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "f1a756e49fc3e0452d3885cb827fa6d98aad15e59d19f7eb877878ac5a949b35",
+      "frameSHA256": "02f24734a31cbfd5be2c5a64bd8c53fc6b7b8ac4b13bb2ed723f0381e373558c",
+      "bytes": 55122,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-72",
+      "path": "assets/art/illustrated-v2/scene-72.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "f093851d3fabd8db65ea7f2dd879aeb8922cbe537e85a5186cded0b08e0403de",
+      "frameSHA256": "a1aeeb90f09dc228b5b0aeb2a441f0f803d4ee9aae8adbcd50a5962358a89d6f",
+      "bytes": 48076,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-73",
+      "path": "assets/art/illustrated-v2/scene-73.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "d9f47ff8679d201bc8e90b2b255466b905144cc3d78059d67a2c614eece79b35",
+      "frameSHA256": "8355ebc5c2170afb0bd26a37fd87e28846c0cc24a3a2d4dd27b87581af54f66c",
+      "bytes": 55922,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-74",
+      "path": "assets/art/illustrated-v2/scene-74.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "bc50706daed101b46f8ef7aa1a67ba128a73b81ed7dbd41001dd6e30445b1843",
+      "frameSHA256": "89db6ab19040bc0bd478456ec486b554b693130ca13c511ecc258cb733affd52",
+      "bytes": 54304,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-75",
+      "path": "assets/art/illustrated-v2/scene-75.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "4834b2a561c7d85ac7c0448ebda06b3d430f958bd8d80d468e608a529ec3fba9",
+      "frameSHA256": "706419c6ce850744e30c17327074577ad1bddc076c4e5869fa3e13e4f3b5b1dd",
+      "bytes": 46656,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-76",
+      "path": "assets/art/illustrated-v2/scene-76.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "ebf4cc7359d30ad96d456a4ddc11c5d66bd2a48623f5f2181b4ad2ae5f1b3249",
+      "frameSHA256": "c87a8f436127411c225bc44cbb9abe344f7ec4490dbcaa2579b889dd003257fc",
+      "bytes": 68278,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-77",
+      "path": "assets/art/illustrated-v2/scene-77.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "7dec03da63e72b8652f73764c4a18dafb8737755a10e62d5950386a32776f4d2",
+      "frameSHA256": "8957b9132cf69de2f57cef51d68d1a7b8585f6575d7d1742c896cbbf0904e137",
+      "bytes": 63474,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-78",
+      "path": "assets/art/illustrated-v2/scene-78.webp",
+      "width": 768,
+      "height": 512,
+      "sourceSHA256": "39c4bb45c099466258f87c9cf4eedaf8bb8b8f3b37bbc1aa2d25765ef5da7f27",
+      "frameSHA256": "ecc4ee86829c602737b2646bf5732edc9f05efff50a3a6bdb5477d0b18ce4109",
+      "bytes": 106486,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-79",
+      "path": "assets/art/illustrated-v2/scene-79.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "709d931c200d627d6482e60b397227ef88df73ba2e1a210cf71ee4447ca0ebd3",
+      "frameSHA256": "2af7c6ee0066062893338825b04ef1f1d079d85b8cd3ae151b8303d607c8dc32",
+      "bytes": 60776,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-80",
+      "path": "assets/art/illustrated-v2/scene-80.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "9d827bef57184d60a64089d5e1f23278b10d882fcdbaeeec049f1cf0e584843f",
+      "frameSHA256": "8f96d97201a9b84d51fcf986a78a24ced6dc3fbe954d6c51e20f99279474dfa7",
+      "bytes": 70528,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-81",
+      "path": "assets/art/illustrated-v2/scene-81.webp",
+      "width": 768,
+      "height": 512,
+      "sourceSHA256": "991b934cf26b70d67a0895a92ff0d861661a0c369f3c695d649775686ed029c3",
+      "frameSHA256": "914992ea52d93d4ea961b64670548263574c88a09aa3f0f4f609bb3bca6792b1",
+      "bytes": 154936,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-82",
+      "path": "assets/art/illustrated-v2/scene-82.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "95fc7f440e0d6dc44d1436c463e9757bb9bc6127a0b68319aa7894b96b7afcf6",
+      "frameSHA256": "aebf30295a293ed60ad7b9f7873bc01dfbff966839b7d2f3ba51a6c215bf13ca",
+      "bytes": 60422,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-83",
+      "path": "assets/art/illustrated-v2/scene-83.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "643b70681a28eb50543ed7bb09b06f86e7a3bbe5610dfe8facab7baedfafc6fe",
+      "frameSHA256": "92d4e4948b67aa58974f3b5b88aa2307996ff1813b7faf2f51a08f43aff678c2",
+      "bytes": 58754,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-84",
+      "path": "assets/art/illustrated-v2/scene-84.webp",
+      "width": 768,
+      "height": 512,
+      "sourceSHA256": "b52aa8a67b643f6fec40646b5a89761e4255752c9feee0876a81ed252f92bc41",
+      "frameSHA256": "315e22e680afd1a48d53ae4e58321776c7f6424d52b36dfa90861f352956a6a8",
+      "bytes": 144472,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-85",
+      "path": "assets/art/illustrated-v2/scene-85.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "a39c2e027304a0551bdcd8dfa075f07558cabec1b7940a31f8f339a47251587f",
+      "frameSHA256": "7bd67337ebfd4ca1d5d6e40d2475be54038a986255b9384c30da85d32e4323fa",
+      "bytes": 67514,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-86",
+      "path": "assets/art/illustrated-v2/scene-86.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "2a70b3d394329e7ec2b3964abb5f289beb4ab5b5063616ab3dce3af6e477edde",
+      "frameSHA256": "5b374c41923cb3312ca52d42f03ee1b5845d2e8324779c07f538ed17badf198d",
+      "bytes": 59106,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-87",
+      "path": "assets/art/illustrated-v2/scene-87.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "bad422728c5c4d5f59781244663b18ea99273353ebcbde8761ce0aad716c8bb1",
+      "frameSHA256": "9ebfcaa74954443e5b02aa46b4471e458918e2fcb203083edaf1b5fabf9aee7a",
+      "bytes": 60674,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-88",
+      "path": "assets/art/illustrated-v2/scene-88.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "dd5bc70ad6a2c0f0c12918f56e0338ac1d8a89772e6f0e4aef4088c068877876",
+      "frameSHA256": "61ab80e94999f05f1ae579818d0821fa8d6345d89d42f33445159affe345a3de",
+      "bytes": 66548,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-89",
+      "path": "assets/art/illustrated-v2/scene-89.webp",
+      "width": 512,
+      "height": 342,
+      "sourceSHA256": "b7f6ea6f3935b5a924f8a5383f19a3251a30ed420af4366fc5a27a22e980c0ef",
+      "frameSHA256": "1726549914354f1c192f82c7bdf5f0bee4caa28b7d92adf0a927fa529fa4459b",
+      "bytes": 60676,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-90",
+      "path": "assets/art/illustrated-v2/scene-90.webp",
+      "width": 768,
+      "height": 512,
+      "sourceSHA256": "bd734a57e59f350f42a7d34c70729469ffaa88f8ab867715557127d44ff20b88",
+      "frameSHA256": "5c35a15d46ebd45753c58755b2e7a2bdf41464c0990ce33d4164b56b4fc67f25",
+      "bytes": 155396,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-91",
+      "path": "assets/art/illustrated-v2/scene-91.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "562b63ed07604895aa15eca95b8099efa54f9637e4524c2b3d055b33c1e443b3",
+      "frameSHA256": "34008f9d8953a02baa26f479373f3578f9633fd4a94d34c6b57ff477b0c6cdfb",
+      "bytes": 66356,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-92",
+      "path": "assets/art/illustrated-v2/scene-92.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "8e7e2cad93244f4a945141ae47a48e7bf3a876bccecf1ded220ea3e5688f1302",
+      "frameSHA256": "9b7ab5d2db433a89ce7473065bcc1e35d84afbe922a162ea8369f7ce7b9bbf4b",
+      "bytes": 44282,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-93",
+      "path": "assets/art/illustrated-v2/scene-93.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "bfece029fb1b1743f6832d6c71ac575d40a21bae3cbeba8252f4a17ff73a1b60",
+      "frameSHA256": "3f7d06e56a233f85deb8e0806127c171aab27177eb10e5476e614cccc840460a",
+      "bytes": 42776,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-94",
+      "path": "assets/art/illustrated-v2/scene-94.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "3a868ee2436a0014613913055ceaf553adecbb6aad01ac040ec104cd20336b01",
+      "frameSHA256": "6c1986d53692a96c822a13b019b50d7e5e684751c65270fe943ffc9f641f6cf9",
+      "bytes": 45176,
+      "existingSourceByteIdenticalToBaseline": false
+    },
+    {
+      "id": "scene-95",
+      "path": "assets/art/illustrated-v2/scene-95.webp",
+      "width": 512,
+      "height": 341,
+      "sourceSHA256": "b2768d10eaca3bdc9db3a635abd5316985edcc9d5c7865b4d3b819a60778e8d2",
+      "frameSHA256": "8d8366ab95a3ff2a4c80ac1908e2cdbc70b7f93f1fe27455c669612e83d0a6bd",
+      "bytes": 44666,
+      "existingSourceByteIdenticalToBaseline": false
+    }
+  ],
+  "validation": {
+    "entryPoints": 40,
+    "allPassed": true,
+    "spotDesktopActualCompletions": 300,
+    "spotMobileActualCompletions": 200,
+    "spotMobileActualTaps": 1400,
+    "puzzleActualCompletions": 300,
+    "authenticOld50MigrationCases": 6,
+    "newSourceFailureCases": 4,
+    "boundedCacheGames": 2,
+    "actualProductionUIScenarios": 9,
+    "rootActuallyViewedUICaptures": 18,
+    "newAuthorAndIndependentApprovedScenes": 50,
+    "newIndividuallyReviewedAnswers": 350,
+    "runtime": {
+      "node": "v24.19.0",
+      "chromium": "154.0.8037.57 Debian13 Linux"
+    },
+    "testSources": [
+      {
+        "path": "tests.js",
+        "sha256": "134974abf2b074ebde22b5448824f976ad96257c56d6010a426cbc9b8efe7993"
+      },
+      {
+        "path": "sliding-tests.js",
+        "sha256": "101eaece210e59eeaa1e0fdded1eff05cdc99a7a555102d50bd32fd39b9bd857"
+      },
+      {
+        "path": "sudoku-tests.js",
+        "sha256": "481ce25400c437882bdf21688169039e586db22526c9bc06e11a183aef200103"
+      },
+      {
+        "path": "tests/family-core.test.cjs",
+        "sha256": "13f7119553c9400703e741ff76752151fe62eff1bd8159cec4380562503ac74d"
+      },
+      {
+        "path": "tests/banks.test.cjs",
+        "sha256": "6492ad5b934c4f0c888a374538a21c44a1b4b939e83157bd6ed9818ea49a02c5"
+      },
+      {
+        "path": "tests/illustration-content.test.cjs",
+        "sha256": "1701c02bd1ecea867183579d30c26e2167c3b069a4ba3423e8ef77ef7359e634"
+      },
+      {
+        "path": "tests/art-quality-expanded-browser.cjs",
+        "sha256": "43aeb0006ae39ed619979eb27fffa4bf9b5c34d8653a85e1548a4e12de2353c3"
+      },
+      {
+        "path": "tests/natural-touch-browser.cjs",
+        "sha256": "bdd7c677bd90c445d22dcae423a7225a491ceda07812a3f64c9f2c143ab53316"
+      },
+      {
+        "path": "tests/illustration-puzzle-browser.cjs",
+        "sha256": "c30400a848ecb6bb1fedb68618fa2e738e165bc1251358682125a9e7b7a172cc"
+      },
+      {
+        "path": "tests/illustration-100-migration-browser.cjs",
+        "sha256": "c18e79b77d7eb06b8db5acdeb90330e2a1f74c6a8c0462148528509b7e7d4c7d"
+      },
+      {
+        "path": "tests/illustration-100-failure-browser.cjs",
+        "sha256": "f2f0b6f477bfbbe7b402293945a50fa678276f88af8ba19070c5752ebceedce2"
+      },
+      {
+        "path": "tests/illustration-100-loading-browser.cjs",
+        "sha256": "b1622757252b743934b89375a8e28e0c99e9a543249e991e6437ce98d502f610"
+      },
+      {
+        "path": "tests/natural-legacy-layer-browser.cjs",
+        "sha256": "86f9b661a91f9216e6fade24646f9cbf9fe22c2ffb93a8f9df6533c047b0ee71"
+      },
+      {
+        "path": "tests/art-quality-legacy.cjs",
+        "sha256": "c771f9559f430e574311db5159c56f3d24f456859c0dd338da211ca5b828090e"
+      },
+      {
+        "path": "tests/art-quality-load-failure.cjs",
+        "sha256": "c4b6f1de101a08bf8e55e3afdd940b954dea9088e421ef2e87a21287e83bdcfa"
+      },
+      {
+        "path": "tests/parent-browser.cjs",
+        "sha256": "0b1788315a58a5477af7cbd9a0053d54e104cd42d1f358ceb1d29c9819593a3e"
+      },
+      {
+        "path": "tests/games-browser.cjs",
+        "sha256": "c372c6a61e3266291c40d2cc25557578d25ff346d6b7773ff2bebc1d80448e93"
+      },
+      {
+        "path": "tests/cutoff-browser.cjs",
+        "sha256": "1ce3685abb87e52f0de9a3a6fceef60ac3a2952503c50bb2f058ff00b72d045c"
+      },
+      {
+        "path": "tests/cutoff-progress-browser.cjs",
+        "sha256": "75c4eec58c0a666d8f627a5f95729109195fde3d611207895ec8ec061ba95bfd"
+      },
+      {
+        "path": "tests/renew-transition-browser.cjs",
+        "sha256": "744b477861cbe21875d64f377025f025fcbccd3854c1c36c5671ab99045329a8"
+      },
+      {
+        "path": "tests/parent-edge-browser.cjs",
+        "sha256": "bcd728a73fbcd5a4a99df4c391a9bce9e7059ac5b74627677e9801e430223c97"
+      },
+      {
+        "path": "tests/relaunch-browser.cjs",
+        "sha256": "ebfb1bdf814ce8e04e761f11d5f8ed261e9720326d19685b0dd2a679eff1bd53"
+      },
+      {
+        "path": "tests/migration-browser.cjs",
+        "sha256": "202fd3fca5449c6b66a575dd97c228d33c67faca6040724a7f06ad7d5b1c56e9"
+      },
+      {
+        "path": "tests/touch-browser.cjs",
+        "sha256": "98192615f3d4e51830051e60433ad629bdad6a9684dc253b52d984bf50e4b7b9"
+      },
+      {
+        "path": "tests/viewport-all-games-browser.cjs",
+        "sha256": "05597536c5e31aac7add712556992b6060513e354dc80908dbc6a2f617ca0c40"
+      },
+      {
+        "path": "tests/zoom-browser.cjs",
+        "sha256": "71dc1d5d771d83683b59829bc9d51cf7424fb1348cfd29e278076c2e2601fb1c"
+      },
+      {
+        "path": "tests/original-five-material-browser.cjs",
+        "sha256": "b7e4cbe3d76a2e0a80dd5d6c7f61187239d397d49ff0301ebeed73594ee6563a"
+      },
+      {
+        "path": "tests/original-five-material-touch.cjs",
+        "sha256": "bc7385df173e8ba94916de51ecb4e227c8802fb978f652ac52a65891ed5b9812"
+      },
+      {
+        "path": "tests/natural-renderer-guards-browser.cjs",
+        "sha256": "8070e170d500f900f12ad1d190b5e3071d9792145aa0b2cfb15134740e7e0206"
+      },
+      {
+        "path": "tests/art-quality-parent-touch.cjs",
+        "sha256": "fc6df21085223bdb9a6c02263562c98cee49795719c80fbdf7456a86cdf6c830"
+      },
+      {
+        "path": "tests/game-flow-browser.cjs",
+        "sha256": "166c0e8cd827f1f92a115763f009c622344100e508003844bfe3650fb482dab8"
+      },
+      {
+        "path": "tests/shared-layout-reviewer-browser.cjs",
+        "sha256": "d7c3b9c30799d63cbcc660cedd8c92990ec3c3391fb1324ef89c783a2f78e6ba"
+      },
+      {
+        "path": "tests/puzzle-mobile-reference-browser.cjs",
+        "sha256": "a61ed32a9dd2fd51b6e3fa0f603453bc6fb9fcdf9631fc31523312a1c3649a80"
+      },
+      {
+        "path": "tests/puzzle-mobile-save-browser.cjs",
+        "sha256": "90094d67b69ffe97d6a408a3430f3f05f106ee68887f7dbb243a16816dda3c6b"
+      },
+      {
+        "path": "tests/maze-sokoban-tap-browser.cjs",
+        "sha256": "113f0b2782da1401526d1d111d07dfb636ce44ae3f0b55fbe4d4a61504859e26"
+      },
+      {
+        "path": "tests/sliding-vehicle-browser.cjs",
+        "sha256": "8e96ddf94d618a0db1f10e5cf9f673a5dc59e0b40636e48bcdca1c2406d42279"
+      },
+      {
+        "path": "tests/tangram-flip-browser.cjs",
+        "sha256": "3685154271659ae7c3bfd1ada8f494c81eba0e0be03cfc68e97af1a94cc124bf"
+      },
+      {
+        "path": "tests/tangram-release-browser.cjs",
+        "sha256": "dbae67fe029dce912e4f5a1169f830c48a14204a4b8504997610b9806a12e733"
+      },
+      {
+        "path": "tests/spot-replay-layout-reviewer-browser.cjs",
+        "sha256": "fd834f9771c20d9d9ed0a00473eb6f2be18f708a118f749cef958fbb8c2a313d"
+      },
+      {
+        "path": "tests/mobile-family-text-browser.cjs",
+        "sha256": "92e9cf5dce02506d6737c1d489ee745e45ebb1e52cc2daff62f2371a50f60572"
+      }
+    ]
+  },
+  "evidence": {
+    "finalVerification": {
+      "path": "outputs/r4-100/final-verification.json",
+      "sha256": "7f1aee7ed5aad77dac75faad0c70c7ac31d32d39ee91798592351ce7239142f4"
+    },
+    "visualApprovalGate": {
+      "file": "outputs/r4-100/visual-approval-gate.json",
+      "sha256": "91b7d078bf54ac034d78f375b2d81f6f3c12d2d1f708450c22b5c99878447d58",
+      "authorFrames": 50,
+      "independentFrames": 50,
+      "individualAnswers": 350
+    },
+    "actualProductionUI": {
+      "file": "outputs/r4-100/production-ui-review/root-visual-review.json",
+      "sha256": "c3647b46c8df17fee27faa15aa1a6e92302c1f86b2fa2719d18f2dfae61d9680",
+      "scenarios": 9,
+      "rootActuallyViewedCaptures": 18
+    },
+    "resolvedTestPreparation": {
+      "file": "outputs/r4-100/sliding-grace-diagnosis/diagnosis.json",
+      "sha256": "774cde65203729a05c6f36e904b4eaa8e611abc6c657c16a5f8ba3b059905082",
+      "productionChanged": false
+    }
+  },
+  "unchangedParentalAndRendererCore": [
+    {
+      "file": "assets/js/family-core.js",
+      "sha256": "a6f9f4d24355ecc8c0e66ecca9106aacc46bb65227304594930ce12d616c59ca",
+      "unchanged": true
+    },
+    {
+      "file": "assets/js/family.js",
+      "sha256": "b0c5c68a22077960143520a3bb65d75be55ec6c6d793e9932c66f6df41cb91cf",
+      "unchanged": true
+    },
+    {
+      "file": "assets/js/lifecycle.js",
+      "sha256": "dba75b19bffbeecfb1502eae0ac14ba0104b983f8ed67cf7ae9af34fc5ac7167",
+      "unchanged": true
+    },
+    {
+      "file": "assets/js/illustration-patches.js",
+      "sha256": "db2afcfcfb3fb3315e08280540bbe2da8ff3bc5707095a2775a240d962998c7a",
+      "unchanged": true
+    }
+  ],
+  "limits": [
+    "Physical mobile devices and Safari not tested; Chromium mobile/touch emulation only.",
+    "Current original is loaded on demand; JS caches are bounded. Local CPU-throttled timings do not guarantee production CDN or device speed.",
+    "Existing 50-frame cycle resets to100 at first new draw; old remaining order is not preserved across pool expansion.",
+    "Static local storage and clock/code can be changed or cleared; no cross-device server enforcement.",
+    "Cloud production CDN access may be403; Pages deployment proof does not prove directCDN gameplay."
+  ]
+}

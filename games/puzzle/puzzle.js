@@ -1,7 +1,7 @@
 (async () => {
   "use strict";
   const arts = window.SistersIllustrations;
-  if(!Array.isArray(arts)||arts.length<50)throw Error('完整插畫題庫未達 50 張');
+  if(!Array.isArray(arts)||arts.length!==100)throw Error('完整插畫題庫需 100 張');
   const sizes = [12, 24, 36];
   const state = { pieces: 12, art: arts[0], placed: [], hints: 0, moves: 0, restarts: 0, startedAt: Date.now(), cols: 4, rows: 3, image: null, trayOrder: [], question:null,referenceShown:false };
   const board = document.getElementById("board");
@@ -26,7 +26,7 @@
     try{while(wanted){const next=wanted;wanted=null;loadingTarget=next;
       const ok=await SistersRound.start(async()=>{
         // Load before changing the logical state so failures preserve the old board.
-        // Each difficulty draws from 50 complete compositions. Cache the choice
+        // Each difficulty draws from 100 complete compositions. Cache the choice
         // on this factory so a failed image load retries the same question.
         const keep=next.reason==='restart'&&state.art.id===next.art.id&&state.pieces===next.pieces;
         if(!next.choice){const frame=keep?state.art:next.draw?await SistersChallenges.draw('puzzle:illustrated-v1:'+next.pieces,arts):arts.find(a=>a.id===next.art.id);if(!frame)throw Error('插畫不在題庫，原局保留');next.choice={actualArt:structuredClone(frame),question:keep?state.question:{id:'illustrated-v1/'+frame.id,kind:'complete-illustration-v1',frameVersion:frame.version,frame:structuredClone(frame)}};}

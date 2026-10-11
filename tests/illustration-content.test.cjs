@@ -1,15 +1,10 @@
 'use strict';
-const fs=require('fs'),vm=require('vm'),assert=require('assert/strict'),crypto=require('crypto');
-global.window=global;
-for(const file of ['assets/data/illustration-bank.js','assets/js/illustration-detail.js','assets/data/illustration-details-01.js','assets/data/illustration-details-16.js','assets/data/illustration-details-31.js','assets/data/illustration-details-original.js'])vm.runInThisContext(fs.readFileSync(file,'utf8'),{filename:file});
-const frames=SistersIllustrations;assert.equal(frames.length,50);assert.equal(new Set(frames.map(f=>f.id)).size,50);const hashes=[];
-for(const frame of frames){
- assert(Number.isInteger(frame.version)&&frame.version>0);assert(frame.name&&frame.src&&frame.width>0&&frame.height>0);
- const bytes=fs.readFileSync(frame.src.replace('../../',''));hashes.push(crypto.createHash('sha256').update(bytes).digest('hex'));
- const complete={...frame,details:IllustrationDetails[frame.id]};assert.equal(complete.details.length,7);SistersIllustrationDetails.validate(complete);
- for(const tier of [3,5,7]){const ids=complete.details.slice(0,tier).map(d=>d.id),spots=SistersIllustrationDetails.spots(complete,ids);assert.equal(spots.length,tier);assert.notEqual(SistersIllustrationDetails.svg(complete,ids),SistersIllustrationDetails.svg(complete,ids,true));}
-}
-assert.equal(new Set(hashes).size,50,'each question uses a different complete artwork file');
-for(const file of ['assets/js/family-core.js','assets/js/family.js','assets/js/lifecycle.js']){const original=require('child_process').execFileSync('git',['show','f8a0778:'+file]);assert.deepEqual(fs.readFileSync(file),original,'Owner-approved ten-minute protection unchanged: '+file);}
-const report={completeCompositions:50,newGeneratedCompositions:45,existingCompleteArtworks:5,puzzle:{12:50,24:50,36:50},spot:{3:50,5:50,7:50},detailRegions:350,parentalFilesUnchanged:true};
-fs.mkdirSync('outputs/r3/illustration-content',{recursive:true});fs.writeFileSync('outputs/r3/illustration-content/content-counts.json',JSON.stringify(report,null,2));console.log('PASS',report);
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict'),crypto=require('crypto'),cp=require('child_process');
+function read(file,ref){const w={};vm.runInNewContext(ref?cp.execFileSync('git',['show',ref+':'+file]).toString():fs.readFileSync(file,'utf8'),{window:w});return JSON.parse(JSON.stringify(w));}
+const arts=read('assets/data/illustration-bank.js').SistersIllustrations,natural=read('assets/data/natural-illustrations-v2.js').SistersNaturalIllustrations;
+assert.equal(arts.length,100);assert.equal(natural.length,100);assert.equal(new Set(arts.map(f=>f.id)).size,100);assert.deepEqual(arts.slice(0,50),read('assets/data/illustration-bank.js','f13b671').SistersIllustrations);assert.deepEqual(natural.slice(0,50),read('assets/data/natural-illustrations-v2.js','f13b671').SistersNaturalIllustrations);
+const hashes=[];let details=0,newBytes=0;
+for(let i=0;i<arts.length;i++){const f=arts[i],q=natural[i];assert.equal(q.id,f.id);assert.equal(q.src,f.src);assert.equal(q.width,f.width);assert.equal(q.height,f.height);assert(f.name&&Number.isInteger(f.version)&&f.version>0);const bytes=fs.readFileSync(f.src.replace('../../','')),hash=crypto.createHash('sha256').update(bytes).digest('hex');hashes.push(hash);if(q.sourceSHA256)assert.equal(hash,q.sourceSHA256);assert.equal(q.details.length,7);assert.equal(new Set(q.details.map(d=>d.id)).size,7);if(i>=50)newBytes+=bytes.length;for(const d of q.details){assert(d.label&&d.material&&d.mask.paths.length&&Array.isArray(d.mask.holes));assert.equal(d.patch,undefined);const[x,y,w,h]=d.bounds;assert([x,y,w,h].every(Number.isFinite)&&x>=0&&y>=0&&w>0&&h>0&&x+w<=q.width&&y+h<=q.height);assert(d.material.sourceHue.length);details++;}for(const tier of[3,5,7])assert.equal(q.details.slice(0,tier).length,tier);}
+assert.equal(new Set(hashes).size,100,'100 different complete source files; independent full-scene visual review verifies composition quality');
+for(const file of['assets/js/family-core.js','assets/js/family.js','assets/js/lifecycle.js','assets/js/illustration-patches.js'])assert.deepEqual(fs.readFileSync(file),cp.execFileSync('git',['show','f13b671:'+file]),'approved parental policy and material compositor unchanged: '+file);
+const report={completeCompositions:100,existingScenesPreserved:50,newScenes:50,newCompressedImageBytes:newBytes,puzzle:{12:100,24:100,36:100},spot:{3:100,5:100,7:100},materialAnswers:details,originalOrderAndFrameDataPreserved:true,parentalAndCompositorUnchanged:true};fs.mkdirSync('outputs/r4-100/illustration-content',{recursive:true});fs.writeFileSync('outputs/r4-100/illustration-content/content-counts.json',JSON.stringify(report,null,2));console.log('PASS',report);

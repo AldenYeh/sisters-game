@@ -23,7 +23,7 @@ async function start(reason="new",nextTier=wanted?.tier??loadingScene??tier){
  try{while(wanted){const next=wanted;wanted=null;loadingScene=next.tier;
  const ok=await SistersRound.start(async()=>{
   if(!Object.prototype.hasOwnProperty.call(next,'choice')){let q=next.reason==='restart'?question:null;
-  if(next.reason!=='restart'){const frames=availableFrames();if(frames.length!==50)throw Error('完整自然插畫需 50 景；原局保留');const f=await SistersChallenges.draw('spot:natural-objects:v2:'+next.tier,frames);q={kind:'illustration-patches-v2',id:f.id+':v2:'+next.tier,frame:f,tier:next.tier,selectedIDs:f.details.slice(0,next.tier).map(d=>d.id)};}next.choice=q;}
+  if(next.reason!=='restart'){const frames=availableFrames();if(frames.length!==100)throw Error('完整自然插畫需 100 景；原局保留');const f=await SistersChallenges.draw('spot:natural-objects:v2:'+next.tier,frames);q={kind:'illustration-patches-v2',id:f.id+':v2:'+next.tier,frame:f,tier:next.tier,selectedIDs:f.details.slice(0,next.tier).map(d=>d.id)};}next.choice=q;}
   const q=next.choice;const loaded=await load(scene,q);pair=layered(q)?loaded:null;question=q;tier=layered(q)?q.tier:next.tier;found=new Set();startedAt=Date.now();document.getElementById('complete').hidden=true;render();chips();
  },next.reason);if(!ok){wanted=null;break;}
  }}finally{switching=false;loadingScene=null;chips();}
