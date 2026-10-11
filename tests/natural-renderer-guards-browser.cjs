@@ -1,0 +1,7 @@
+'use strict';
+const{chromium}=require('playwright'),fs=require('fs'),assert=require('assert/strict'),openHarness=require('./original-five-material-harness.cjs');
+(async()=>{const b=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']}),p=await b.newPage(),out='outputs/r3/natural-renderer-guards';fs.mkdirSync(out,{recursive:true});try{await openHarness(p);const rows=await p.evaluate(async()=>{const h=SistersIllustrationPatches,frame=frames[0],rows=[];await show(frame.id);async function rejects(name,f){let rejected=false;try{await h.canvas(f,f.details.map(d=>d.id),true);}catch(e){rejected=true;}rows.push({name,rejected});}
+const patches=structuredClone(frame);patches.details=patches.details.map(d=>{delete d.material;d.patch={src:frame.src};return d;});await rejects('abandoned raw patch schema rejected',patches);
+const overlap=structuredClone(frame);overlap.details=frame.details.map((_,i)=>({...structuredClone(frame.details[0]),id:'fictional-overlap-'+i}));await rejects('actual material overlap rejected',overlap);
+const empty=structuredClone(frame);empty.details[0].mask={paths:['M0 0 L0 0 Z'],holes:[]};await rejects('empty answer rejected',empty);
+const bad=structuredClone(frame);bad.details[0].material.targetSat=NaN;await rejects('invalid material rejected',bad);return rows;});for(const r of rows)assert(r.rejected,r.name);fs.writeFileSync(out+'/results.json',JSON.stringify(rows,null,2));console.log('PASS renderer guards',rows.length);}catch(e){console.error(e);process.exitCode=1;}finally{await b.close();}})();
